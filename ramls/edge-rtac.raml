@@ -1,0 +1,39 @@
+#%RAML 0.8
+title: Edge API: Real Time Availability Check
+baseUri: https://github.com/folio-org/edge-rtac
+version: v1
+
+documentation:
+  - title: Edge API: Real Time Availability Check
+  - content: Edge API to interface w/ FOLIO for 3rd party discovery services to determine holdings availability
+
+schemas:
+  - holdings: !include holdings.xsd
+
+/prod/rtac:
+  displayName: RTAC
+  get:
+    description: RTAC for the specified holding id
+    responses:
+      200:
+        description: "Success"
+        body:
+          application/xml:
+            schema: holdings
+    uriParameters:
+      mms_id:
+        description: "The UUID of a FOLIO instance"
+        type: string
+        pattern: "^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[1-5][0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}$"
+      apikey:
+        description: "API Key"
+        type: string
+/admin/health:
+  displayName: Health Check
+  get:
+    description: RTAC for the specified holding id
+    responses:
+      200:
+        description: "Success"
+        body:
+          text/plain
