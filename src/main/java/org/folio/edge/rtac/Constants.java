@@ -1,6 +1,11 @@
 package org.folio.edge.rtac;
 
 public class Constants {
+  
+  private Constants() {
+
+  }
+
   // System Properties
   public static final String SYS_SECURE_STORE_PROP_FILE = "secure_store_props";
   public static final String SYS_SECURE_STORE_TYPE = "secure_store";
