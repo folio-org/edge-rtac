@@ -1,13 +1,17 @@
 package org.folio.edge.rtac.security;
 
-import static org.hamcrest.CoreMatchers.*;
+import static org.hamcrest.CoreMatchers.equalTo;
+import static org.hamcrest.CoreMatchers.instanceOf;
 import static org.hamcrest.MatcherAssert.assertThat;
-
 import static org.junit.Assert.fail;
+
+import static com.amazonaws.SDKGlobalConfiguration.*;
 
 import java.util.Properties;
 
 import org.junit.Test;
+
+import com.amazonaws.SdkClientException;
 
 public class SecureStoreFactoryTest {
 
@@ -25,19 +29,24 @@ public class SecureStoreFactoryTest {
     SecureStore actual;
 
     for (Class<?> clazz : stores) {
+      if (clazz.equals(AwsParamStore.class)) {
+        System.setProperty(ACCESS_KEY_SYSTEM_PROPERTY, "bogus");
+        System.setProperty(SECRET_KEY_SYSTEM_PROPERTY, "bogus");
+      }
+
       actual = SecureStoreFactory.getSecureStore((String) clazz.getField("TYPE").get(null), new Properties());
       assertThat(actual, instanceOf(clazz));
-      
+
       try {
         actual = SecureStoreFactory.getSecureStore((String) clazz.getField("TYPE").get(null), null);
         assertThat(actual, instanceOf(clazz));
-      } catch (Exception e) {
-        if(clazz.equals(VaultStore.class)) {
+      } catch (Throwable t) {
+        if (clazz.equals(VaultStore.class)) {
           // Expect NPE as VaultStore has required properties
-          assertThat(e.getClass(), equalTo(NullPointerException.class));
+          assertThat(t.getClass(), equalTo(NullPointerException.class));
         } else {
           // Whoops, something went wrong.
-          fail(String.format("Unexpected Exception thrown for class: ", clazz.getName(), e.getMessage()));
+          fail(String.format("Unexpected Exception thrown for class: ", clazz.getName(), t.getMessage()));
         }
       }
     }
