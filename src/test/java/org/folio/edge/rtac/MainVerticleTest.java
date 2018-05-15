@@ -1,7 +1,9 @@
 package org.folio.edge.rtac;
 
-import static org.folio.edge.rtac.Constants.*;
-import static org.junit.Assert.*;
+import static org.folio.edge.rtac.Constants.SYS_OKAPI_URL;
+import static org.folio.edge.rtac.Constants.SYS_PORT;
+import static org.folio.edge.rtac.Constants.SYS_SECURE_STORE_PROP_FILE;
+import static org.junit.Assert.assertEquals;
 
 import org.apache.http.HttpHeaders;
 import org.apache.log4j.Logger;

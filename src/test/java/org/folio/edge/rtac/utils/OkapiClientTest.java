@@ -51,7 +51,8 @@ public class OkapiClientTest {
   @Test
   public void testLogin(TestContext context) {
     Async async = context.async();
-    client.getToken("admin", "password").thenRun(() -> {
+    // client.getToken("admin", "password").thenRun(() -> {
+    client.login("admin", "password").thenRun(() -> {
       logger.info(client.defaultHeaders.get(X_OKAPI_TOKEN));
 
       // Ensure that the client's default headers now contain the
@@ -64,7 +65,8 @@ public class OkapiClientTest {
   @Test
   public void testRtac(TestContext context) {
     Async async = context.async();
-    client.getToken("admin", "password").thenAccept(v -> {
+    // client.getToken("admin", "password").thenAccept(v -> {
+    client.login("admin", "password").thenAccept(v -> {
       // Redundant - also checked in testLogin(...), but can't hurt
       assertEquals(mockToken, client.defaultHeaders.get(X_OKAPI_TOKEN));
 

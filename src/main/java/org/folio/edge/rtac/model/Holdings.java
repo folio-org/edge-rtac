@@ -20,6 +20,7 @@ import com.fasterxml.jackson.dataformat.xml.annotation.JacksonXmlRootElement;
 @JacksonXmlRootElement(localName = "holdings")
 public final class Holdings {
 
+  @JsonProperty("holdings")
   @JacksonXmlProperty(localName = "holding")
   @JacksonXmlElementWrapper(useWrapping = false)
   public final List<Holding> holdingRecords;
