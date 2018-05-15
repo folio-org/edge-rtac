@@ -45,20 +45,17 @@ public class AwsParamStore extends SecureStore {
     } else {
       region = DEFAULT_REGION;
     }
-
-    credProvider = new EnvironmentVariableCredentialsProvider();
+    
     try {
+      credProvider = new EnvironmentVariableCredentialsProvider();
       credProvider.getCredentials();
     } catch (Exception e) {
       try {
         credProvider = new SystemPropertiesCredentialsProvider();
+        credProvider.getCredentials();
       } catch (Exception e2) {
-        try {
-          credProvider.getCredentials();
-        } catch (Exception e3) {
-          credProvider = new ContainerCredentialsProvider(new ECSCredentialsEndpointProvider());
-          credProvider.getCredentials();
-        }
+        credProvider = new ContainerCredentialsProvider(new ECSCredentialsEndpointProvider());
+        credProvider.getCredentials();
       }
     }
 
