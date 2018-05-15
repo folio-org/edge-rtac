@@ -13,6 +13,7 @@ public class Constants {
   public static final String SYS_PORT = "port";
   public static final String SYS_TOKEN_CACHE_TTL_MS = "token_cache_ttl_ms";
   public static final String SYS_TOKEN_CACHE_CAPACITY = "token_cache_capacity";
+  public static final String SYS_ECS_CREDENTIALS_ENDPOINT = "ecs_credentials_endpoint";
 
   // Property names
   public static final String PROP_SECURE_STORE_TYPE = "secureStore.type";

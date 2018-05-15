@@ -1,5 +1,7 @@
 package org.folio.edge.rtac.security;
 
+import static org.folio.edge.rtac.Constants.*;
+
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.util.Properties;
@@ -95,10 +97,13 @@ public class AwsParamStore extends SecureStore {
     /**
      * Environment variable to get the Amazon ECS credentials resource path.
      */
-    static final String ECS_CONTAINER_CREDENTIALS_PATH = "AWS_CONTAINER_CREDENTIALS_RELATIVE_URI";
+    public static final String ECS_CONTAINER_CREDENTIALS_PATH = "AWS_CONTAINER_CREDENTIALS_RELATIVE_URI";
 
-    /** Default endpoint to retreive the Amazon ECS Credentials. */
-    private static final String ECS_CREDENTIALS_ENDPOINT = "http://169.254.170.2";
+    /**
+     * Default endpoint to retrieve the Amazon ECS Credentials.
+     */
+    public static final String ECS_CREDENTIALS_ENDPOINT = System.getProperty(SYS_ECS_CREDENTIALS_ENDPOINT,
+        "http://169.254.170.2");
 
     @Override
     public URI getCredentialsEndpoint() throws URISyntaxException {
