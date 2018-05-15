@@ -1,6 +1,6 @@
 package org.folio.edge.rtac.security;
 
-import static org.folio.edge.rtac.Constants.*;
+import static org.folio.edge.rtac.Constants.SYS_ECS_CREDENTIALS_ENDPOINT;
 
 import java.net.URI;
 import java.net.URISyntaxException;
@@ -45,7 +45,7 @@ public class AwsParamStore extends SecureStore {
     } else {
       region = DEFAULT_REGION;
     }
-    
+
     try {
       credProvider = new EnvironmentVariableCredentialsProvider();
       credProvider.getCredentials();

@@ -1,17 +1,15 @@
 package org.folio.edge.rtac.security;
 
+import static com.amazonaws.SDKGlobalConfiguration.ACCESS_KEY_SYSTEM_PROPERTY;
+import static com.amazonaws.SDKGlobalConfiguration.SECRET_KEY_SYSTEM_PROPERTY;
 import static org.hamcrest.CoreMatchers.equalTo;
 import static org.hamcrest.CoreMatchers.instanceOf;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.junit.Assert.fail;
 
-import static com.amazonaws.SDKGlobalConfiguration.*;
-
 import java.util.Properties;
 
 import org.junit.Test;
-
-import com.amazonaws.SdkClientException;
 
 public class SecureStoreFactoryTest {
 

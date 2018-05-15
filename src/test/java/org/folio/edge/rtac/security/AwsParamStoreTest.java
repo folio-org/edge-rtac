@@ -1,5 +1,7 @@
 package org.folio.edge.rtac.security;
 
+import static com.amazonaws.SDKGlobalConfiguration.ACCESS_KEY_SYSTEM_PROPERTY;
+import static com.amazonaws.SDKGlobalConfiguration.SECRET_KEY_SYSTEM_PROPERTY;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNull;
 import static org.mockito.Matchers.any;
@@ -36,8 +38,8 @@ public class AwsParamStoreTest {
     //
     // Use system props since they're easier to deal with
     // programmatically.
-    System.setProperty("aws.accessKeyId", "bogus");
-    System.setProperty("aws.secretKey", "bogus");
+    System.setProperty(ACCESS_KEY_SYSTEM_PROPERTY, "bogus");
+    System.setProperty(SECRET_KEY_SYSTEM_PROPERTY, "bogus");
 
     // Use empty properties since the only thing configurable
     // is related to AWS, which is mocked here
