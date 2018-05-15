@@ -7,16 +7,18 @@ import java.util.List;
 import org.folio.edge.rtac.utils.Mappers;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.core.JsonParseException;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonMappingException;
+import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import com.fasterxml.jackson.dataformat.xml.annotation.JacksonXmlElementWrapper;
 import com.fasterxml.jackson.dataformat.xml.annotation.JacksonXmlProperty;
 import com.fasterxml.jackson.dataformat.xml.annotation.JacksonXmlRootElement;
 
 @JsonIgnoreProperties(ignoreUnknown = true)
 @JacksonXmlRootElement(localName = "holdings")
-public class Holdings {
+public final class Holdings {
 
   @JacksonXmlProperty(localName = "holding")
   @JacksonXmlElementWrapper(useWrapping = false)
@@ -52,60 +54,75 @@ public class Holdings {
   }
 
   @JacksonXmlRootElement(localName = "holding")
-  public static class Holding {
-    private String id;
-    private String callNumber;
-    private String location;
-    private String status;
-    private String dueDate;
-    private String tempLocation;
+  @JsonDeserialize(builder = Holding.Builder.class)
+  public static final class Holding {
+    public final String id;
+    public final String callNumber;
+    public final String location;
+    public final String status;
+    public final String dueDate;
+    public final String tempLocation;
 
-    public String getId() {
-      return id;
-    }
-
-    public void setId(String id) {
+    private Holding(String id, String callNumber, String location, String status, String dueDate, String tempLocation) {
       this.id = id;
-    }
-
-    public String getCallNumber() {
-      return callNumber;
-    }
-
-    public void setCallNumber(String callNumber) {
       this.callNumber = callNumber;
-    }
-
-    public String getLocation() {
-      return location;
-    }
-
-    public void setLocation(String location) {
       this.location = location;
-    }
-
-    public String getStatus() {
-      return status;
-    }
-
-    public void setStatus(String status) {
       this.status = status;
-    }
-
-    public String getDueDate() {
-      return dueDate;
-    }
-
-    public void setDueDate(String dueDate) {
       this.dueDate = dueDate;
-    }
-
-    public String getTempLocation() {
-      return tempLocation;
-    }
-
-    public void setTempLocation(String tempLocation) {
       this.tempLocation = tempLocation;
+    }
+
+    public static Builder builder() {
+      return new Builder();
+    }
+
+    public static class Builder {
+      private String id;
+      private String callNumber;
+      private String location;
+      private String status;
+      private String dueDate;
+      private String tempLocation;
+
+      @JsonProperty("id")
+      public Builder id(String id) {
+        this.id = id;
+        return this;
+      }
+
+      @JsonProperty("callNumber")
+      public Builder callNumber(String callNumber) {
+        this.callNumber = callNumber;
+        return this;
+      }
+
+      @JsonProperty("location")
+      public Builder location(String location) {
+        this.location = location;
+        return this;
+      }
+
+      @JsonProperty("status")
+      public Builder status(String status) {
+        this.status = status;
+        return this;
+      }
+
+      @JsonProperty("dueDate")
+      public Builder dueDate(String dueDate) {
+        this.dueDate = dueDate;
+        return this;
+      }
+
+      @JsonProperty("tempLocation")
+      public Builder tempLocation(String tempLocation) {
+        this.tempLocation = tempLocation;
+        return this;
+      }
+
+      public Holding build() {
+        return new Holding(id, callNumber, location, status, dueDate, tempLocation);
+      }
     }
 
     @Override

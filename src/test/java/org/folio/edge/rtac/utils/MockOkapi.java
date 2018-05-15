@@ -45,7 +45,7 @@ public class MockOkapi {
       ctx.response()
         .setStatusCode(200)
         .end("[ ]");
-    });    
+    });
     router.route(HttpMethod.POST, "/authn/login").handler(ctx -> {
       JsonObject body = ctx.getBodyAsJson();
 
@@ -104,13 +104,14 @@ public class MockOkapi {
   }
 
   public static String getHoldingsJson(String titleId) {
-    Holding h = new Holding();
-    h.setId("99712686103569");
-    h.setCallNumber("PS3552.E796 D44x 1975");
-    h.setLocation("LC General Collection Millersville University Library");
-    h.setStatus("Item in place");
-    h.setTempLocation("");
-    h.setDueDate("");
+    Holding h = Holding.builder()
+      .id("99712686103569")
+      .callNumber("PS3552.E796 D44x 1975")
+      .location("LC General Collection Millersville University Library")
+      .status("Item in place")
+      .tempLocation("")
+      .dueDate("")
+      .build();
 
     Holdings holdings = new Holdings();
     holdings.holdingRecords.add(h);

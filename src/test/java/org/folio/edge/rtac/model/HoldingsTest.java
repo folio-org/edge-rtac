@@ -19,6 +19,8 @@ import org.junit.Before;
 import org.junit.Test;
 import org.xml.sax.SAXException;
 
+import nl.jqno.equalsverifier.EqualsVerifier;
+
 public class HoldingsTest {
 
   private static final Logger logger = Logger.getLogger(HoldingsTest.class);
@@ -30,21 +32,23 @@ public class HoldingsTest {
 
   @Before
   public void setUp() throws Exception {
-    Holding h1 = new Holding();
-    h1.setId("99712686103569");
-    h1.setCallNumber("PS3552.E796 D44x 1975");
-    h1.setLocation("LC General Collection Millersville University Library");
-    h1.setStatus("Item in place");
-    h1.setTempLocation("");
-    h1.setDueDate("");
+    Holding h1 = Holding.builder()
+      .id("99712686103569")
+      .callNumber("PS3552.E796 D44x 1975")
+      .location("LC General Collection Millersville University Library")
+      .status("Item in place")
+      .tempLocation("")
+      .dueDate("")
+      .build();
 
-    Holding h2 = new Holding();
-    h2.setId("99712686103569");
-    h2.setCallNumber("PS3552.E796 D44x 1975");
-    h2.setLocation("LC General Collection Millersville University Library");
-    h2.setStatus("Item in place");
-    h2.setTempLocation("");
-    h2.setDueDate("2018-04-23 12:00:00");
+    Holding h2 = Holding.builder()
+      .id("99712686103569")
+      .callNumber("PS3552.E796 D44x 1975")
+      .location("LC General Collection Millersville University Library")
+      .status("Item in place")
+      .tempLocation("")
+      .dueDate("2018-04-23 12:00:00")
+      .build();
 
     holdings = new Holdings();
     holdings.holdingRecords.add(h1);
@@ -55,6 +59,12 @@ public class HoldingsTest {
     Schema schema = schemaFactory.newSchema(new File(holdingsXSD));
     validator = schema.newValidator();
 
+  }
+
+  @Test
+  public void testEqualsContract() {
+    EqualsVerifier.forClass(Holding.class).verify();
+    EqualsVerifier.forClass(Holdings.class).verify();
   }
 
   @Test
