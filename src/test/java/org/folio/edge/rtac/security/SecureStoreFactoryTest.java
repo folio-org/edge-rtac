@@ -1,7 +1,9 @@
 package org.folio.edge.rtac.security;
 
-import static org.hamcrest.CoreMatchers.instanceOf;
+import static org.hamcrest.CoreMatchers.*;
 import static org.hamcrest.MatcherAssert.assertThat;
+
+import static org.junit.Assert.fail;
 
 import java.util.Properties;
 
@@ -25,8 +27,19 @@ public class SecureStoreFactoryTest {
     for (Class<?> clazz : stores) {
       actual = SecureStoreFactory.getSecureStore((String) clazz.getField("TYPE").get(null), new Properties());
       assertThat(actual, instanceOf(clazz));
-      actual = SecureStoreFactory.getSecureStore((String) clazz.getField("TYPE").get(null), null);
-      assertThat(actual, instanceOf(clazz));
+      
+      try {
+        actual = SecureStoreFactory.getSecureStore((String) clazz.getField("TYPE").get(null), null);
+        assertThat(actual, instanceOf(clazz));
+      } catch (Exception e) {
+        if(clazz.equals(VaultStore.class)) {
+          // Expect NPE as VaultStore has required properties
+          assertThat(e.getClass(), equalTo(NullPointerException.class));
+        } else {
+          // Whoops, something went wrong.
+          fail(String.format("Unexpected Exception thrown for class: ", clazz.getName(), e.getMessage()));
+        }
+      }
     }
   }
 
