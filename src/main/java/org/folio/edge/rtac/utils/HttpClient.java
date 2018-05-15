@@ -70,7 +70,8 @@ public class HttpClient {
     try {
       httpClient = vertx.createHttpClient();
 
-      logger.info("GET " + url + " tenant: " + tenant + " token: " + headers != null ? headers.get(X_OKAPI_TOKEN) : "");
+      logger.info(String.format("GET %s tenant: %s token: %s", url, tenant,
+          (headers != null) ? headers.get(X_OKAPI_TOKEN) : ""));
 
       final HttpClientRequest request = httpClient.getAbs(url);
 

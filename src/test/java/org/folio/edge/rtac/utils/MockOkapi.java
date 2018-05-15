@@ -41,6 +41,11 @@ public class MockOkapi {
     HttpServer server = vertx.createHttpServer();
 
     router.route().handler(BodyHandler.create());
+    router.route(HttpMethod.GET, "/_/proxy/health").handler(ctx -> {
+      ctx.response()
+        .setStatusCode(200)
+        .end("[ ]");
+    });    
     router.route(HttpMethod.POST, "/authn/login").handler(ctx -> {
       JsonObject body = ctx.getBodyAsJson();
 

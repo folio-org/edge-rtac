@@ -2,6 +2,7 @@ package org.folio.edge.rtac.utils;
 
 import static org.folio.edge.rtac.Constants.X_OKAPI_TOKEN;
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
 
 import org.apache.log4j.Logger;
 import org.junit.After;
@@ -72,6 +73,15 @@ public class OkapiClientTest {
         assertEquals(body, MockOkapi.getHoldingsJson(titleId));
         async.complete();
       });
+    });
+  }
+
+  @Test
+  public void testHealthy(TestContext context) {
+    Async async = context.async();
+    client.healthy().thenAccept(isHealthy -> {
+      assertTrue(isHealthy);
+      async.complete();
     });
   }
 }

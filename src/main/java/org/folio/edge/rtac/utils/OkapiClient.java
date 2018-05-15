@@ -118,6 +118,27 @@ public class OkapiClient {
     return future;
   }
 
+  public CompletableFuture<Boolean> healthy() {
+    CompletableFuture<Boolean> future = new CompletableFuture<>();
+    httpClient.get(
+        okapiURL + "/_/proxy/health",
+        tenant, response -> response.bodyHandler(body -> {
+          try {
+            int status = response.statusCode();
+            if (status == 200) {
+              future.complete(true);
+            } else {
+              logger.error(String.format("OKAPI is unhealthy! status: %s body: %s", status, body.toString()));
+              future.complete(false);
+            }
+          } catch (Exception e) {
+            logger.error("Exception checking OKAPI's health: " + e.getMessage());
+            future.complete(false);
+          }
+        }));
+    return future;
+  }
+
   private void setToken(String token) {
     defaultHeaders.put(X_OKAPI_TOKEN, token);
   }
