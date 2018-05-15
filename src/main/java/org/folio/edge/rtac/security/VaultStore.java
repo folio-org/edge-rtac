@@ -20,7 +20,7 @@ public class VaultStore extends SecureStore {
   public static final String PROP_SSL_PEM_FILE = "ssl.pem.path";
   public static final String PROP_TRUSTSTORE_JKS_FILE = "ssl.truststore.jks.path";
   public static final String PROP_KEYSTORE_JKS_FILE = "ssl.keystore.jks.path";
-  public static final String PROP_KEYSTORE_PASSWORD = "ssl.keystore.password";
+  public static final String PROP_KEYSTORE_PASS = "ssl.keystore.password";
 
   public static final String DEFAULT_VAULT_ADDRESS = "http://127.0.0.1:8200";
   public static final String DEFAULT_VAULT_USER_SSL = "false";
@@ -55,7 +55,7 @@ public class VaultStore extends SecureStore {
           sslConfig.trustStoreFile(new File(truststorePath));
         }
 
-        final String keystorePass = properties.getProperty(PROP_KEYSTORE_PASSWORD);
+        final String keystorePass = properties.getProperty(PROP_KEYSTORE_PASS);
         final String keystorePath = properties.getProperty(PROP_KEYSTORE_JKS_FILE);
         if (keystorePath != null) {
           sslConfig.keyStoreFile(new File(keystorePath), keystorePass);

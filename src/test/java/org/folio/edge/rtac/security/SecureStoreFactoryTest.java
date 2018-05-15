@@ -5,10 +5,13 @@ import static org.hamcrest.MatcherAssert.assertThat;
 
 import java.util.Properties;
 
+import org.junit.Test;
+
 public class SecureStoreFactoryTest {
 
   public static final Class<? extends SecureStore> DEFAULT_SS_CLASS = EphemeralStore.class;
 
+  @Test
   public void testGetSecureStoreKnownTypes()
       throws IllegalArgumentException, IllegalAccessException, NoSuchFieldException, SecurityException {
     Class<?>[] stores = new Class<?>[] {
@@ -27,6 +30,7 @@ public class SecureStoreFactoryTest {
     }
   }
 
+  @Test
   public void testGetSecureStoreDefaultType()
       throws IllegalArgumentException, IllegalAccessException, NoSuchFieldException, SecurityException {
     SecureStore actual;
