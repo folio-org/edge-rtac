@@ -8,6 +8,10 @@ public class SecureStoreFactory {
 
   private static final Logger logger = Logger.getLogger(SecureStoreFactory.class);
 
+  private SecureStoreFactory() {
+
+  }
+
   public static SecureStore getSecureStore(String type, Properties props) {
     SecureStore ret;
 

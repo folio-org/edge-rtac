@@ -17,7 +17,7 @@ public class EphemeralStore extends SecureStore {
   public static final Pattern COMMA = Pattern.compile("\\s*[,]\\s*");
 
   protected static final Logger logger = Logger.getLogger(EphemeralStore.class);
-  protected final Map<String, String> store = new ConcurrentHashMap<String, String>();
+  protected final Map<String, String> store = new ConcurrentHashMap<>();
 
   public EphemeralStore(Properties properties) {
     super(properties);

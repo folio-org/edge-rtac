@@ -25,30 +25,30 @@ public class HoldingsTest {
 
   private static final String holdingsXSD = "ramls/holdings.xsd";
   private Validator validator;
-  
+
   private Holdings holdings;
 
   @Before
   public void setUp() throws Exception {
     Holding h1 = new Holding();
-    h1.id = "99712686103569";
-    h1.callNumber = "PS3552.E796 D44x 1975";
-    h1.location = "LC General Collection Millersville University Library";
-    h1.status = "Item in place";
-    h1.tempLocation = "";
-    h1.dueDate = "";
+    h1.setId("99712686103569");
+    h1.setCallNumber("PS3552.E796 D44x 1975");
+    h1.setLocation("LC General Collection Millersville University Library");
+    h1.setStatus("Item in place");
+    h1.setTempLocation("");
+    h1.setDueDate("");
 
     Holding h2 = new Holding();
-    h2.id = "99712686103569";
-    h2.callNumber = "PS3552.E796 D45x 1975";
-    h2.location = "LC General Collection Millersville University Library";
-    h2.status = "Checked out";
-    h2.tempLocation = "";
-    h2.dueDate = "2018-04-23 12:00:00";
+    h2.setId("99712686103569");
+    h2.setCallNumber("PS3552.E796 D44x 1975");
+    h2.setLocation("LC General Collection Millersville University Library");
+    h2.setStatus("Item in place");
+    h2.setTempLocation("");
+    h2.setDueDate("2018-04-23 12:00:00");
 
     holdings = new Holdings();
-    holdings.holdings.add(h1);
-    holdings.holdings.add(h2);
+    holdings.holdingRecords.add(h1);
+    holdings.holdingRecords.add(h2);
 
     SchemaFactory schemaFactory = SchemaFactory
       .newInstance(XMLConstants.W3C_XML_SCHEMA_NS_URI);
@@ -68,9 +68,9 @@ public class HoldingsTest {
 
   @Test
   public void testToFromXml() throws IOException {
-    String xml = holdings.toXml();    
+    String xml = holdings.toXml();
     logger.info("XML: " + xml);
-    
+
     Source source = new StreamSource(new StringReader(xml));
     try {
       validator.validate(source);
@@ -84,9 +84,9 @@ public class HoldingsTest {
 
   @Test
   public void testEmpty() throws IOException {
-    String xml = new Holdings().toXml();    
+    String xml = new Holdings().toXml();
     logger.info("XML: " + xml);
-    
+
     Source source = new StreamSource(new StringReader(xml));
     try {
       validator.validate(source);

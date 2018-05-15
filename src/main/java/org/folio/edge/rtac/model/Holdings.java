@@ -20,20 +20,93 @@ public class Holdings {
 
   @JacksonXmlProperty(localName = "holding")
   @JacksonXmlElementWrapper(useWrapping = false)
-  public List<Holding> holdings;
+  public final List<Holding> holdingRecords;
 
   public Holdings() {
-    this.holdings = new ArrayList<Holding>();
+    this.holdingRecords = new ArrayList<>();
+  }
+
+  @Override
+  public int hashCode() {
+    final int prime = 31;
+    int result = 1;
+    result = prime * result + ((holdingRecords == null) ? 0 : holdingRecords.hashCode());
+    return result;
+  }
+
+  @Override
+  public boolean equals(Object obj) {
+    if (this == obj)
+      return true;
+    if (obj == null)
+      return false;
+    if (getClass() != obj.getClass())
+      return false;
+    Holdings other = (Holdings) obj;
+    if (holdingRecords == null) {
+      if (other.holdingRecords != null)
+        return false;
+    } else if (!holdingRecords.equals(other.holdingRecords))
+      return false;
+    return true;
   }
 
   @JacksonXmlRootElement(localName = "holding")
   public static class Holding {
-    public String id;
-    public String callNumber;
-    public String location;
-    public String status;
-    public String dueDate;
-    public String tempLocation;
+    private String id;
+    private String callNumber;
+    private String location;
+    private String status;
+    private String dueDate;
+    private String tempLocation;
+
+    public String getId() {
+      return id;
+    }
+
+    public void setId(String id) {
+      this.id = id;
+    }
+
+    public String getCallNumber() {
+      return callNumber;
+    }
+
+    public void setCallNumber(String callNumber) {
+      this.callNumber = callNumber;
+    }
+
+    public String getLocation() {
+      return location;
+    }
+
+    public void setLocation(String location) {
+      this.location = location;
+    }
+
+    public String getStatus() {
+      return status;
+    }
+
+    public void setStatus(String status) {
+      this.status = status;
+    }
+
+    public String getDueDate() {
+      return dueDate;
+    }
+
+    public void setDueDate(String dueDate) {
+      this.dueDate = dueDate;
+    }
+
+    public String getTempLocation() {
+      return tempLocation;
+    }
+
+    public void setTempLocation(String tempLocation) {
+      this.tempLocation = tempLocation;
+    }
 
     @Override
     public int hashCode() {
@@ -92,7 +165,7 @@ public class Holdings {
   }
 
   public String toXml() throws JsonProcessingException {
-    return Mappers.prolog + Mappers.xmlMapper.writeValueAsString(this);
+    return Mappers.PROLOG + Mappers.xmlMapper.writeValueAsString(this);
   }
 
   public String toJson() throws JsonProcessingException {
@@ -105,30 +178,5 @@ public class Holdings {
 
   public static Holdings fromXml(String xml) throws JsonParseException, JsonMappingException, IOException {
     return Mappers.xmlMapper.readValue(xml, Holdings.class);
-  }
-
-  @Override
-  public int hashCode() {
-    final int prime = 31;
-    int result = 1;
-    result = prime * result + ((holdings == null) ? 0 : holdings.hashCode());
-    return result;
-  }
-
-  @Override
-  public boolean equals(Object obj) {
-    if (this == obj)
-      return true;
-    if (obj == null)
-      return false;
-    if (getClass() != obj.getClass())
-      return false;
-    Holdings other = (Holdings) obj;
-    if (holdings == null) {
-      if (other.holdings != null)
-        return false;
-    } else if (!holdings.equals(other.holdings))
-      return false;
-    return true;
   }
 }

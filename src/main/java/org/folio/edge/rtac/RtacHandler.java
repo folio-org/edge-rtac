@@ -43,7 +43,7 @@ public class RtacHandler {
         xml = new Holdings().toXml();
       } catch (JsonProcessingException e) {
         // OK, we'll doing ourselves then
-        xml = Mappers.prolog + "\n<holdings/>";
+        xml = Mappers.PROLOG + "\n<holdings/>";
       }
       ctx.response()
         .setStatusCode(200)
@@ -68,7 +68,7 @@ public class RtacHandler {
             xml = Holdings.fromJson(body).toXml();
             logger.info("Converted Response: \n" + xml);
           } catch (Exception e) {
-            xml = Mappers.prolog + "\n<holdings/>";
+            xml = Mappers.PROLOG + "\n<holdings/>";
             logger.error("Exception translating JSON -> XML: " + e.getMessage());
           }
 

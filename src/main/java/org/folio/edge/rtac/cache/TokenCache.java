@@ -37,27 +37,27 @@ public class TokenCache<T> {
         cache.remove(key);
         return null;
       } else {
-        T token = cached.value;
-        return token;
+        return cached.value;
       }
     } else {
       return null;
     }
   }
 
-  public void put(String tenant, String username, T token) {
+  public CacheValue<T> put(String tenant, String username, T token) {
     String key = getKey(tenant, username);
 
     // Double-checked locking...
-    CacheValue<T> fromCache = cache.get(key);
-    if (fromCache == null || fromCache.expired()) {
+    CacheValue<T> value = cache.get(key);
+    if (value == null || value.expired()) {
 
       // lock to safeguard against multiple threads
       // trying to cache the same key at the same time
       synchronized (this) {
-        fromCache = cache.get(key);
-        if (fromCache == null || fromCache.expired()) {
-          cache.put(key, new CacheValue<T>(token, System.currentTimeMillis() + ttl));
+        value = cache.get(key);
+        if (value == null || value.expired()) {
+          value = new CacheValue<>(token, System.currentTimeMillis() + ttl);
+          cache.put(key, value);
         }
       }
     }
@@ -65,6 +65,8 @@ public class TokenCache<T> {
     if (cache.size() >= capacity) {
       prune();
     }
+
+    return value;
   }
 
   private String getKey(String tenant, String username) {
@@ -74,7 +76,7 @@ public class TokenCache<T> {
   private void prune() {
     logger.info("Cache size before pruning: " + cache.size());
 
-    LinkedHashMap<String, CacheValue<T>> updated = new LinkedHashMap<String, CacheValue<T>>(capacity);
+    LinkedHashMap<String, CacheValue<T>> updated = new LinkedHashMap<>(capacity);
     Iterator<String> keyIter = cache.keySet().iterator();
     while (keyIter.hasNext()) {
       String key = keyIter.next();
@@ -129,7 +131,7 @@ public class TokenCache<T> {
     private TokenCache<T> instance;
 
     public TokenCacheBuilder() {
-      instance = new TokenCache<T>();
+      instance = new TokenCache<>();
     }
 
     public TokenCacheBuilder<T> withTTL(long ttl) {
@@ -143,7 +145,7 @@ public class TokenCache<T> {
     }
 
     public TokenCache<T> build() {
-      instance.cache = new LinkedHashMap<String, CacheValue<T>>(instance.capacity);
+      instance.cache = new LinkedHashMap<>(instance.capacity);
       return instance;
     }
   }

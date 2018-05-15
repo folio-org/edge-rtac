@@ -15,7 +15,7 @@ import static org.folio.edge.rtac.Constants.*;
 public class HttpClient {
   private static final Logger logger = Logger.getLogger(HttpClient.class);
 
-  public static final long DEFAULT_REQUEST_TIMEOUT = 3 * 1000; // ms
+  public static final long DEFAULT_REQUEST_TIMEOUT = 3 * 1000L; // ms
 
   private final Vertx vertx;
 
@@ -70,7 +70,7 @@ public class HttpClient {
     try {
       httpClient = vertx.createHttpClient();
 
-      logger.info("GET " + url + " tenant: " + tenant + " token: " + headers.get(X_OKAPI_TOKEN));
+      logger.info("GET " + url + " tenant: " + tenant + " token: " + headers != null ? headers.get(X_OKAPI_TOKEN) : "");
 
       final HttpClientRequest request = httpClient.getAbs(url);
 

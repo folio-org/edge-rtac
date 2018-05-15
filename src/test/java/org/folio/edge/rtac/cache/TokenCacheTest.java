@@ -1,9 +1,12 @@
 package org.folio.edge.rtac.cache;
 
+import static org.awaitility.Awaitility.await;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNull;
 
-import org.folio.edge.rtac.cache.TokenCache;
+import java.util.concurrent.TimeUnit;
+
+import org.folio.edge.rtac.cache.TokenCache.CacheValue;
 import org.folio.edge.rtac.cache.TokenCache.TokenCacheBuilder;
 import org.junit.Before;
 import org.junit.Test;
@@ -47,38 +50,36 @@ public class TokenCacheTest {
   public void testNoOverwrite() throws Exception {
     // make sure we don't overwrite the cached value
     Long val = 1L;
-    Long start = System.currentTimeMillis();
 
     cache.put(tenant, user, val);
     assertEquals(val.longValue(), cache.get(tenant, user).longValue());
 
-    while (System.currentTimeMillis() < (start + ttl)) {
+    for (int i = 0; i < 100; i++) {
       cache.put(tenant, user, ++val);
       assertEquals(1L, cache.get(tenant, user).longValue());
     }
 
-    // wait a little longer just to be sure...
-    try {
-      Thread.sleep(10);
-    } catch (InterruptedException e) {
-      e.printStackTrace();
-    }
-
-    // should have expired
-    assertNull(cache.get(tenant, user));
+    // should expire very soon, if not already.
+    await().with()
+      .pollInterval(20, TimeUnit.MILLISECONDS)
+      .atMost(ttl + 100, TimeUnit.MILLISECONDS)
+      .until(() -> cache.get(tenant, user) == null);
   }
 
   @Test
   public void testPruneExpires() throws Exception {
-    cache.put(tenant, user + 0, 0L);
-    Thread.sleep(ttl + 10); // wait a tad longer than ttl just to be sure
+    CacheValue<Long> cached = cache.put(tenant, user + 0, 0L);
+    await().with()
+      .pollInterval(20, TimeUnit.MILLISECONDS)
+      .atMost(ttl + 100, TimeUnit.MILLISECONDS)
+      .until(() -> cached.expired());
 
-    // load capacity + 1 entries triggering eviction of the first
+    // load capacity + 1 entries triggering eviction of expired
     for (Long i = 1L; i <= cap; i++) {
       cache.put(tenant, user + i, i);
     }
 
-    // should be evicted as it's the oldest
+    // should be evicted as it's expired
     assertNull(cache.get(tenant, user + 0));
 
     // should still be cached
@@ -104,7 +105,7 @@ public class TokenCacheTest {
   }
 
   @Test
-  public void testString() throws Exception {
+  public void testWithString() throws Exception {
     TokenCache<String> cache = new TokenCacheBuilder<String>()
       .withCapacity(cap)
       .withTTL(ttl)
@@ -114,10 +115,13 @@ public class TokenCacheTest {
     assertNull(cache.get(tenant, user));
 
     // basic functionality
-    cache.put(tenant, user, val);
+    CacheValue<String> cached = cache.put(tenant, user, val);
     assertEquals(val, cache.get(tenant, user));
 
-    Thread.sleep(ttl + 1);
+    await().with()
+      .pollInterval(20, TimeUnit.MILLISECONDS)
+      .atMost(ttl + 100, TimeUnit.MILLISECONDS)
+      .until(() -> cached.expired());
 
     // empty cache...
     assertNull(cache.get(tenant, user));

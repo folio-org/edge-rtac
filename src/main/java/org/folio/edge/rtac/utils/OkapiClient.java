@@ -26,7 +26,7 @@ public class OkapiClient {
   private final String tenant;
   private final TokenCache<String> tokenCache;
 
-  protected final Map<String, String> defaultHeaders = new HashMap<String, String>();
+  protected final Map<String, String> defaultHeaders = new HashMap<>();
 
   public OkapiClient(Vertx vertx, String okapiURL, String tenant) {
     this.okapiURL = okapiURL;
@@ -50,7 +50,7 @@ public class OkapiClient {
   }
 
   public CompletableFuture<Void> getToken(String username, String password) {
-    CompletableFuture<Void> future = new CompletableFuture<Void>();
+    CompletableFuture<Void> future = new CompletableFuture<>();
 
     String token = tokenCache.get(tenant, username);
     if (token != null) {
@@ -80,9 +80,9 @@ public class OkapiClient {
                     body.toString()));
                 future.complete(null);
               }
-            } catch (Throwable t) {
-              logger.warn("Exception during login: " + t.getMessage());
-              future.completeExceptionally(t);
+            } catch (Exception e) {
+              logger.warn("Exception during login: " + e.getMessage());
+              future.completeExceptionally(e);
             }
           }));
     }
@@ -90,7 +90,7 @@ public class OkapiClient {
   }
 
   public CompletableFuture<String> rtac(String titleId) {
-    CompletableFuture<String> future = new CompletableFuture<String>();
+    CompletableFuture<String> future = new CompletableFuture<>();
     httpClient.get(
         okapiURL + "/rtac/" + titleId,
         tenant,
@@ -110,8 +110,8 @@ public class OkapiClient {
               logger.error(err);
               future.complete("{}");
             }
-          } catch (Throwable t) {
-            logger.error("Exception calling mod-rtac: " + t.getMessage());
+          } catch (Exception e) {
+            logger.error("Exception calling mod-rtac: " + e.getMessage());
             future.complete("{}");
           }
         }));

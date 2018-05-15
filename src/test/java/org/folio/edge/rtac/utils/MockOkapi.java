@@ -100,15 +100,15 @@ public class MockOkapi {
 
   public static String getHoldingsJson(String titleId) {
     Holding h = new Holding();
-    h.id = titleId;
-    h.callNumber = "PS3552.E796 D44x 1975";
-    h.location = "LC General Collection Millersville University Library";
-    h.status = "Item in place";
-    h.tempLocation = "";
-    h.dueDate = "";
+    h.setId("99712686103569");
+    h.setCallNumber("PS3552.E796 D44x 1975");
+    h.setLocation("LC General Collection Millersville University Library");
+    h.setStatus("Item in place");
+    h.setTempLocation("");
+    h.setDueDate("");
 
     Holdings holdings = new Holdings();
-    holdings.holdings.add(h);
+    holdings.holdingRecords.add(h);
 
     String ret = null;
     try {
