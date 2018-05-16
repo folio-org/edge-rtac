@@ -34,7 +34,7 @@ public class TokenCache {
    * 
    * @return the TokenCache singleton instance.
    */
-  public static synchronized TokenCache getInstance() throws NotInitializedException {
+  public static synchronized TokenCache getInstance() {
     if (instance == null) {
       throw new NotInitializedException(
           "You must call TokenCache.initialize(ttl, capacity) before you can get the singleton instance");
@@ -72,7 +72,7 @@ public class TokenCache {
     return String.format("%s:%s", tenant, username);
   }
 
-  public static class NotInitializedException extends Exception {
+  public static class NotInitializedException extends RuntimeException {
 
     private static final long serialVersionUID = -1660691531387000897L;
 

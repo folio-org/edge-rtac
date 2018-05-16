@@ -1,8 +1,6 @@
 package org.folio.edge.rtac;
 
 import static org.folio.edge.rtac.Constants.APPLICATION_XML;
-import static org.folio.edge.rtac.Constants.DEFAULT_TOKEN_CACHE_CAPACITY;
-import static org.folio.edge.rtac.Constants.DEFAULT_TOKEN_CACHE_TTL_MS;
 import static org.folio.edge.rtac.Constants.PARAM_API_KEY;
 import static org.folio.edge.rtac.Constants.PARAM_TITLE_ID;
 
@@ -94,31 +92,28 @@ public class RtacHandler {
   private CompletableFuture<String> getToken(OkapiClient client, String tenant, String username) {
     CompletableFuture<String> future = new CompletableFuture<>();
 
-    TokenCache cache = null;
+    String token = null;
     try {
-      cache = TokenCache.getInstance();
+      TokenCache cache = TokenCache.getInstance();
+      token = cache.get(tenant, username);
     } catch (NotInitializedException e) {
-      logger.warn("TokenCache was never initialized.  Initializing it w/ the default configuration");
-      cache = TokenCache.initialize(
-          Long.parseLong(DEFAULT_TOKEN_CACHE_TTL_MS),
-          Integer.parseInt(DEFAULT_TOKEN_CACHE_CAPACITY));
-    } finally {
-      String token = cache.get(tenant, username);
-      if (token != null) {
-        logger.info("Using cached token");
-        future.complete(token);
-      } else {
-        String password = secureStore.get(tenant, username);
-  
-        client.login(username, password).thenAccept(t -> {
-          try {
-            TokenCache.getInstance().put(tenant, username, t);
-          } catch (NotInitializedException e) {
-            logger.warn("Failed to cache token", e);
-          }
-          future.complete(t);
-        });
-      }
+      logger.warn("Failed to access TokenCache", e);
+    }
+
+    if (token != null) {
+      logger.info("Using cached token");
+      future.complete(token);
+    } else {
+      String password = secureStore.get(tenant, username);
+
+      client.login(username, password).thenAccept(t -> {
+        try {
+          TokenCache.getInstance().put(tenant, username, t);
+        } catch (NotInitializedException e) {
+          logger.warn("Failed to cache token", e);
+        }
+        future.complete(t);
+      });
     }
 
     return future;
