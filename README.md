@@ -68,6 +68,7 @@ Proprety              | Default     | Description
 `secure_store_props`  | `NA`        | Path to a properties file specifying secure store configuration
 `token_cache_ttl_ms`  | `3600000`   | How long to cache JWTs, in milliseconds (ms)
 `token_cache_capacity`| `100`       | Max token cache size
+`log_level`           | `INFO`      | Log4j Log Level
 
 ## Additional information
 

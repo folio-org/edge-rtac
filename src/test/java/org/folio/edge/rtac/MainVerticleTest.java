@@ -1,5 +1,6 @@
 package org.folio.edge.rtac;
 
+import static org.folio.edge.rtac.Constants.SYS_LOG_LEVEL;
 import static org.folio.edge.rtac.Constants.SYS_OKAPI_URL;
 import static org.folio.edge.rtac.Constants.SYS_PORT;
 import static org.folio.edge.rtac.Constants.SYS_SECURE_STORE_PROP_FILE;
@@ -49,12 +50,12 @@ public class MainVerticleTest {
     mockOkapi.start(context);
     vertx = Vertx.vertx();
 
-    final JsonObject conf = new JsonObject();
-    conf.put(SYS_PORT, String.valueOf(serverPort));
-    conf.put(SYS_OKAPI_URL, "http://localhost:" + okapiPort);
-    conf.put(SYS_SECURE_STORE_PROP_FILE, "src/main/resources/ephemeral.properties");
+    System.setProperty(SYS_PORT, String.valueOf(serverPort));
+    System.setProperty(SYS_OKAPI_URL, "http://localhost:" + okapiPort);
+    System.setProperty(SYS_SECURE_STORE_PROP_FILE, "src/main/resources/ephemeral.properties");
+    System.setProperty(SYS_LOG_LEVEL, "DEBUG");
 
-    final DeploymentOptions opt = new DeploymentOptions().setConfig(conf);
+    final DeploymentOptions opt = new DeploymentOptions();
     vertx.deployVerticle(MainVerticle.class.getName(), opt, context.asyncAssertSuccess());
 
     RestAssured.baseURI = "http://localhost:" + serverPort;

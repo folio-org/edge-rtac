@@ -14,6 +14,7 @@ public class Constants {
   public static final String SYS_TOKEN_CACHE_TTL_MS = "token_cache_ttl_ms";
   public static final String SYS_TOKEN_CACHE_CAPACITY = "token_cache_capacity";
   public static final String SYS_ECS_CREDENTIALS_ENDPOINT = "ecs_credentials_endpoint";
+  public static final String SYS_LOG_LEVEL = "log_level";
 
   // Property names
   public static final String PROP_SECURE_STORE_TYPE = "secureStore.type";
@@ -23,6 +24,7 @@ public class Constants {
   public static final String DEFAULT_PORT = "8081";
   public static final String DEFAULT_TOKEN_CACHE_TTL_MS = String.valueOf(60 * 60 * 1000);
   public static final String DEFAULT_TOKEN_CACHE_CAPACITY = "100";
+  public static final String DEFAULT_LOG_LEVEL = "INFO";
 
   // Headers
   public static final String X_OKAPI_TENANT = "x-okapi-tenant";

@@ -1,15 +1,19 @@
 package org.folio.edge.rtac;
 
-import static org.folio.edge.rtac.Constants.*;
+import static org.folio.edge.rtac.Constants.DEFAULT_LOG_LEVEL;
+import static org.folio.edge.rtac.Constants.DEFAULT_PORT;
 import static org.folio.edge.rtac.Constants.DEFAULT_SECURE_STORE_TYPE;
 import static org.folio.edge.rtac.Constants.PROP_SECURE_STORE_TYPE;
+import static org.folio.edge.rtac.Constants.SYS_LOG_LEVEL;
 import static org.folio.edge.rtac.Constants.SYS_OKAPI_URL;
+import static org.folio.edge.rtac.Constants.SYS_PORT;
 import static org.folio.edge.rtac.Constants.SYS_SECURE_STORE_PROP_FILE;
 import static org.folio.edge.rtac.Constants.SYS_SECURE_STORE_TYPE;
 
 import java.io.FileInputStream;
 import java.util.Properties;
 
+import org.apache.log4j.Level;
 import org.apache.log4j.Logger;
 import org.folio.edge.rtac.security.SecureStore;
 import org.folio.edge.rtac.security.SecureStoreFactory;
@@ -26,32 +30,31 @@ import io.vertx.ext.web.handler.BodyHandler;
 
 public class MainVerticle extends AbstractVerticle {
 
-  // Private Members
   private static final Logger logger = Logger.getLogger(MainVerticle.class);
+
   private SecureStore secureStore;
 
   @Override
   public void start(Future<Void> future) {
-    Router router = Router.router(vertx);
-    HttpServer server = vertx.createHttpServer();
+    final String logLvl = System.getProperty(SYS_LOG_LEVEL, DEFAULT_LOG_LEVEL);
+    Logger.getRootLogger().setLevel(Level.toLevel(logLvl));
+    logger.info("Using log level: " + logLvl);
 
-    // Get properties from context too, for unit tests purposes.
-    final String portStr = System.getProperty(SYS_PORT, context.config().getString(SYS_PORT, DEFAULT_PORT));
+    final String portStr = System.getProperty(SYS_PORT, DEFAULT_PORT);
     final int port = Integer.parseInt(portStr);
     logger.info("Using port: " + port);
 
-    final String okapiURL = System.getProperty(SYS_OKAPI_URL, context.config().getString(SYS_OKAPI_URL));
+    final String okapiURL = System.getProperty(SYS_OKAPI_URL);
     logger.info("Using okapiURL: " + okapiURL);
 
-    final String secureStorePropFile = System.getProperty(SYS_SECURE_STORE_PROP_FILE,
-        context.config().getString(SYS_SECURE_STORE_PROP_FILE));
-
+    final String secureStorePropFile = System.getProperty(SYS_SECURE_STORE_PROP_FILE);
     initializeSecureStore(secureStorePropFile);
 
     OkapiClientFactory ocf = new OkapiClientFactory(vertx, okapiURL);
-
     RtacHandler rtacHandler = new RtacHandler(secureStore, ocf);
 
+    Router router = Router.router(vertx);
+    HttpServer server = vertx.createHttpServer();
     router.route().handler(BodyHandler.create());
     router.route(HttpMethod.GET, "/admin/health").handler(this::healthCheckHandler);
     router.route(HttpMethod.GET, "/prod/rtac/folioRTAC").handler(rtacHandler::rtacHandler);
