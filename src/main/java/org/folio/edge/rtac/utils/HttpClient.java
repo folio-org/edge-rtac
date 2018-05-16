@@ -41,9 +41,9 @@ public class HttpClient {
 
       // safe to assume application/json. I *think* Caller can still
       // override
-      request.putHeader(HttpHeaders.CONTENT_TYPE.toString(), "application/json")
-        .putHeader(HttpHeaders.ACCEPT.toString(), "application/json, text/plain")
-        .putHeader("X-Okapi-Tenant", tenant);
+      request.putHeader(HttpHeaders.CONTENT_TYPE.toString(), APPLICATION_JSON)
+        .putHeader(HttpHeaders.ACCEPT.toString(), String.format("%s, %s", APPLICATION_JSON, TEXT_PLAIN))
+        .putHeader(X_OKAPI_TENANT, tenant);
 
       if (headers != null) {
         request.headers().addAll(headers);
@@ -75,7 +75,7 @@ public class HttpClient {
 
       final HttpClientRequest request = httpClient.getAbs(url);
 
-      request.putHeader(HttpHeaders.ACCEPT.toString(), "application/json, text/plain")
+      request.putHeader(HttpHeaders.ACCEPT.toString(), String.format("%s, %s", APPLICATION_JSON, TEXT_PLAIN))
         .putHeader(X_OKAPI_TENANT, tenant);
 
       if (headers != null) {

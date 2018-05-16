@@ -3,18 +3,24 @@ package org.folio.edge.rtac;
 import static org.folio.edge.rtac.Constants.DEFAULT_LOG_LEVEL;
 import static org.folio.edge.rtac.Constants.DEFAULT_PORT;
 import static org.folio.edge.rtac.Constants.DEFAULT_SECURE_STORE_TYPE;
+import static org.folio.edge.rtac.Constants.DEFAULT_TOKEN_CACHE_CAPACITY;
+import static org.folio.edge.rtac.Constants.DEFAULT_TOKEN_CACHE_TTL_MS;
 import static org.folio.edge.rtac.Constants.PROP_SECURE_STORE_TYPE;
 import static org.folio.edge.rtac.Constants.SYS_LOG_LEVEL;
 import static org.folio.edge.rtac.Constants.SYS_OKAPI_URL;
 import static org.folio.edge.rtac.Constants.SYS_PORT;
 import static org.folio.edge.rtac.Constants.SYS_SECURE_STORE_PROP_FILE;
 import static org.folio.edge.rtac.Constants.SYS_SECURE_STORE_TYPE;
+import static org.folio.edge.rtac.Constants.SYS_TOKEN_CACHE_CAPACITY;
+import static org.folio.edge.rtac.Constants.SYS_TOKEN_CACHE_TTL_MS;
+import static org.folio.edge.rtac.Constants.TEXT_PLAIN;
 
 import java.io.FileInputStream;
 import java.util.Properties;
 
 import org.apache.log4j.Level;
 import org.apache.log4j.Logger;
+import org.folio.edge.rtac.cache.TokenCache;
 import org.folio.edge.rtac.security.SecureStore;
 import org.folio.edge.rtac.security.SecureStoreFactory;
 import org.folio.edge.rtac.utils.OkapiClientFactory;
@@ -32,8 +38,6 @@ public class MainVerticle extends AbstractVerticle {
 
   private static final Logger logger = Logger.getLogger(MainVerticle.class);
 
-  private SecureStore secureStore;
-
   @Override
   public void start(Future<Void> future) {
     final String logLvl = System.getProperty(SYS_LOG_LEVEL, DEFAULT_LOG_LEVEL);
@@ -45,10 +49,21 @@ public class MainVerticle extends AbstractVerticle {
     logger.info("Using port: " + port);
 
     final String okapiURL = System.getProperty(SYS_OKAPI_URL);
-    logger.info("Using okapiURL: " + okapiURL);
+    logger.info("Using okapi URL: " + okapiURL);
+
+    final String tokenCacheTtlMs = System.getProperty(SYS_TOKEN_CACHE_TTL_MS, DEFAULT_TOKEN_CACHE_TTL_MS);
+    final long cacheTtlMs = Long.parseLong(tokenCacheTtlMs);
+    logger.info("Using token cache TTL (ms): " + tokenCacheTtlMs);
+
+    final String tokenCacheCapacity = System.getProperty(SYS_TOKEN_CACHE_CAPACITY, DEFAULT_TOKEN_CACHE_CAPACITY);
+    final int cacheCapacity = Integer.parseInt(tokenCacheCapacity);
+    logger.info("Using token cache capacity: " + tokenCacheCapacity);
+
+    // initialize the TokenCache
+    TokenCache.getInstance(cacheTtlMs, cacheCapacity);
 
     final String secureStorePropFile = System.getProperty(SYS_SECURE_STORE_PROP_FILE);
-    initializeSecureStore(secureStorePropFile);
+    SecureStore secureStore = initializeSecureStore(secureStorePropFile);
 
     OkapiClientFactory ocf = new OkapiClientFactory(vertx, okapiURL);
     RtacHandler rtacHandler = new RtacHandler(secureStore, ocf);
@@ -68,7 +83,7 @@ public class MainVerticle extends AbstractVerticle {
     });
   }
 
-  protected void initializeSecureStore(String secureStorePropFile) {
+  protected SecureStore initializeSecureStore(String secureStorePropFile) {
     Properties secureStoreProps = new Properties();
 
     if (secureStorePropFile != null) {
@@ -87,13 +102,13 @@ public class MainVerticle extends AbstractVerticle {
     String type = System.getProperty(SYS_SECURE_STORE_TYPE,
         secureStoreProps.getProperty(PROP_SECURE_STORE_TYPE, DEFAULT_SECURE_STORE_TYPE));
 
-    secureStore = SecureStoreFactory.getSecureStore(type, secureStoreProps);
+    return SecureStoreFactory.getSecureStore(type, secureStoreProps);
   }
 
   protected void healthCheckHandler(RoutingContext ctx) {
     ctx.response()
       .setStatusCode(200)
-      .putHeader(HttpHeaders.CONTENT_TYPE, "text/plain")
+      .putHeader(HttpHeaders.CONTENT_TYPE, TEXT_PLAIN)
       .end("\"OK\"");
   }
 }

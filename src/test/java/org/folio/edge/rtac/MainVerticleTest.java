@@ -1,10 +1,16 @@
 package org.folio.edge.rtac;
 
+import static org.folio.edge.rtac.Constants.APPLICATION_XML;
 import static org.folio.edge.rtac.Constants.SYS_LOG_LEVEL;
 import static org.folio.edge.rtac.Constants.SYS_OKAPI_URL;
 import static org.folio.edge.rtac.Constants.SYS_PORT;
 import static org.folio.edge.rtac.Constants.SYS_SECURE_STORE_PROP_FILE;
+import static org.folio.edge.rtac.Constants.TEXT_PLAIN;
 import static org.junit.Assert.assertEquals;
+import static org.mockito.Matchers.any;
+import static org.mockito.Mockito.spy;
+import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.verify;
 
 import org.apache.http.HttpHeaders;
 import org.apache.log4j.Logger;
@@ -22,7 +28,6 @@ import com.jayway.restassured.response.Response;
 
 import io.vertx.core.DeploymentOptions;
 import io.vertx.core.Vertx;
-import io.vertx.core.json.JsonObject;
 import io.vertx.ext.unit.Async;
 import io.vertx.ext.unit.TestContext;
 import io.vertx.ext.unit.junit.VertxUnitRunner;
@@ -46,7 +51,7 @@ public class MainVerticleTest {
   @Before
   public void setUp(TestContext context) throws Exception {
 
-    mockOkapi = new MockOkapi(okapiPort);
+    mockOkapi = spy(new MockOkapi(okapiPort));
     mockOkapi.start(context);
     vertx = Vertx.vertx();
 
@@ -80,7 +85,7 @@ public class MainVerticleTest {
       .then()
       .contentType(ContentType.TEXT)
       .statusCode(200)
-      .header(HttpHeaders.CONTENT_TYPE, "text/plain")
+      .header(HttpHeaders.CONTENT_TYPE, TEXT_PLAIN)
       .extract()
       .response();
 
@@ -98,7 +103,7 @@ public class MainVerticleTest {
       .then()
       .contentType(ContentType.XML)
       .statusCode(200)
-      .header(HttpHeaders.CONTENT_TYPE, "application/xml")
+      .header(HttpHeaders.CONTENT_TYPE, APPLICATION_XML)
       .extract()
       .response();
 
@@ -119,7 +124,7 @@ public class MainVerticleTest {
       .then()
       .contentType(ContentType.XML)
       .statusCode(200)
-      .header(HttpHeaders.CONTENT_TYPE, "application/xml")
+      .header(HttpHeaders.CONTENT_TYPE, APPLICATION_XML)
       .extract()
       .response();
 
@@ -139,7 +144,7 @@ public class MainVerticleTest {
       .then()
       .contentType(ContentType.XML)
       .statusCode(200)
-      .header(HttpHeaders.CONTENT_TYPE, "application/xml")
+      .header(HttpHeaders.CONTENT_TYPE, APPLICATION_XML)
       .extract()
       .response();
 
@@ -159,7 +164,7 @@ public class MainVerticleTest {
       .then()
       .contentType(ContentType.XML)
       .statusCode(200)
-      .header(HttpHeaders.CONTENT_TYPE, "application/xml")
+      .header(HttpHeaders.CONTENT_TYPE, APPLICATION_XML)
       .extract()
       .response();
 
@@ -179,7 +184,7 @@ public class MainVerticleTest {
       .then()
       .contentType(ContentType.XML)
       .statusCode(200)
-      .header(HttpHeaders.CONTENT_TYPE, "application/xml")
+      .header(HttpHeaders.CONTENT_TYPE, APPLICATION_XML)
       .extract()
       .response();
 
@@ -199,7 +204,7 @@ public class MainVerticleTest {
       .then()
       .contentType(ContentType.XML)
       .statusCode(200)
-      .header(HttpHeaders.CONTENT_TYPE, "application/xml")
+      .header(HttpHeaders.CONTENT_TYPE, APPLICATION_XML)
       .extract()
       .response();
 
@@ -207,6 +212,32 @@ public class MainVerticleTest {
     Holdings actual = Holdings.fromXml(resp.body().asString());
     assertEquals(expected, actual);
 
+    async.complete();
+  }
+
+  @Test
+  public void testCachedToken(TestContext context) throws Exception {
+    final Async async = context.async();   
+    
+    Holdings expected = Holdings.fromJson(MockOkapi.getHoldingsJson(titleId));
+    int iters = 5;
+    
+    for(int i=0; i<iters; i++) {
+      final Response resp = RestAssured
+        .get(String.format("/prod/rtac/folioRTAC?mms_id=%s&apikey=%s", titleId, apiKey))
+        .then()
+        .contentType(ContentType.XML)
+        .statusCode(200)
+        .header(HttpHeaders.CONTENT_TYPE, APPLICATION_XML)
+        .extract()
+        .response();
+  
+      assertEquals(expected, Holdings.fromXml(resp.body().asString()));
+    }
+
+    verify(mockOkapi).loginHandler(any());
+    verify(mockOkapi, times(iters)).modRtacHandler(any());
+    
     async.complete();
   }
 }

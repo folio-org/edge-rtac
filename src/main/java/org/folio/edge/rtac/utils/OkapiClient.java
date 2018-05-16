@@ -113,7 +113,7 @@ public class OkapiClient {
     return future;
   }
 
-  private void setToken(String token) {
+  public void setToken(String token) {
     defaultHeaders.put(X_OKAPI_TOKEN, token);
   }
 }

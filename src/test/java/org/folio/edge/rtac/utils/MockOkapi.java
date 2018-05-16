@@ -1,5 +1,6 @@
 package org.folio.edge.rtac.utils;
 
+import static org.folio.edge.rtac.Constants.APPLICATION_JSON;
 import static org.folio.edge.rtac.Constants.X_OKAPI_TENANT;
 import static org.folio.edge.rtac.Constants.X_OKAPI_TOKEN;
 
@@ -17,6 +18,7 @@ import io.vertx.core.json.JsonObject;
 import io.vertx.ext.unit.Async;
 import io.vertx.ext.unit.TestContext;
 import io.vertx.ext.web.Router;
+import io.vertx.ext.web.RoutingContext;
 import io.vertx.ext.web.handler.BodyHandler;
 
 public class MockOkapi {
@@ -41,57 +43,9 @@ public class MockOkapi {
     HttpServer server = vertx.createHttpServer();
 
     router.route().handler(BodyHandler.create());
-    router.route(HttpMethod.GET, "/_/proxy/health").handler(ctx -> {
-      ctx.response()
-        .setStatusCode(200)
-        .end("[ ]");
-    });
-    router.route(HttpMethod.POST, "/authn/login").handler(ctx -> {
-      JsonObject body = ctx.getBodyAsJson();
-
-      int status;
-      String resp = null;
-      if (ctx.request().getHeader(X_OKAPI_TENANT) == null) {
-        status = 400;
-        resp = "Unable to process request Tenant must be set";
-      } else if (!body.containsKey("username") || !body.containsKey("password")) {
-        status = 400;
-        resp = "Json content error";
-      } else if (ctx.request().getHeader(HttpHeaders.CONTENT_TYPE) == null ||
-          !ctx.request().getHeader(HttpHeaders.CONTENT_TYPE).equals("application/json")) {
-        status = 400;
-        resp = "Content-type header must be [\"application/json\"]";
-      } else {
-        status = 201;
-        resp = body.toString();
-      }
-
-      ctx.response()
-        .setStatusCode(status)
-        .putHeader(X_OKAPI_TOKEN, mockToken)
-        .putHeader(HttpHeaders.CONTENT_TYPE, "application/json")
-        .end(resp);
-    });
-    router.route(HttpMethod.GET, "/rtac/:titleid").handler(ctx -> {
-      String titleId = ctx.request().getParam("titleid");
-      String token = ctx.request().getHeader(X_OKAPI_TOKEN);
-      if (token == null || !token.equals(mockToken)) {
-        ctx.response()
-          .setStatusCode(403)
-          .end("Access requires permission: rtac.holdings.item.get");
-      } else if (titleId.equals(titleId_notFound)) {
-        // Magic titleID signifying we want to mock a "not found"
-        // response.
-        ctx.response()
-          .setStatusCode(404)
-          .end("rtac not found");
-      } else {
-        ctx.response()
-          .setStatusCode(200)
-          .putHeader(HttpHeaders.CONTENT_TYPE, "application/json")
-          .end(getHoldingsJson(titleId));
-      }
-    });
+    router.route(HttpMethod.GET, "/_/proxy/health").handler(this::healthCheckHandler);
+    router.route(HttpMethod.POST, "/authn/login").handler(this::loginHandler);
+    router.route(HttpMethod.GET, "/rtac/:titleid").handler(this::modRtacHandler);
 
     final Async async = context.async();
     server.requestHandler(router::accept).listen(okapiPort, result -> {
@@ -123,5 +77,60 @@ public class MockOkapi {
       logger.warn("Failed to generate holdings JSON", e);
     }
     return ret;
+  }
+  
+  public void healthCheckHandler(RoutingContext ctx) {
+    ctx.response()
+      .setStatusCode(200)
+      .putHeader(HttpHeaders.CONTENT_TYPE, APPLICATION_JSON)
+      .end("[ ]");
+  }
+  
+  public void loginHandler(RoutingContext ctx) {
+    JsonObject body = ctx.getBodyAsJson();
+
+    int status;
+    String resp = null;
+    if (ctx.request().getHeader(X_OKAPI_TENANT) == null) {
+      status = 400;
+      resp = "Unable to process request Tenant must be set";
+    } else if (!body.containsKey("username") || !body.containsKey("password")) {
+      status = 400;
+      resp = "Json content error";
+    } else if (ctx.request().getHeader(HttpHeaders.CONTENT_TYPE) == null ||
+        !ctx.request().getHeader(HttpHeaders.CONTENT_TYPE).equals(APPLICATION_JSON)) {
+      status = 400;
+      resp = String.format("Content-type header must be [\"%s\"]", APPLICATION_JSON);
+    } else {
+      status = 201;
+      resp = body.toString();
+    }
+
+    ctx.response()
+      .setStatusCode(status)
+      .putHeader(X_OKAPI_TOKEN, mockToken)
+      .putHeader(HttpHeaders.CONTENT_TYPE, APPLICATION_JSON)
+      .end(resp);
+  }
+  
+  public void modRtacHandler(RoutingContext ctx) {
+    String titleId = ctx.request().getParam("titleid");
+    String token = ctx.request().getHeader(X_OKAPI_TOKEN);
+    if (token == null || !token.equals(mockToken)) {
+      ctx.response()
+        .setStatusCode(403)
+        .end("Access requires permission: rtac.holdings.item.get");
+    } else if (titleId.equals(titleId_notFound)) {
+      // Magic titleID signifying we want to mock a "not found"
+      // response.
+      ctx.response()
+        .setStatusCode(404)
+        .end("rtac not found");
+    } else {
+      ctx.response()
+        .setStatusCode(200)
+        .putHeader(HttpHeaders.CONTENT_TYPE, APPLICATION_JSON)
+        .end(getHoldingsJson(titleId));
+    }
   }
 }

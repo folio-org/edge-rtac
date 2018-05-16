@@ -6,17 +6,17 @@ import static org.junit.Assert.assertNull;
 
 import java.util.concurrent.TimeUnit;
 
-import org.folio.edge.rtac.cache.TokenCache.CacheValue;
-import org.folio.edge.rtac.cache.TokenCache.TokenCacheBuilder;
+import org.apache.log4j.Logger;
+import org.folio.edge.rtac.cache.Cache.CacheValue;
 import org.junit.Before;
 import org.junit.Test;
 
 public class TokenCacheTest {
 
-  final int cap = 50;
-  final long ttl = 5000;
+  private static final Logger logger = Logger.getLogger(TokenCacheTest.class);
 
-  TokenCache<Long> cache;
+  final int cap = 50;
+  final long ttl = 3000;
 
   private final String tenant = "diku";
   private final String user = "diku";
@@ -24,39 +24,65 @@ public class TokenCacheTest {
 
   @Before
   public void setUp() throws Exception {
-    cache = new TokenCacheBuilder<Long>()
-      .withCapacity(cap)
-      .withTTL(ttl)
-      .build();
+    // initialize singleton cache
+    TokenCache.getInstance(ttl, cap);
+  }
+
+  @Test
+  public void testReconfigure() throws Exception {
+    logger.info("=== Test Reconfigure... ===");
+    final CacheValue<String> cached = TokenCache.getInstance().put(tenant, user, val);
+
+    await().with()
+      .pollInterval(20, TimeUnit.MILLISECONDS)
+      .atMost(ttl + 100, TimeUnit.MILLISECONDS)
+      .until(() -> cached.expired());
+
+    final CacheValue<String> cached2 = TokenCache.getInstance(ttl * 2, cap).put(tenant, user, val);
+
+    await().with()
+      .pollInterval(20, TimeUnit.MILLISECONDS)
+      .atLeast(ttl, TimeUnit.MILLISECONDS)
+      .atMost(ttl * 2 + 100, TimeUnit.MILLISECONDS)
+      .until(() -> cached2.expired());
   }
 
   @Test
   public void testEmpty() throws Exception {
+    logger.info("=== Test that a new cache is empty... ===");
+
     // empty cache...
-    assertNull(cache.get(tenant, user));
+    assertNull(TokenCache.getInstance().get(tenant, user));
   }
 
   @Test
   public void testGetPutGet() throws Exception {
+    logger.info("=== Test basic functionality (Get, Put, Get)... ===");
+
+    TokenCache cache = TokenCache.getInstance();
+
     // empty cache...
     assertNull(cache.get(tenant, user));
 
     // basic functionality
-    cache.put(tenant, user, 1L);
-    assertEquals(1L, cache.get(tenant, user).longValue());
+    cache.put(tenant, user, val);
+    assertEquals(val, cache.get(tenant, user));
   }
 
   @Test
   public void testNoOverwrite() throws Exception {
-    // make sure we don't overwrite the cached value
-    Long val = 1L;
+    logger.info("=== Test entries aren't overwritten... ===");
 
-    cache.put(tenant, user, val);
-    assertEquals(val.longValue(), cache.get(tenant, user).longValue());
+    TokenCache cache = TokenCache.getInstance();
+    String baseVal = "val";
+
+    // make sure we don't overwrite the cached value
+    cache.put(tenant, user, baseVal);
+    assertEquals(baseVal, cache.get(tenant, user));
 
     for (int i = 0; i < 100; i++) {
-      cache.put(tenant, user, ++val);
-      assertEquals(1L, cache.get(tenant, user).longValue());
+      cache.put(tenant, user, baseVal + i);
+      assertEquals(baseVal, cache.get(tenant, user));
     }
 
     // should expire very soon, if not already.
@@ -68,62 +94,49 @@ public class TokenCacheTest {
 
   @Test
   public void testPruneExpires() throws Exception {
-    CacheValue<Long> cached = cache.put(tenant, user + 0, 0L);
+    logger.info("=== Test pruning of expired entries... ===");
+
+    TokenCache cache = TokenCache.getInstance();
+    String baseVal = "val";
+
+    CacheValue<String> cached = cache.put(tenant, user + 0, baseVal);
     await().with()
       .pollInterval(20, TimeUnit.MILLISECONDS)
       .atMost(ttl + 100, TimeUnit.MILLISECONDS)
       .until(() -> cached.expired());
 
     // load capacity + 1 entries triggering eviction of expired
-    for (Long i = 1L; i <= cap; i++) {
-      cache.put(tenant, user + i, i);
+    for (int i = 1; i <= cap; i++) {
+      cache.put(tenant, user + i, baseVal + i);
     }
 
     // should be evicted as it's expired
     assertNull(cache.get(tenant, user + 0));
 
     // should still be cached
-    for (Long i = 1L; i <= cap; i++) {
-      assertEquals(i.longValue(), cache.get(tenant, user + i).longValue());
+    for (int i = 1; i <= cap; i++) {
+      assertEquals(baseVal + i, cache.get(tenant, user + i));
     }
   }
 
   @Test
   public void testPruneNoExpires() throws Exception {
+    logger.info("=== Test pruning of unexpired entries... ===");
+
+    TokenCache cache = TokenCache.getInstance();
+    String baseVal = "val";
+
     // load capacity + 1 entries triggering eviction of the first
-    for (Long i = 0L; i <= cap; i++) {
-      cache.put(tenant, user + i, i);
+    for (int i = 0; i <= cap; i++) {
+      cache.put(tenant, user + i, baseVal + i);
     }
 
     // should be evicted as it's the oldest
     assertNull(cache.get(tenant, user + 0));
 
     // should still be cached
-    for (Long i = 1L; i <= cap; i++) {
-      assertEquals(i.longValue(), cache.get(tenant, user + i).longValue());
+    for (int i = 1; i <= cap; i++) {
+      assertEquals(baseVal + i, cache.get(tenant, user + i));
     }
-  }
-
-  @Test
-  public void testWithString() throws Exception {
-    TokenCache<String> cache = new TokenCacheBuilder<String>()
-      .withCapacity(cap)
-      .withTTL(ttl)
-      .build();
-
-    // empty cache...
-    assertNull(cache.get(tenant, user));
-
-    // basic functionality
-    CacheValue<String> cached = cache.put(tenant, user, val);
-    assertEquals(val, cache.get(tenant, user));
-
-    await().with()
-      .pollInterval(20, TimeUnit.MILLISECONDS)
-      .atMost(ttl + 100, TimeUnit.MILLISECONDS)
-      .until(() -> cached.expired());
-
-    // empty cache...
-    assertNull(cache.get(tenant, user));
   }
 }

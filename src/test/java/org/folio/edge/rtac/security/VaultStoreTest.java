@@ -1,5 +1,6 @@
 package org.folio.edge.rtac.security;
 
+import static org.folio.edge.rtac.Constants.APPLICATION_JSON;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNull;
 import static org.mockito.Mockito.mock;
@@ -43,14 +44,14 @@ public class VaultStoreTest {
     LogicalResponse successResp = new LogicalResponse(
         new RestResponse(
             200,
-            "application/json",
+            APPLICATION_JSON,
             ("{\"data\":{\"diku\":\"" + password + "\"}}").getBytes()),
         0);
 
     LogicalResponse failureResp = new LogicalResponse(
         new RestResponse(
             404,
-            "application/json",
+            APPLICATION_JSON,
             "{\"errors\":[]}".getBytes()),
         0);
 
