@@ -14,22 +14,22 @@ public class Cache<T> {
 
   public static final Logger logger = Logger.getLogger(Cache.class);
 
-  private LinkedHashMap<String, CacheValue<T>> cache;
+  private LinkedHashMap<String, CacheValue<T>> storage;
   private final long ttl;
   private final int capacity;
   
   private Cache(long ttl, int capacity) {
     this.ttl = ttl;
     this.capacity = capacity;
-    cache = new LinkedHashMap<>(capacity);
+    storage = new LinkedHashMap<>(capacity);
   }
 
   public T get(String key) {
-    CacheValue<T> cached = cache.get(key);
+    CacheValue<T> cached = storage.get(key);
 
     if (cached != null) {
       if (cached.expired()) {
-        cache.remove(key);
+        storage.remove(key);
         return null;
       } else {
         return cached.value;
@@ -41,21 +41,21 @@ public class Cache<T> {
 
   public CacheValue<T> put(String key, T value) {
     // Double-checked locking...
-    CacheValue<T> cached = cache.get(key);
+    CacheValue<T> cached = storage.get(key);
     if (cached == null || cached.expired()) {
 
       // lock to safeguard against multiple threads
       // trying to cache the same key at the same time
       synchronized (this) {
-        cached = cache.get(key);
+        cached = storage.get(key);
         if (cached == null || cached.expired()) {
           cached = new CacheValue<>(value, System.currentTimeMillis() + ttl);
-          cache.put(key, cached);
+          storage.put(key, cached);
         }
       }
     }
 
-    if (cache.size() >= capacity) {
+    if (storage.size() >= capacity) {
       prune();
     }
 
@@ -63,13 +63,13 @@ public class Cache<T> {
   }
 
   private void prune() {
-    logger.info("Cache size before pruning: " + cache.size());
+    logger.info("Cache size before pruning: " + storage.size());
 
     LinkedHashMap<String, CacheValue<T>> updated = new LinkedHashMap<>(capacity);
-    Iterator<String> keyIter = cache.keySet().iterator();
+    Iterator<String> keyIter = storage.keySet().iterator();
     while (keyIter.hasNext()) {
       String key = keyIter.next();
-      CacheValue<T> val = cache.get(key);
+      CacheValue<T> val = storage.get(key);
       if (val != null && !val.expired()) {
         updated.put(key, val);
       } else {
@@ -88,7 +88,7 @@ public class Cache<T> {
     }
 
     // atomic swap-in updated cache.
-    cache = updated;
+    storage = updated;
 
     logger.info("Cache size after pruning: " + updated.size());
   }
@@ -121,7 +121,7 @@ public class Cache<T> {
     private int capacity;
     
     public Builder() {
-
+      // nothing to do here...
     }
 
     public Builder<T> withTTL(long ttl) {

@@ -34,7 +34,7 @@ public class TokenCache {
    * 
    * @return the TokenCache singleton instance.
    */
-  public synchronized static TokenCache getInstance() throws NotInitializedException {
+  public static synchronized TokenCache getInstance() throws NotInitializedException {
     if (instance == null) {
       throw new NotInitializedException(
           "You must call TokenCache.initialize(ttl, capacity) before you can get the singleton instance");
@@ -52,7 +52,7 @@ public class TokenCache {
    *          maximum number of entries this cache will hold before pruning
    * @return the new TokenCache singleton instance
    */
-  public synchronized static TokenCache initialize(long ttl, int capacity) {
+  public static synchronized TokenCache initialize(long ttl, int capacity) {
     if (instance != null) {
       logger.warn("Reinitializing cache.  All cached entries will be lost");
     }

@@ -8,9 +8,7 @@ import org.folio.edge.rtac.utils.Mappers;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonProperty;
-import com.fasterxml.jackson.core.JsonParseException;
 import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.JsonMappingException;
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import com.fasterxml.jackson.dataformat.xml.annotation.JacksonXmlElementWrapper;
 import com.fasterxml.jackson.dataformat.xml.annotation.JacksonXmlProperty;
@@ -190,11 +188,11 @@ public final class Holdings {
     return Mappers.jsonMapper.writeValueAsString(this);
   }
 
-  public static Holdings fromJson(String json) throws JsonParseException, JsonMappingException, IOException {
+  public static Holdings fromJson(String json) throws IOException {
     return Mappers.jsonMapper.readValue(json, Holdings.class);
   }
 
-  public static Holdings fromXml(String xml) throws JsonParseException, JsonMappingException, IOException {
+  public static Holdings fromXml(String xml) throws IOException {
     return Mappers.xmlMapper.readValue(xml, Holdings.class);
   }
 }
