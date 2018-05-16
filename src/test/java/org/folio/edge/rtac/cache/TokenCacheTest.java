@@ -25,12 +25,12 @@ public class TokenCacheTest {
   @Before
   public void setUp() throws Exception {
     // initialize singleton cache
-    TokenCache.getInstance(ttl, cap);
+    TokenCache.initialize(ttl, cap);
   }
 
   @Test
-  public void testReconfigure() throws Exception {
-    logger.info("=== Test Reconfigure... ===");
+  public void testReinitialize() throws Exception {
+    logger.info("=== Test Reinitialize... ===");
     final CacheValue<String> cached = TokenCache.getInstance().put(tenant, user, val);
 
     await().with()
@@ -38,7 +38,8 @@ public class TokenCacheTest {
       .atMost(ttl + 100, TimeUnit.MILLISECONDS)
       .until(() -> cached.expired());
 
-    final CacheValue<String> cached2 = TokenCache.getInstance(ttl * 2, cap).put(tenant, user, val);
+    TokenCache.initialize(ttl * 2, cap);
+    final CacheValue<String> cached2 = TokenCache.getInstance().put(tenant, user, val);
 
     await().with()
       .pollInterval(20, TimeUnit.MILLISECONDS)

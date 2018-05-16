@@ -60,7 +60,7 @@ public class MainVerticle extends AbstractVerticle {
     logger.info("Using token cache capacity: " + tokenCacheCapacity);
 
     // initialize the TokenCache
-    TokenCache.getInstance(cacheTtlMs, cacheCapacity);
+    TokenCache.initialize(cacheTtlMs, cacheCapacity);
 
     final String secureStorePropFile = System.getProperty(SYS_SECURE_STORE_PROP_FILE);
     SecureStore secureStore = initializeSecureStore(secureStorePropFile);

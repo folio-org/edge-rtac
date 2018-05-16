@@ -1,6 +1,8 @@
 package org.folio.edge.rtac;
 
 import static org.folio.edge.rtac.Constants.APPLICATION_XML;
+import static org.folio.edge.rtac.Constants.DEFAULT_TOKEN_CACHE_CAPACITY;
+import static org.folio.edge.rtac.Constants.DEFAULT_TOKEN_CACHE_TTL_MS;
 import static org.folio.edge.rtac.Constants.PARAM_API_KEY;
 import static org.folio.edge.rtac.Constants.PARAM_TITLE_ID;
 
@@ -10,6 +12,7 @@ import java.util.concurrent.CompletableFuture;
 
 import org.apache.log4j.Logger;
 import org.folio.edge.rtac.cache.TokenCache;
+import org.folio.edge.rtac.cache.TokenCache.NotInitializedException;
 import org.folio.edge.rtac.model.Holdings;
 import org.folio.edge.rtac.security.SecureStore;
 import org.folio.edge.rtac.utils.Mappers;
@@ -91,7 +94,15 @@ public class RtacHandler {
   private CompletableFuture<String> getToken(OkapiClient client, String tenant, String username) {
     CompletableFuture<String> future = new CompletableFuture<>();
 
-    TokenCache cache = TokenCache.getInstance();
+    TokenCache cache = null;
+    try {
+      cache = TokenCache.getInstance();
+    } catch (NotInitializedException e) {
+      logger.warn("TokenCache was never initialized.  Initializing it w/ the default configuration");
+      TokenCache.initialize(
+          Long.parseLong(DEFAULT_TOKEN_CACHE_TTL_MS),
+          Integer.parseInt(DEFAULT_TOKEN_CACHE_CAPACITY));
+    }
 
     String token = cache.get(tenant, username);
     if (token != null) {
@@ -99,9 +110,13 @@ public class RtacHandler {
       future.complete(token);
     } else {
       String password = secureStore.get(tenant, username);
-      
+
       client.login(username, password).thenAccept(t -> {
-        cache.put(tenant, username, t);
+        try {
+          TokenCache.getInstance().put(tenant, username, t);
+        } catch (NotInitializedException e) {
+          logger.warn("Failed to cache token", e);
+        }
         future.complete(t);
       });
     }

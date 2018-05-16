@@ -1,8 +1,5 @@
 package org.folio.edge.rtac.cache;
 
-import static org.folio.edge.rtac.Constants.DEFAULT_TOKEN_CACHE_CAPACITY;
-import static org.folio.edge.rtac.Constants.DEFAULT_TOKEN_CACHE_TTL_MS;
-
 import org.apache.log4j.Logger;
 import org.folio.edge.rtac.cache.Cache.Builder;
 import org.folio.edge.rtac.cache.Cache.CacheValue;
@@ -16,7 +13,7 @@ public class TokenCache {
 
   public static final Logger logger = Logger.getLogger(TokenCache.class);
 
-  private static TokenCache instance;
+  private static TokenCache instance = null;
 
   private Cache<String> cache;
 
@@ -30,20 +27,17 @@ public class TokenCache {
   }
 
   /**
-   * Get the TokenCache singleton, creating one w/ the default TTL and capacity
-   * if necessary
+   * Get the TokenCache singleton. the singleton must be initialize before
+   * calling this method.
+   * 
+   * @see {@link #initialize(long, int)}
    * 
    * @return the TokenCache singleton instance.
    */
-  public static TokenCache getInstance() {
+  public synchronized static TokenCache getInstance() throws NotInitializedException {
     if (instance == null) {
-      synchronized (TokenCache.class) {
-        if (instance == null) {
-          instance = new TokenCache(
-              Long.parseLong(DEFAULT_TOKEN_CACHE_TTL_MS),
-              Integer.parseInt(DEFAULT_TOKEN_CACHE_CAPACITY));
-        }
-      }
+      throw new NotInitializedException(
+          "You must call TokenCache.initialize(ttl, capacity) before you can get the singleton instance");
     }
     return instance;
   }
@@ -58,13 +52,11 @@ public class TokenCache {
    *          maximum number of entries this cache will hold before pruning
    * @return the new TokenCache singleton instance
    */
-  public static TokenCache getInstance(long ttl, int capacity) {
-    synchronized (TokenCache.class) {
-      if(instance != null) {
-        logger.warn("Replacing cache.  All cached entries will be lost");
-      }
-      instance = new TokenCache(ttl, capacity);
+  public synchronized static TokenCache initialize(long ttl, int capacity) {
+    if (instance != null) {
+      logger.warn("Reinitializing cache.  All cached entries will be lost");
     }
+    instance = new TokenCache(ttl, capacity);
     return instance;
   }
 
@@ -75,8 +67,17 @@ public class TokenCache {
   public CacheValue<String> put(String tenant, String username, String token) {
     return cache.put(computeKey(tenant, username), token);
   }
-  
+
   private String computeKey(String tenant, String username) {
     return String.format("%s:%s", tenant, username);
+  }
+
+  public static class NotInitializedException extends Exception {
+
+    private static final long serialVersionUID = -1660691531387000897L;
+
+    public NotInitializedException(String msg) {
+      super(msg);
+    }
   }
 }
