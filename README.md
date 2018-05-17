@@ -11,7 +11,7 @@ Edge API to interface w/ FOLIO for 3rd party discovery services to determine hol
 
 ## Overview
 
-The purpose of this edge API is to bridge the gap between 3rd party discovery services and FOLIO.  More specifically, the initial implementation was built with EBSCO's Real Time Availability Check (RTAC) service in mind.  RTAC is used by the EBSCO Discovery Service (EDS) to obtain up-to-date holdings information (status, call number, location, due date, etc.).  
+The purpose of this edge API is to bridge the gap between 3rd party discovery services and FOLIO.  More specifically, the initial implementation was built with EBSCO's Real Time Availability Check (RTAC) service in mind.  RTAC is used by the EBSCO Discovery Service (EDS) to obtain up-to-date holdings information (status, call number, location, due date, etc.).
 
 In order to reduce the amount of integration work on the discovery side, the API implemented here mimics an existing RTAC integration.  This includes the parameter names, data formats, API endpoint names, among other things.  There are certain quirks about the API being mimiced that may seem unintuitive, such as failures of any sort still result in 200 response, but with an empty `<holdings/>` XML payload.  Eventually all this will be documented.
 
@@ -39,7 +39,7 @@ Only intended for _development purposes_.  Credentials are defind in plain text 
 
 Retreives credentials from Amazon Web Services Systems Manager (AWS SSM), more specifically the Parameter Store, where they're stored encrypted using a KMS key.  See `src.main/resources/aws_ss.properties`
 
-**Key:** `<tenantId>_<username>` 
+**Key:** `<tenantId>_<username>`
 
 E.g. Key=`diku_diku`
 
@@ -47,14 +47,14 @@ E.g. Key=`diku_diku`
 
 Retreives credentials from a Vault (http://vaultproject.io).  This was added as a more generic alternative for those not using AWS.  See `src/main/resources/vault.properties`
 
-**Key:** `secrets/<tenantId>` 
+**Key:** `secrets/<tenantId>`
 **Field:** `<username>`
 
 E.g. Key=`secrets/diku`, Field=`diku`
 
 ## Configuration
 
-Configuration information is specified in two forms:  
+Configuration information is specified in two forms:
 1. System Properties - General configuration
 1. Properties File - Configuration specific to the desired secure store
 
