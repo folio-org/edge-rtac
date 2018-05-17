@@ -1,7 +1,7 @@
 package org.folio.edge.rtac;
 
 public class Constants {
-  
+
   private Constants() {
 
   }
@@ -34,7 +34,7 @@ public class Constants {
   public static final String APPLICATION_JSON = "application/json";
   public static final String APPLICATION_XML = "application/xml";
   public static final String TEXT_PLAIN = "text/plain";
-  
+
   // Param names
   public static final String PARAM_API_KEY = "apikey";
   public static final String PARAM_TITLE_ID = "mms_id";

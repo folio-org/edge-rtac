@@ -29,9 +29,9 @@ public class TokenCache {
   /**
    * Get the TokenCache singleton. the singleton must be initialize before
    * calling this method.
-   * 
+   *
    * @see {@link #initialize(long, int)}
-   * 
+   *
    * @return the TokenCache singleton instance.
    */
   public static synchronized TokenCache getInstance() {
@@ -45,7 +45,7 @@ public class TokenCache {
   /**
    * Creates a new TokenCache instance, replacing the existing one if it already
    * exists; in which case all pre-existing cache entries will be lost.
-   * 
+   *
    * @param ttl
    *          cache entry time to live in ms
    * @param capacity

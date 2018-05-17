@@ -78,14 +78,14 @@ public class MockOkapi {
     }
     return ret;
   }
-  
+
   public void healthCheckHandler(RoutingContext ctx) {
     ctx.response()
       .setStatusCode(200)
       .putHeader(HttpHeaders.CONTENT_TYPE, APPLICATION_JSON)
       .end("[ ]");
   }
-  
+
   public void loginHandler(RoutingContext ctx) {
     JsonObject body = ctx.getBodyAsJson();
 
@@ -112,7 +112,7 @@ public class MockOkapi {
       .putHeader(HttpHeaders.CONTENT_TYPE, APPLICATION_JSON)
       .end(resp);
   }
-  
+
   public void modRtacHandler(RoutingContext ctx) {
     String titleId = ctx.request().getParam("titleid");
     String token = ctx.request().getHeader(X_OKAPI_TOKEN);

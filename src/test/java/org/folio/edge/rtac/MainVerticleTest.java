@@ -217,11 +217,11 @@ public class MainVerticleTest {
 
   @Test
   public void testCachedToken(TestContext context) throws Exception {
-    final Async async = context.async();   
-    
+    final Async async = context.async();
+
     Holdings expected = Holdings.fromJson(MockOkapi.getHoldingsJson(titleId));
     int iters = 5;
-    
+
     for(int i=0; i<iters; i++) {
       final Response resp = RestAssured
         .get(String.format("/prod/rtac/folioRTAC?mms_id=%s&apikey=%s", titleId, apiKey))
@@ -231,13 +231,13 @@ public class MainVerticleTest {
         .header(HttpHeaders.CONTENT_TYPE, APPLICATION_XML)
         .extract()
         .response();
-  
+
       assertEquals(expected, Holdings.fromXml(resp.body().asString()));
     }
 
     verify(mockOkapi).loginHandler(any());
     verify(mockOkapi, times(iters)).modRtacHandler(any());
-    
+
     async.complete();
   }
 }
