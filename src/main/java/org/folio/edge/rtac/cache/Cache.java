@@ -17,7 +17,7 @@ public class Cache<T> {
   private LinkedHashMap<String, CacheValue<T>> storage;
   private final long ttl;
   private final int capacity;
-  
+
   private Cache(long ttl, int capacity) {
     this.ttl = ttl;
     this.capacity = capacity;
@@ -95,10 +95,10 @@ public class Cache<T> {
 
   /**
    * A Generic, immutable cache entry.
-   * 
+   *
    * Expiration times are specified in ms since epoch.<br>
    * e.g. <code>System.currentTimeMills() + TTL</code>
-   * 
+   *
    * @param <T>
    *          The class/type of value being cached
    */
@@ -119,7 +119,7 @@ public class Cache<T> {
   public static class Builder<T> {
     private long ttl;
     private int capacity;
-    
+
     public Builder() {
       // nothing to do here...
     }

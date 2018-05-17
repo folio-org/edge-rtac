@@ -98,14 +98,14 @@ public class HoldingsTest {
     Holdings fromJson = Holdings.fromJson(json);
     String xml = fromJson.toXml();
     Holdings fromXml = Holdings.fromXml(xml);
-    
+
     logger.info(json);
     logger.info(xml);
-    
+
     assertEquals(holdings, fromJson);
     assertEquals(holdings, fromXml);
   }
-  
+
   @Test
   public void testEmpty() throws IOException {
     String xml = new Holdings().toXml();
