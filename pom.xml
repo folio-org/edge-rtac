@@ -8,7 +8,7 @@
 
   <name>Edge API - Real Time Availability Check</name>
   <url>https://github.com/folio-org/edge-rtac</url>
-  <description>Edge API to interface w/ FOLIO for 3rd party discovery services to determine holdings availability</description>
+  <description>Edge API to interface with FOLIO for 3rd party discovery services to determine holdings availability</description>
   <inceptionYear>2018</inceptionYear>
   <organization>
     <name>The Open Library Foundation</name>
