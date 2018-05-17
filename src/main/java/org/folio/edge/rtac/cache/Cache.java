@@ -12,7 +12,7 @@ import org.apache.log4j.Logger;
  */
 public class Cache<T> {
 
-  public static final Logger logger = Logger.getLogger(Cache.class);
+  private static final Logger logger = Logger.getLogger(Cache.class);
 
   private LinkedHashMap<String, CacheValue<T>> storage;
   private final long ttl;

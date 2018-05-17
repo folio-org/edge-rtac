@@ -11,7 +11,7 @@ import org.folio.edge.rtac.cache.Cache.CacheValue;
  */
 public class TokenCache {
 
-  public static final Logger logger = Logger.getLogger(TokenCache.class);
+  private static final Logger logger = Logger.getLogger(TokenCache.class);
 
   private static TokenCache instance = null;
 
