@@ -1,6 +1,7 @@
 package org.folio.edge.rtac.utils;
 
 import static org.folio.edge.rtac.Constants.APPLICATION_JSON;
+import static org.folio.edge.rtac.Constants.TEXT_PLAIN;
 import static org.folio.edge.rtac.Constants.X_OKAPI_TENANT;
 import static org.folio.edge.rtac.Constants.X_OKAPI_TOKEN;
 
@@ -29,11 +30,15 @@ public class MockOkapi {
   public static final String titleId_notFound = "0c8e8ac5-6bcc-461e-a8d3-4b55a96addc9";
 
   public final int okapiPort;
-  public final Vertx vertx;
+  private final Vertx vertx;
 
   public MockOkapi(int port) {
     okapiPort = port;
     vertx = Vertx.vertx();
+  }
+
+  public void close() {
+    vertx.close();
   }
 
   public void start(TestContext context) {
@@ -78,17 +83,18 @@ public class MockOkapi {
     }
     return ret;
   }
-  
+
   public void healthCheckHandler(RoutingContext ctx) {
     ctx.response()
       .setStatusCode(200)
       .putHeader(HttpHeaders.CONTENT_TYPE, APPLICATION_JSON)
       .end("[ ]");
   }
-  
+
   public void loginHandler(RoutingContext ctx) {
     JsonObject body = ctx.getBodyAsJson();
 
+    String contentType = TEXT_PLAIN;
     int status;
     String resp = null;
     if (ctx.request().getHeader(X_OKAPI_TENANT) == null) {
@@ -104,15 +110,16 @@ public class MockOkapi {
     } else {
       status = 201;
       resp = body.toString();
+      contentType = APPLICATION_JSON;
     }
 
     ctx.response()
       .setStatusCode(status)
       .putHeader(X_OKAPI_TOKEN, mockToken)
-      .putHeader(HttpHeaders.CONTENT_TYPE, APPLICATION_JSON)
+      .putHeader(HttpHeaders.CONTENT_TYPE, contentType)
       .end(resp);
   }
-  
+
   public void modRtacHandler(RoutingContext ctx) {
     String titleId = ctx.request().getParam("titleid");
     String token = ctx.request().getHeader(X_OKAPI_TOKEN);

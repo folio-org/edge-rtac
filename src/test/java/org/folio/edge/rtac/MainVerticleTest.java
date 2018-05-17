@@ -8,8 +8,8 @@ import static org.folio.edge.rtac.Constants.SYS_SECURE_STORE_PROP_FILE;
 import static org.folio.edge.rtac.Constants.TEXT_PLAIN;
 import static org.junit.Assert.assertEquals;
 import static org.mockito.Matchers.any;
+import static org.mockito.Mockito.atLeast;
 import static org.mockito.Mockito.spy;
-import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 
 import org.apache.http.HttpHeaders;
@@ -17,8 +17,8 @@ import org.apache.log4j.Logger;
 import org.folio.edge.rtac.model.Holdings;
 import org.folio.edge.rtac.utils.MockOkapi;
 import org.folio.edge.rtac.utils.TestUtils;
-import org.junit.After;
-import org.junit.Before;
+import org.junit.AfterClass;
+import org.junit.BeforeClass;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
@@ -40,19 +40,19 @@ public class MainVerticleTest {
   private final String titleId = "0c8e8ac5-6bcc-461e-a8d3-4b55a96addc8";
   private final String apiKey = "ZnMwMDAwMDAwMA==";
 
-  private Vertx vertx;
-  private MockOkapi mockOkapi;
-
-  private int okapiPort = TestUtils.getPort();
-  private int serverPort = TestUtils.getPort();
+  private static Vertx vertx;
+  private static MockOkapi mockOkapi;
 
   // ** setUp/tearDown **//
 
-  @Before
-  public void setUp(TestContext context) throws Exception {
+  @BeforeClass
+  public static void setUpOnce(TestContext context) throws Exception {
+    int okapiPort = TestUtils.getPort();
+    int serverPort = TestUtils.getPort();
 
     mockOkapi = spy(new MockOkapi(okapiPort));
     mockOkapi.start(context);
+
     vertx = Vertx.vertx();
 
     System.setProperty(SYS_PORT, String.valueOf(serverPort));
@@ -68,10 +68,13 @@ public class MainVerticleTest {
     RestAssured.enableLoggingOfRequestAndResponseIfValidationFails();
   }
 
-  @After
-  public void tearDown(TestContext context) {
-    logger.info("Closing Vertx");
+  @AfterClass
+  public static void tearDownOnce(TestContext context) {
+    logger.info("Shutting down server");
     vertx.close(context.asyncAssertSuccess());
+
+    logger.info("Shutting down mock Okapi");
+    mockOkapi.close();
   }
 
   // ** Test cases **//
@@ -217,12 +220,12 @@ public class MainVerticleTest {
 
   @Test
   public void testCachedToken(TestContext context) throws Exception {
-    final Async async = context.async();   
-    
+    final Async async = context.async();
+
     Holdings expected = Holdings.fromJson(MockOkapi.getHoldingsJson(titleId));
     int iters = 5;
-    
-    for(int i=0; i<iters; i++) {
+
+    for (int i = 0; i < iters; i++) {
       final Response resp = RestAssured
         .get(String.format("/prod/rtac/folioRTAC?mms_id=%s&apikey=%s", titleId, apiKey))
         .then()
@@ -231,13 +234,13 @@ public class MainVerticleTest {
         .header(HttpHeaders.CONTENT_TYPE, APPLICATION_XML)
         .extract()
         .response();
-  
+
       assertEquals(expected, Holdings.fromXml(resp.body().asString()));
     }
 
     verify(mockOkapi).loginHandler(any());
-    verify(mockOkapi, times(iters)).modRtacHandler(any());
-    
+    verify(mockOkapi, atLeast(iters)).modRtacHandler(any());
+
     async.complete();
   }
 }
