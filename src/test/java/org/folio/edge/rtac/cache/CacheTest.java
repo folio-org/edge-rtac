@@ -17,6 +17,7 @@ public class CacheTest {
 
   final int cap = 50;
   final long ttl = 3000;
+  final long nullValueTtl = 1000;
 
   private Cache<Long> cache;
 
@@ -27,6 +28,7 @@ public class CacheTest {
     cache = new Cache.Builder<Long>()
       .withCapacity(cap)
       .withTTL(ttl)
+      .withNullValueTTL(nullValueTtl)
       .build();
   }
 
@@ -121,6 +123,7 @@ public class CacheTest {
     Cache<String> cache = new Cache.Builder<String>()
       .withCapacity(cap)
       .withTTL(ttl)
+      .withNullValueTTL(nullValueTtl)
       .build();
 
     // empty cache...
@@ -137,5 +140,53 @@ public class CacheTest {
 
     // empty cache...
     assertNull(cache.get(key));
+  }
+
+  @Test
+  public void testNullValueExpires() throws Exception {
+    logger.info("=== Test expiration of null value entries... ===");
+
+    String key = "nullValueKey";
+
+    CacheValue<Long> cached = cache.put("nullValueKey", null);
+
+    assertNull(cache.get(key));
+
+    await().with()
+      .pollInterval(20, TimeUnit.MILLISECONDS)
+      .atMost(nullValueTtl + 100, TimeUnit.MILLISECONDS)
+      .until(() -> cached.expired());
+
+    assertNull(cache.get(key));
+  }
+
+  @Test(expected = IllegalStateException.class)
+  public void testMissingTTL() {
+    logger.info("=== Test construction w/o TTL... ===");
+
+    new Cache.Builder<String>()
+      .withCapacity(cap)
+      .withNullValueTTL(nullValueTtl)
+      .build();
+  }
+
+  @Test(expected = IllegalStateException.class)
+  public void testMissingNullValueTTL() {
+    logger.info("=== Test construction w/o Null Value TTL... ===");
+
+    new Cache.Builder<String>()
+      .withCapacity(cap)
+      .withTTL(ttl)
+      .build();
+  }
+
+  @Test(expected = IllegalStateException.class)
+  public void testMissingCapacity() {
+    logger.info("=== Test construction w/o Capacity... ===");
+
+    new Cache.Builder<String>()
+      .withTTL(ttl)
+      .withNullValueTTL(nullValueTtl)
+      .build();
   }
 }

@@ -16,10 +16,12 @@ public class Cache<T> {
 
   private LinkedHashMap<String, CacheValue<T>> storage;
   private final long ttl;
+  private final long nullValueTtl;
   private final int capacity;
 
-  private Cache(long ttl, int capacity) {
+  private Cache(long ttl, long nullValueTtl, int capacity) {
     this.ttl = ttl;
+    this.nullValueTtl = nullValueTtl;
     this.capacity = capacity;
     storage = new LinkedHashMap<>(capacity);
   }
@@ -49,7 +51,7 @@ public class Cache<T> {
       synchronized (this) {
         cached = storage.get(key);
         if (cached == null || cached.expired()) {
-          cached = new CacheValue<>(value, System.currentTimeMillis() + ttl);
+          cached = new CacheValue<>(value, System.currentTimeMillis() + (value == null ? nullValueTtl : ttl));
           storage.put(key, cached);
         }
       }
@@ -117,8 +119,9 @@ public class Cache<T> {
   }
 
   public static class Builder<T> {
-    private long ttl;
-    private int capacity;
+    private Long ttl = null;
+    private Long nullValueTtl = null;
+    private Integer capacity = null;
 
     public Builder() {
       // nothing to do here...
@@ -129,13 +132,25 @@ public class Cache<T> {
       return this;
     }
 
+    public Builder<T> withNullValueTTL(long ttl) {
+      this.nullValueTtl = ttl;
+      return this;
+    }
+
     public Builder<T> withCapacity(int capacity) {
       this.capacity = capacity;
       return this;
     }
 
     public Cache<T> build() {
-      return new Cache<>(ttl, capacity);
+      if (ttl == null || nullValueTtl == null || capacity == null) {
+        throw new IllegalStateException("TTL must be specified");
+      } else if (nullValueTtl == null) {
+        throw new IllegalStateException("Null Value TTL must be specified");
+      } else if (capacity == null) {
+        throw new IllegalStateException("Capacity must be specified");
+      }
+      return new Cache<>(ttl, nullValueTtl, capacity);
     }
   }
 }

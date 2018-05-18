@@ -58,8 +58,7 @@ public class MainVerticleTest {
     List<String> knownTenants = new ArrayList<>();
     knownTenants.add(new String(Base64.getUrlDecoder().decode(apiKey)));
 
-    mockOkapi = spy(new MockOkapi(okapiPort, knownTenants));// spy(new
-    // MockOkapi(okapiPort));
+    mockOkapi = spy(new MockOkapi(okapiPort, knownTenants));
     mockOkapi.start(context);
 
     vertx = Vertx.vertx();

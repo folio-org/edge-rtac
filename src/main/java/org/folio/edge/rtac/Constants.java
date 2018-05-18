@@ -12,6 +12,7 @@ public class Constants {
   public static final String SYS_OKAPI_URL = "okapi_url";
   public static final String SYS_PORT = "port";
   public static final String SYS_TOKEN_CACHE_TTL_MS = "token_cache_ttl_ms";
+  public static final String SYS_NULL_TOKEN_CACHE_TTL_MS = "null_token_cache_ttl_ms";
   public static final String SYS_TOKEN_CACHE_CAPACITY = "token_cache_capacity";
   public static final String SYS_ECS_CREDENTIALS_ENDPOINT = "ecs_credentials_endpoint";
   public static final String SYS_LOG_LEVEL = "log_level";
@@ -22,9 +23,10 @@ public class Constants {
   // Defaults
   public static final String DEFAULT_SECURE_STORE_TYPE = "ephemeral";
   public static final String DEFAULT_PORT = "8081";
-  public static final String DEFAULT_TOKEN_CACHE_TTL_MS = String.valueOf(60 * 60 * 1000);
-  public static final String DEFAULT_TOKEN_CACHE_CAPACITY = "100";
   public static final String DEFAULT_LOG_LEVEL = "INFO";
+  public static final long DEFAULT_TOKEN_CACHE_TTL_MS = 60 * 60 * 1000;
+  public static final long DEFAULT_NULL_TOKEN_CACHE_TTL_MS = 30 * 1000;
+  public static final int DEFAULT_TOKEN_CACHE_CAPACITY = 100;
 
   // Headers
   public static final String X_OKAPI_TENANT = "x-okapi-tenant";

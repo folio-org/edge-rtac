@@ -1,12 +1,14 @@
 package org.folio.edge.rtac;
 
 import static org.folio.edge.rtac.Constants.DEFAULT_LOG_LEVEL;
+import static org.folio.edge.rtac.Constants.DEFAULT_NULL_TOKEN_CACHE_TTL_MS;
 import static org.folio.edge.rtac.Constants.DEFAULT_PORT;
 import static org.folio.edge.rtac.Constants.DEFAULT_SECURE_STORE_TYPE;
 import static org.folio.edge.rtac.Constants.DEFAULT_TOKEN_CACHE_CAPACITY;
 import static org.folio.edge.rtac.Constants.DEFAULT_TOKEN_CACHE_TTL_MS;
 import static org.folio.edge.rtac.Constants.PROP_SECURE_STORE_TYPE;
 import static org.folio.edge.rtac.Constants.SYS_LOG_LEVEL;
+import static org.folio.edge.rtac.Constants.SYS_NULL_TOKEN_CACHE_TTL_MS;
 import static org.folio.edge.rtac.Constants.SYS_OKAPI_URL;
 import static org.folio.edge.rtac.Constants.SYS_PORT;
 import static org.folio.edge.rtac.Constants.SYS_SECURE_STORE_PROP_FILE;
@@ -51,16 +53,22 @@ public class MainVerticle extends AbstractVerticle {
     final String okapiURL = System.getProperty(SYS_OKAPI_URL);
     logger.info("Using okapi URL: " + okapiURL);
 
-    final String tokenCacheTtlMs = System.getProperty(SYS_TOKEN_CACHE_TTL_MS, DEFAULT_TOKEN_CACHE_TTL_MS);
-    final long cacheTtlMs = Long.parseLong(tokenCacheTtlMs);
+    final String tokenCacheTtlMs = System.getProperty(SYS_TOKEN_CACHE_TTL_MS);
+    final long cacheTtlMs = tokenCacheTtlMs != null ? Long.parseLong(tokenCacheTtlMs) : DEFAULT_TOKEN_CACHE_TTL_MS;
     logger.info("Using token cache TTL (ms): " + tokenCacheTtlMs);
 
-    final String tokenCacheCapacity = System.getProperty(SYS_TOKEN_CACHE_CAPACITY, DEFAULT_TOKEN_CACHE_CAPACITY);
-    final int cacheCapacity = Integer.parseInt(tokenCacheCapacity);
+    final String nullTokenCacheTtlMs = System.getProperty(SYS_NULL_TOKEN_CACHE_TTL_MS);
+    final long failureCacheTtlMs = nullTokenCacheTtlMs != null ? Long.parseLong(nullTokenCacheTtlMs)
+        : DEFAULT_NULL_TOKEN_CACHE_TTL_MS;
+    logger.info("Using token cache TTL (ms): " + failureCacheTtlMs);
+
+    final String tokenCacheCapacity = System.getProperty(SYS_TOKEN_CACHE_CAPACITY);
+    final int cacheCapacity = tokenCacheCapacity != null ? Integer.parseInt(tokenCacheCapacity)
+        : DEFAULT_TOKEN_CACHE_CAPACITY;
     logger.info("Using token cache capacity: " + tokenCacheCapacity);
 
     // initialize the TokenCache
-    TokenCache.initialize(cacheTtlMs, cacheCapacity);
+    TokenCache.initialize(cacheTtlMs, failureCacheTtlMs, cacheCapacity);
 
     final String secureStorePropFile = System.getProperty(SYS_SECURE_STORE_PROP_FILE);
     SecureStore secureStore = initializeSecureStore(secureStorePropFile);

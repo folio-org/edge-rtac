@@ -17,11 +17,13 @@ public class TokenCache {
 
   private Cache<String> cache;
 
-  private TokenCache(long ttl, int capacity) {
+  private TokenCache(long ttl, long nullTokenTtl, int capacity) {
     logger.info("Using TTL: " + ttl);
+    logger.info("Using null token TTL: " + nullTokenTtl);
     logger.info("Using capcity: " + capacity);
     cache = new Builder<String>()
       .withTTL(ttl)
+      .withNullValueTTL(nullTokenTtl)
       .withCapacity(capacity)
       .build();
   }
@@ -52,11 +54,11 @@ public class TokenCache {
    *          maximum number of entries this cache will hold before pruning
    * @return the new TokenCache singleton instance
    */
-  public static synchronized TokenCache initialize(long ttl, int capacity) {
+  public static synchronized TokenCache initialize(long ttl, long nullValueTtl, int capacity) {
     if (instance != null) {
       logger.warn("Reinitializing cache.  All cached entries will be lost");
     }
-    instance = new TokenCache(ttl, capacity);
+    instance = new TokenCache(ttl, nullValueTtl, capacity);
     return instance;
   }
 

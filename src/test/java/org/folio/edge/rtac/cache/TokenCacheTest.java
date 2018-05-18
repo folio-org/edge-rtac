@@ -17,6 +17,7 @@ public class TokenCacheTest {
 
   final int cap = 50;
   final long ttl = 3000;
+  final long nullValueTtl = 1000;
 
   private final String tenant = "diku";
   private final String user = "diku";
@@ -25,7 +26,7 @@ public class TokenCacheTest {
   @Before
   public void setUp() throws Exception {
     // initialize singleton cache
-    TokenCache.initialize(ttl, cap);
+    TokenCache.initialize(ttl, nullValueTtl, cap);
   }
 
   @Test
@@ -38,7 +39,7 @@ public class TokenCacheTest {
       .atMost(ttl + 100, TimeUnit.MILLISECONDS)
       .until(() -> cached.expired());
 
-    TokenCache.initialize(ttl * 2, cap);
+    TokenCache.initialize(ttl * 2, nullValueTtl, cap);
     final CacheValue<String> cached2 = TokenCache.getInstance().put(tenant, user, val);
 
     await().with()
@@ -139,5 +140,23 @@ public class TokenCacheTest {
     for (int i = 1; i <= cap; i++) {
       assertEquals(baseVal + i, cache.get(tenant, user + i));
     }
+  }
+
+  @Test
+  public void testNullTokenExpires() throws Exception {
+    logger.info("=== Test expiration of null token entries... ===");
+
+    TokenCache cache = TokenCache.getInstance();
+
+    CacheValue<String> cached = cache.put(tenant, user, null);
+
+    assertNull(cache.get(tenant, user));
+
+    await().with()
+      .pollInterval(20, TimeUnit.MILLISECONDS)
+      .atMost(nullValueTtl + 100, TimeUnit.MILLISECONDS)
+      .until(() -> cached.expired());
+
+    assertNull(cache.get(tenant, user));
   }
 }
