@@ -143,7 +143,7 @@ public class Cache<T> {
     }
 
     public Cache<T> build() {
-      if (ttl == null || nullValueTtl == null || capacity == null) {
+      if (ttl == null) {
         throw new IllegalStateException("TTL must be specified");
       } else if (nullValueTtl == null) {
         throw new IllegalStateException("Null Value TTL must be specified");

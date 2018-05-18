@@ -24,8 +24,8 @@ public class Constants {
   public static final String DEFAULT_SECURE_STORE_TYPE = "ephemeral";
   public static final String DEFAULT_PORT = "8081";
   public static final String DEFAULT_LOG_LEVEL = "INFO";
-  public static final long DEFAULT_TOKEN_CACHE_TTL_MS = 60 * 60 * 1000;
-  public static final long DEFAULT_NULL_TOKEN_CACHE_TTL_MS = 30 * 1000;
+  public static final long DEFAULT_TOKEN_CACHE_TTL_MS = 60 * 60 * 1000L;
+  public static final long DEFAULT_NULL_TOKEN_CACHE_TTL_MS = 30 * 1000L;
   public static final int DEFAULT_TOKEN_CACHE_CAPACITY = 100;
 
   // Headers
