@@ -2,7 +2,12 @@ package org.folio.edge.rtac.utils;
 
 import static org.folio.edge.rtac.Constants.X_OKAPI_TOKEN;
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
+
+import java.util.ArrayList;
+import java.util.List;
+import java.util.concurrent.CompletableFuture;
 
 import org.apache.log4j.Logger;
 import org.junit.After;
@@ -22,6 +27,7 @@ public class OkapiClientTest {
 
   private final String mockToken = MockOkapi.mockToken;
   private final String titleId = "0c8e8ac5-6bcc-461e-a8d3-4b55a96addc8";
+  private static final String tenant = "diku";
 
   private Vertx vertx;
   private OkapiClient client;
@@ -33,11 +39,14 @@ public class OkapiClientTest {
   public void setUp(TestContext context) throws Exception {
     int okapiPort = TestUtils.getPort();
 
-    mockOkapi = new MockOkapi(okapiPort);
+    List<String> knownTenants = new ArrayList<>();
+    knownTenants.add(tenant);
+
+    mockOkapi = new MockOkapi(okapiPort, knownTenants);
     mockOkapi.start(context);
     vertx = Vertx.vertx();
 
-    client = new OkapiClientFactory(vertx, "http://localhost:" + okapiPort).getOkapiClient("testtenant");
+    client = new OkapiClientFactory(vertx, "http://localhost:" + okapiPort).getOkapiClient(tenant);
   }
 
   @After
@@ -85,5 +94,16 @@ public class OkapiClientTest {
       assertTrue(isHealthy);
       async.complete();
     });
+  }
+
+  @Test
+  public void testLoginNoPassword(TestContext context) {
+    Async async = context.async();
+    // client.getToken("admin", "password").thenRun(() -> {
+    CompletableFuture<String> future = client.login("admin", null);
+    future.thenAcceptAsync(token -> {
+      assertNull(token);
+    });
+    async.complete();
   }
 }

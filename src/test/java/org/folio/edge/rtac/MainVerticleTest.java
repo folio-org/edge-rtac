@@ -12,6 +12,10 @@ import static org.mockito.Mockito.atLeast;
 import static org.mockito.Mockito.spy;
 import static org.mockito.Mockito.verify;
 
+import java.util.ArrayList;
+import java.util.Base64;
+import java.util.List;
+
 import org.apache.http.HttpHeaders;
 import org.apache.log4j.Logger;
 import org.folio.edge.rtac.model.Holdings;
@@ -23,7 +27,6 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 
 import com.jayway.restassured.RestAssured;
-import com.jayway.restassured.http.ContentType;
 import com.jayway.restassured.response.Response;
 
 import io.vertx.core.DeploymentOptions;
@@ -37,8 +40,10 @@ public class MainVerticleTest {
 
   private static final Logger logger = Logger.getLogger(MainVerticleTest.class);
 
-  private final String titleId = "0c8e8ac5-6bcc-461e-a8d3-4b55a96addc8";
-  private final String apiKey = "ZnMwMDAwMDAwMA==";
+  private static final String titleId = "0c8e8ac5-6bcc-461e-a8d3-4b55a96addc8";
+  private static final String apiKey = "ZGlrdQ==";
+  private static final String badApiKey = "ZnMwMDAwMDAwMA==0000";
+  private static final String unknownTenantApiKey = "Ym9ndXN0ZW5hbnQ=";
 
   private static Vertx vertx;
   private static MockOkapi mockOkapi;
@@ -50,7 +55,11 @@ public class MainVerticleTest {
     int okapiPort = TestUtils.getPort();
     int serverPort = TestUtils.getPort();
 
-    mockOkapi = spy(new MockOkapi(okapiPort));
+    List<String> knownTenants = new ArrayList<>();
+    knownTenants.add(new String(Base64.getUrlDecoder().decode(apiKey)));
+
+    mockOkapi = spy(new MockOkapi(okapiPort, knownTenants));// spy(new
+    // MockOkapi(okapiPort));
     mockOkapi.start(context);
 
     vertx = Vertx.vertx();
@@ -86,7 +95,7 @@ public class MainVerticleTest {
     final Response resp = RestAssured
       .get("/admin/health")
       .then()
-      .contentType(ContentType.TEXT)
+      .contentType(TEXT_PLAIN)
       .statusCode(200)
       .header(HttpHeaders.CONTENT_TYPE, TEXT_PLAIN)
       .extract()
@@ -98,13 +107,55 @@ public class MainVerticleTest {
   }
 
   @Test
+  public void testRtacUnknownApiKey(TestContext context) throws Exception {
+    final Async async = context.async();
+
+    final Response resp = RestAssured
+      .get(String.format("/prod/rtac/folioRTAC?mms_id=%s&apikey=%s", titleId, unknownTenantApiKey))
+      .then()
+      .contentType(APPLICATION_XML)
+      .statusCode(200)
+      .header(HttpHeaders.CONTENT_TYPE, APPLICATION_XML)
+      .extract()
+      .response();
+
+    String expected = new Holdings().toXml();
+    String actual = resp.body().asString();
+    assertEquals(expected, actual);
+
+    async.complete();
+  }
+
+  @Test
+  public void testRtacBadApiKey(TestContext context) throws Exception {
+    final Async async = context.async();
+
+    final Response resp = RestAssured
+      .get(String.format("/prod/rtac/folioRTAC?mms_id=%s&apikey=%s", titleId, badApiKey))
+      .then()
+      .contentType(APPLICATION_XML)
+      .statusCode(200)
+      .header(HttpHeaders.CONTENT_TYPE, APPLICATION_XML)
+      .extract()
+      .response();
+
+    String expected = new Holdings().toXml();
+    String actual = resp.body().asString();
+
+    logger.info(actual);
+    assertEquals(expected, actual);
+
+    async.complete();
+  }
+
+  @Test
   public void testRtacTitleFound(TestContext context) throws Exception {
     final Async async = context.async();
 
     final Response resp = RestAssured
       .get(String.format("/prod/rtac/folioRTAC?mms_id=%s&apikey=%s", titleId, apiKey))
       .then()
-      .contentType(ContentType.XML)
+      .contentType(APPLICATION_XML)
       .statusCode(200)
       .header(HttpHeaders.CONTENT_TYPE, APPLICATION_XML)
       .extract()
@@ -125,7 +176,7 @@ public class MainVerticleTest {
       .get(String.format("/prod/rtac/folioRTAC?mms_id=%s&apikey=%s",
           MockOkapi.titleId_notFound, apiKey))
       .then()
-      .contentType(ContentType.XML)
+      .contentType(APPLICATION_XML)
       .statusCode(200)
       .header(HttpHeaders.CONTENT_TYPE, APPLICATION_XML)
       .extract()
@@ -145,7 +196,7 @@ public class MainVerticleTest {
     final Response resp = RestAssured
       .get(String.format("/prod/rtac/folioRTAC?mms_id=%s", MockOkapi.titleId_notFound))
       .then()
-      .contentType(ContentType.XML)
+      .contentType(APPLICATION_XML)
       .statusCode(200)
       .header(HttpHeaders.CONTENT_TYPE, APPLICATION_XML)
       .extract()
@@ -165,7 +216,7 @@ public class MainVerticleTest {
     final Response resp = RestAssured
       .get(String.format("/prod/rtac/folioRTAC?apikey=%s", apiKey))
       .then()
-      .contentType(ContentType.XML)
+      .contentType(APPLICATION_XML)
       .statusCode(200)
       .header(HttpHeaders.CONTENT_TYPE, APPLICATION_XML)
       .extract()
@@ -185,7 +236,7 @@ public class MainVerticleTest {
     final Response resp = RestAssured
       .get("/prod/rtac/folioRTAC")
       .then()
-      .contentType(ContentType.XML)
+      .contentType(APPLICATION_XML)
       .statusCode(200)
       .header(HttpHeaders.CONTENT_TYPE, APPLICATION_XML)
       .extract()
@@ -205,7 +256,7 @@ public class MainVerticleTest {
     final Response resp = RestAssured
       .get("/prod/rtac/folioRTAC?mms_id=&apikey=")
       .then()
-      .contentType(ContentType.XML)
+      .contentType(APPLICATION_XML)
       .statusCode(200)
       .header(HttpHeaders.CONTENT_TYPE, APPLICATION_XML)
       .extract()
@@ -229,7 +280,7 @@ public class MainVerticleTest {
       final Response resp = RestAssured
         .get(String.format("/prod/rtac/folioRTAC?mms_id=%s&apikey=%s", titleId, apiKey))
         .then()
-        .contentType(ContentType.XML)
+        .contentType(APPLICATION_XML)
         .statusCode(200)
         .header(HttpHeaders.CONTENT_TYPE, APPLICATION_XML)
         .extract()

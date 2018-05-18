@@ -5,6 +5,9 @@ import static org.folio.edge.rtac.Constants.TEXT_PLAIN;
 import static org.folio.edge.rtac.Constants.X_OKAPI_TENANT;
 import static org.folio.edge.rtac.Constants.X_OKAPI_TOKEN;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import org.apache.log4j.Logger;
 import org.folio.edge.rtac.model.Holdings;
 import org.folio.edge.rtac.model.Holdings.Holding;
@@ -31,10 +34,12 @@ public class MockOkapi {
 
   public final int okapiPort;
   private final Vertx vertx;
+  private final List<String> knownTenants;
 
-  public MockOkapi(int port) {
+  public MockOkapi(int port, List<String> knownTenants) {
     okapiPort = port;
     vertx = Vertx.vertx();
+    this.knownTenants = knownTenants == null ? new ArrayList<>() : knownTenants;
   }
 
   public void close() {
@@ -92,30 +97,40 @@ public class MockOkapi {
   }
 
   public void loginHandler(RoutingContext ctx) {
-    JsonObject body = ctx.getBodyAsJson();
+    JsonObject body = null;
+    try {
+      body = ctx.getBodyAsJson();
+    } catch (Exception e) {
+
+    }
+
+    String tenant = ctx.request().getHeader(X_OKAPI_TENANT);
 
     String contentType = TEXT_PLAIN;
     int status;
     String resp = null;
-    if (ctx.request().getHeader(X_OKAPI_TENANT) == null) {
+    if (tenant == null) {
       status = 400;
       resp = "Unable to process request Tenant must be set";
-    } else if (!body.containsKey("username") || !body.containsKey("password")) {
+    } else if (body == null || !body.containsKey("username") || !body.containsKey("password")) {
       status = 400;
       resp = "Json content error";
     } else if (ctx.request().getHeader(HttpHeaders.CONTENT_TYPE) == null ||
         !ctx.request().getHeader(HttpHeaders.CONTENT_TYPE).equals(APPLICATION_JSON)) {
       status = 400;
       resp = String.format("Content-type header must be [\"%s\"]", APPLICATION_JSON);
+    } else if (!knownTenants.contains(tenant)) {
+      status = 400;
+      resp = String.format("no such tenant %s", tenant);
     } else {
       status = 201;
       resp = body.toString();
       contentType = APPLICATION_JSON;
+      ctx.response().putHeader(X_OKAPI_TOKEN, mockToken);
     }
 
     ctx.response()
       .setStatusCode(status)
-      .putHeader(X_OKAPI_TOKEN, mockToken)
       .putHeader(HttpHeaders.CONTENT_TYPE, contentType)
       .end(resp);
   }

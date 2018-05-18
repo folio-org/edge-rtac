@@ -25,7 +25,7 @@ public class OkapiClient {
   private static final Logger logger = Logger.getLogger(OkapiClient.class);
 
   public static final long DEFAULT_REQUEST_TIMEOUT = 3 * 1000L; // ms
- 
+
   private final String okapiURL;
   private final HttpClient client;
   private final String tenant;
@@ -43,14 +43,13 @@ public class OkapiClient {
 
     JsonObject payload = new JsonObject();
     payload.put("username", username);
-    payload.put("password", password);
+    payload.put("password", password == null ? "" : password);
 
     post(
         okapiURL + "/authn/login",
         tenant,
         payload.encode(),
         response -> response.bodyHandler(body -> {
-
           try {
             if (response.statusCode() == 201) {
               logger.info("Successfully logged into FOLIO");
@@ -125,9 +124,9 @@ public class OkapiClient {
   }
 
   public void setToken(String token) {
-    defaultHeaders.put(X_OKAPI_TOKEN, token);
+    defaultHeaders.put(X_OKAPI_TOKEN, token == null ? "" : token);
   }
-  
+
   public void post(String url, String tenant, String payload, Handler<HttpClientResponse> responseHandler) {
     post(url, tenant, payload, null, responseHandler);
   }
@@ -179,7 +178,7 @@ public class OkapiClient {
       .setTimeout(DEFAULT_REQUEST_TIMEOUT)
       .end();
   }
-  
+
   public void close() {
     client.close();
   }
