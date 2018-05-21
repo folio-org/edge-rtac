@@ -4,6 +4,7 @@ import static org.folio.edge.rtac.Constants.APPLICATION_JSON;
 import static org.folio.edge.rtac.Constants.TEXT_PLAIN;
 import static org.folio.edge.rtac.Constants.X_OKAPI_TENANT;
 import static org.folio.edge.rtac.Constants.X_OKAPI_TOKEN;
+import static org.junit.Assert.fail;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -43,7 +44,14 @@ public class MockOkapi {
   }
 
   public void close() {
-    vertx.close();
+    vertx.close(res -> {
+      if(res.failed()) {
+        logger.error("Failed to shut down mock OKAPI server", res.cause());
+        fail(res.cause().getMessage());
+      } else {
+        logger.info("Successfully shut down mock OKAPI server");
+      }
+    });
   }
 
   public void start(TestContext context) {
@@ -141,12 +149,14 @@ public class MockOkapi {
     if (token == null || !token.equals(mockToken)) {
       ctx.response()
         .setStatusCode(403)
+        .putHeader(HttpHeaders.CONTENT_TYPE, TEXT_PLAIN)
         .end("Access requires permission: rtac.holdings.item.get");
     } else if (titleId.equals(titleId_notFound)) {
       // Magic titleID signifying we want to mock a "not found"
       // response.
       ctx.response()
         .setStatusCode(404)
+        .putHeader(HttpHeaders.CONTENT_TYPE, TEXT_PLAIN)
         .end("rtac not found");
     } else {
       ctx.response()

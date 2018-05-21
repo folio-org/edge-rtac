@@ -43,10 +43,12 @@ public class RtacHandler {
 
     if (id == null || id.isEmpty() || key == null || key.isEmpty()) {
       returnEmptyResponse(ctx);
+      return;
     } else {
       String tenant = getTenant(key);
       if (tenant == null) {
         returnEmptyResponse(ctx);
+        return;
       }
 
       final OkapiClient client = ocf.getOkapiClient(tenant);
@@ -55,6 +57,7 @@ public class RtacHandler {
       CompletableFuture<String> tokenFuture = getToken(client, tenant, tenant);
       if (tokenFuture.isCompletedExceptionally()) {
         returnEmptyResponse(ctx);
+        return;
       } else {
         tokenFuture.thenAcceptAsync(token -> {
           client.setToken(token);
@@ -71,6 +74,7 @@ public class RtacHandler {
             } catch (IOException e) {
               logger.error("Exception translating JSON -> XML: " + e.getMessage());
               returnEmptyResponse(ctx);
+              return;
             }
           });
         });

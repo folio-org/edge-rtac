@@ -3,6 +3,7 @@ package org.folio.edge.rtac;
 import static org.folio.edge.rtac.Constants.DEFAULT_LOG_LEVEL;
 import static org.folio.edge.rtac.Constants.DEFAULT_NULL_TOKEN_CACHE_TTL_MS;
 import static org.folio.edge.rtac.Constants.DEFAULT_PORT;
+import static org.folio.edge.rtac.Constants.DEFAULT_REQUEST_TIMEOUT_MS;
 import static org.folio.edge.rtac.Constants.DEFAULT_SECURE_STORE_TYPE;
 import static org.folio.edge.rtac.Constants.DEFAULT_TOKEN_CACHE_CAPACITY;
 import static org.folio.edge.rtac.Constants.DEFAULT_TOKEN_CACHE_TTL_MS;
@@ -11,6 +12,7 @@ import static org.folio.edge.rtac.Constants.SYS_LOG_LEVEL;
 import static org.folio.edge.rtac.Constants.SYS_NULL_TOKEN_CACHE_TTL_MS;
 import static org.folio.edge.rtac.Constants.SYS_OKAPI_URL;
 import static org.folio.edge.rtac.Constants.SYS_PORT;
+import static org.folio.edge.rtac.Constants.SYS_REQUEST_TIMEOUT_MS;
 import static org.folio.edge.rtac.Constants.SYS_SECURE_STORE_PROP_FILE;
 import static org.folio.edge.rtac.Constants.SYS_SECURE_STORE_TYPE;
 import static org.folio.edge.rtac.Constants.SYS_TOKEN_CACHE_CAPACITY;
@@ -18,7 +20,11 @@ import static org.folio.edge.rtac.Constants.SYS_TOKEN_CACHE_TTL_MS;
 import static org.folio.edge.rtac.Constants.TEXT_PLAIN;
 
 import java.io.FileInputStream;
+import java.io.IOException;
+import java.io.InputStream;
+import java.net.URL;
 import java.util.Properties;
+import java.util.regex.Pattern;
 
 import org.apache.log4j.Level;
 import org.apache.log4j.Logger;
@@ -39,6 +45,8 @@ import io.vertx.ext.web.handler.BodyHandler;
 public class MainVerticle extends AbstractVerticle {
 
   private static final Logger logger = Logger.getLogger(MainVerticle.class);
+
+  private static Pattern isURL = Pattern.compile("(?i)^http[s]?://.*");
 
   @Override
   public void start(Future<Void> future) {
@@ -67,13 +75,18 @@ public class MainVerticle extends AbstractVerticle {
         : DEFAULT_TOKEN_CACHE_CAPACITY;
     logger.info("Using token cache capacity: " + tokenCacheCapacity);
 
+    final String requestTimeout = System.getProperty(SYS_REQUEST_TIMEOUT_MS);
+    final long reqTimeoutMs = requestTimeout != null ? Long.parseLong(requestTimeout)
+        : DEFAULT_REQUEST_TIMEOUT_MS;
+    logger.info("Using request timeout (ms): " + reqTimeoutMs);
+
     // initialize the TokenCache
     TokenCache.initialize(cacheTtlMs, failureCacheTtlMs, cacheCapacity);
 
     final String secureStorePropFile = System.getProperty(SYS_SECURE_STORE_PROP_FILE);
     SecureStore secureStore = initializeSecureStore(secureStorePropFile);
 
-    OkapiClientFactory ocf = new OkapiClientFactory(vertx, okapiURL);
+    OkapiClientFactory ocf = new OkapiClientFactory(vertx, okapiURL, reqTimeoutMs);
     RtacHandler rtacHandler = new RtacHandler(secureStore, ocf);
 
     Router router = Router.router(vertx);
@@ -95,12 +108,26 @@ public class MainVerticle extends AbstractVerticle {
     Properties secureStoreProps = new Properties();
 
     if (secureStorePropFile != null) {
-      // TODO add support for s3://bucket/file.properties
+      InputStream in = null;
       try {
-        secureStoreProps.load(new FileInputStream(secureStorePropFile));
+        if (isURL.matcher(secureStorePropFile).matches()) {
+          URL url = new URL(secureStorePropFile);
+          in = url.openStream();
+        } else {
+          in = new FileInputStream(secureStorePropFile);
+        }
+        secureStoreProps.load(in);
         logger.info("Successfully loaded properties from: " + secureStorePropFile);
       } catch (Exception e) {
         logger.warn("Failed to load secure store properties.", e);
+      } finally {
+        if (in != null) {
+          try {
+            in.close();
+          } catch (IOException e) {
+            logger.warn("Failed to close input stream cleanly", e);
+          }
+        }
       }
     } else {
       logger.warn("No secure store properties file specified.  Using defaults");

@@ -28,6 +28,7 @@ public class OkapiClientTest {
   private final String mockToken = MockOkapi.mockToken;
   private final String titleId = "0c8e8ac5-6bcc-461e-a8d3-4b55a96addc8";
   private static final String tenant = "diku";
+  private static final long reqTimeout = 5000L;
 
   private Vertx vertx;
   private OkapiClient client;
@@ -46,7 +47,7 @@ public class OkapiClientTest {
     mockOkapi.start(context);
     vertx = Vertx.vertx();
 
-    client = new OkapiClientFactory(vertx, "http://localhost:" + okapiPort).getOkapiClient(tenant);
+    client = new OkapiClientFactory(vertx, "http://localhost:" + okapiPort, reqTimeout).getOkapiClient(tenant);
   }
 
   @After

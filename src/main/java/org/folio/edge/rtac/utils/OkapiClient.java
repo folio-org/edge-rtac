@@ -24,15 +24,15 @@ public class OkapiClient {
 
   private static final Logger logger = Logger.getLogger(OkapiClient.class);
 
-  public static final long DEFAULT_REQUEST_TIMEOUT = 3 * 1000L; // ms
-
-  private final String okapiURL;
-  private final HttpClient client;
-  private final String tenant;
+  public final String okapiURL;
+  public final HttpClient client;
+  public final String tenant;
+  public final long reqTimeout;
 
   protected final Map<String, String> defaultHeaders = new HashMap<>();
 
-  public OkapiClient(Vertx vertx, String okapiURL, String tenant) {
+  protected OkapiClient(Vertx vertx, String okapiURL, String tenant, long timeout) {
+    this.reqTimeout = timeout;
     this.okapiURL = okapiURL;
     this.tenant = tenant;
     this.client = vertx.createHttpClient(new HttpClientOptions().setKeepAlive(false));
@@ -151,7 +151,7 @@ public class OkapiClient {
 
     request.handler(responseHandler);
 
-    request.setTimeout(DEFAULT_REQUEST_TIMEOUT)
+    request.setTimeout(reqTimeout)
       .end(payload);
   }
 
@@ -175,7 +175,7 @@ public class OkapiClient {
     }
 
     request.handler(responseHandler)
-      .setTimeout(DEFAULT_REQUEST_TIMEOUT)
+      .setTimeout(reqTimeout)
       .end();
   }
 

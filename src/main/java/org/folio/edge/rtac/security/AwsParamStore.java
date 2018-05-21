@@ -1,7 +1,5 @@
 package org.folio.edge.rtac.security;
 
-import static org.folio.edge.rtac.Constants.SYS_ECS_CREDENTIALS_ENDPOINT;
-
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.util.Properties;
@@ -26,13 +24,16 @@ public class AwsParamStore extends SecureStore {
   public static final String TYPE = "AwsSsm";
 
   public static final String PROP_REGION = "region";
-  public static final String PROP_KEY_ID = "keyId";
+  public static final String PROP_USE_IAM = "useIAM";
+  public static final String PROP_ECS_CREDENTIALS_PATH = "ecsCredentialsPath";
+  public static final String PROP_ECS_CREDENTIALS_ENDPOINT = "ecsCredentialsEndpoint";
 
-  public static final String DEFAULT_REGION = "us-east-1";
+  public static final String DEFAULT_USE_IAM = "true";
 
   private String region;
-
-  private AWSCredentialsProvider credProvider;
+  private boolean useIAM;
+  private String ecsCredEndpoint;
+  private String ecsCredPath;
 
   protected AWSSimpleSystemsManagement ssm;
 
@@ -41,28 +42,40 @@ public class AwsParamStore extends SecureStore {
     logger.info("Initializing...");
 
     if (properties != null) {
-      region = properties.getProperty(PROP_REGION, DEFAULT_REGION);
+      region = properties.getProperty(PROP_REGION);
+      useIAM = Boolean.parseBoolean(properties.getProperty(PROP_USE_IAM, DEFAULT_USE_IAM));
+      ecsCredEndpoint = properties.getProperty(PROP_ECS_CREDENTIALS_ENDPOINT);
+      ecsCredPath = properties.getProperty(PROP_ECS_CREDENTIALS_PATH);
+    }
+
+    AWSSimpleSystemsManagementClientBuilder builder = AWSSimpleSystemsManagementClientBuilder.standard();
+
+    if (region != null) {
+      builder.withRegion(region);
+    }
+
+    if (useIAM) {
+      logger.info("Using IAM");
     } else {
-      region = DEFAULT_REGION;
-    }
-
-    try {
-      credProvider = new EnvironmentVariableCredentialsProvider();
-      credProvider.getCredentials();
-    } catch (Exception e) {
+      AWSCredentialsProvider credProvider;
       try {
-        credProvider = new SystemPropertiesCredentialsProvider();
+        credProvider = new EnvironmentVariableCredentialsProvider();
         credProvider.getCredentials();
-      } catch (Exception e2) {
-        credProvider = new ContainerCredentialsProvider(new ECSCredentialsEndpointProvider());
-        credProvider.getCredentials();
+      } catch (Exception e) {
+        try {
+          credProvider = new SystemPropertiesCredentialsProvider();
+          credProvider.getCredentials();
+        } catch (Exception e2) {
+          credProvider = new ContainerCredentialsProvider(
+              new ECSCredentialsEndpointProvider(ecsCredEndpoint, ecsCredPath));
+          credProvider.getCredentials();
+        }
       }
+      logger.info("Using " + credProvider.getClass().getName());
+      builder.withCredentials(credProvider);
     }
 
-    ssm = AWSSimpleSystemsManagementClientBuilder.standard()
-      .withRegion(region)
-      .withCredentials(credProvider)
-      .build();
+    ssm = builder.build();
   }
 
   @Override
@@ -85,36 +98,41 @@ public class AwsParamStore extends SecureStore {
           key),
           e);
     }
-
     return ret;
   }
 
   protected static class ECSCredentialsEndpointProvider extends CredentialsEndpointProvider {
+    public static final String ECS_CREDENTIALS_PATH_VAR = "AWS_CONTAINER_CREDENTIALS_RELATIVE_URI";
 
-    /**
-     * Environment variable to get the Amazon ECS credentials resource path.
-     */
-    public static final String ECS_CONTAINER_CREDENTIALS_PATH = "AWS_CONTAINER_CREDENTIALS_RELATIVE_URI";
+    public final String ecsCredEndpoint;
+    public final String ecsCredPath;
 
-    /**
-     * Default endpoint to retrieve the Amazon ECS Credentials.
-     */
-    public static final String ECS_CREDENTIALS_ENDPOINT = System.getProperty(SYS_ECS_CREDENTIALS_ENDPOINT,
-        "http://169.254.170.2");
+    public ECSCredentialsEndpointProvider(String ecsCredEndpoint, String ecsCredPath) {
+      this.ecsCredEndpoint = ecsCredEndpoint;
+      this.ecsCredPath = ecsCredPath;
+    }
 
     @Override
     public URI getCredentialsEndpoint() throws URISyntaxException {
-      String path = System.getenv(ECS_CONTAINER_CREDENTIALS_PATH);
+      String path = ecsCredPath;
+      if (path == null) {
+        path = System.getenv(ECS_CREDENTIALS_PATH_VAR);
+      }
       if (path == null) {
         throw new SdkClientException(
-            "The environment variable " + ECS_CONTAINER_CREDENTIALS_PATH + " is empty");
+            "No credentials path was provided and the environment variable " + ECS_CREDENTIALS_PATH_VAR + " is empty");
       }
 
-      return new URI(ECS_CREDENTIALS_ENDPOINT + path);
+      return new URI(ecsCredEndpoint + path);
     }
   }
 
   public String getRegion() {
     return region;
   }
+
+  public Boolean getUseIAM() {
+    return useIAM;
+  }
+
 }

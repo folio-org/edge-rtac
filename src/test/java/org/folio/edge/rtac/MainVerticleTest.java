@@ -7,11 +7,17 @@ import static org.folio.edge.rtac.Constants.SYS_PORT;
 import static org.folio.edge.rtac.Constants.SYS_SECURE_STORE_PROP_FILE;
 import static org.folio.edge.rtac.Constants.TEXT_PLAIN;
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.fail;
 import static org.mockito.Matchers.any;
 import static org.mockito.Mockito.atLeast;
 import static org.mockito.Mockito.spy;
 import static org.mockito.Mockito.verify;
 
+import java.io.BufferedReader;
+import java.io.FileInputStream;
+import java.io.InputStream;
+import java.io.InputStreamReader;
 import java.util.ArrayList;
 import java.util.Base64;
 import java.util.List;
@@ -19,6 +25,8 @@ import java.util.List;
 import org.apache.http.HttpHeaders;
 import org.apache.log4j.Logger;
 import org.folio.edge.rtac.model.Holdings;
+import org.folio.edge.rtac.security.EphemeralStore;
+import org.folio.edge.rtac.security.SecureStore;
 import org.folio.edge.rtac.utils.MockOkapi;
 import org.folio.edge.rtac.utils.TestUtils;
 import org.junit.AfterClass;
@@ -31,9 +39,13 @@ import com.jayway.restassured.response.Response;
 
 import io.vertx.core.DeploymentOptions;
 import io.vertx.core.Vertx;
+import io.vertx.core.http.HttpMethod;
+import io.vertx.core.http.HttpServer;
 import io.vertx.ext.unit.Async;
 import io.vertx.ext.unit.TestContext;
 import io.vertx.ext.unit.junit.VertxUnitRunner;
+import io.vertx.ext.web.Router;
+import io.vertx.ext.web.handler.BodyHandler;
 
 @RunWith(VertxUnitRunner.class)
 public class MainVerticleTest {
@@ -79,16 +91,24 @@ public class MainVerticleTest {
   @AfterClass
   public static void tearDownOnce(TestContext context) {
     logger.info("Shutting down server");
-    vertx.close(context.asyncAssertSuccess());
+    vertx.close(res -> {
+      if (res.failed()) {
+        logger.error("Failed to shut down edge-rtac server", res.cause());
+        fail(res.cause().getMessage());
+      } else {
+        logger.info("Successfully shut down edge-rtac server");
+      }
 
-    logger.info("Shutting down mock Okapi");
-    mockOkapi.close();
+      logger.info("Shutting down mock Okapi");
+      mockOkapi.close();
+    });
   }
 
   // ** Test cases **//
 
   @Test
   public void testAdminHealth(TestContext context) {
+    logger.info("=== Test the health check endpoint ===");
     final Async async = context.async();
 
     final Response resp = RestAssured
@@ -107,6 +127,7 @@ public class MainVerticleTest {
 
   @Test
   public void testRtacUnknownApiKey(TestContext context) throws Exception {
+    logger.info("=== Test request with unknown apiKey (tenant) ===");
     final Async async = context.async();
 
     final Response resp = RestAssured
@@ -127,6 +148,7 @@ public class MainVerticleTest {
 
   @Test
   public void testRtacBadApiKey(TestContext context) throws Exception {
+    logger.info("=== Test request with malformed apiKey ===");
     final Async async = context.async();
 
     final Response resp = RestAssured
@@ -149,6 +171,7 @@ public class MainVerticleTest {
 
   @Test
   public void testRtacTitleFound(TestContext context) throws Exception {
+    logger.info("=== Test request where title is found ===");
     final Async async = context.async();
 
     final Response resp = RestAssured
@@ -169,6 +192,7 @@ public class MainVerticleTest {
 
   @Test
   public void testRtacTitleNotFound(TestContext context) throws Exception {
+    logger.info("=== Test request where title isn't found ===");
     final Async async = context.async();
 
     final Response resp = RestAssured
@@ -190,6 +214,7 @@ public class MainVerticleTest {
 
   @Test
   public void testRtacNoApiKey(TestContext context) throws Exception {
+    logger.info("=== Test request with no apiKey ===");
     final Async async = context.async();
 
     final Response resp = RestAssured
@@ -210,6 +235,7 @@ public class MainVerticleTest {
 
   @Test
   public void testRtacNoId(TestContext context) throws Exception {
+    logger.info("=== Test request with no mms_id ===");
     final Async async = context.async();
 
     final Response resp = RestAssured
@@ -230,6 +256,7 @@ public class MainVerticleTest {
 
   @Test
   public void testRtacNoQueryArgs(TestContext context) throws Exception {
+    logger.info("=== Test request with no query args ===");
     final Async async = context.async();
 
     final Response resp = RestAssured
@@ -250,6 +277,7 @@ public class MainVerticleTest {
 
   @Test
   public void testRtacEmptyQueryArgs(TestContext context) throws Exception {
+    logger.info("=== Test request with empty query args ===");
     final Async async = context.async();
 
     final Response resp = RestAssured
@@ -270,6 +298,7 @@ public class MainVerticleTest {
 
   @Test
   public void testCachedToken(TestContext context) throws Exception {
+    logger.info("=== Test the tokens are cached and reused ===");
     final Async async = context.async();
 
     Holdings expected = Holdings.fromJson(MockOkapi.getHoldingsJson(titleId));
@@ -292,5 +321,79 @@ public class MainVerticleTest {
     verify(mockOkapi, atLeast(iters)).modRtacHandler(any());
 
     async.complete();
+  }
+
+  @Test
+  public void testInitializeSecureStoreHttp(TestContext context) throws Exception {
+    logger.info("=== Test initialize secure store from Http link ===");
+    final Async testAsync = context.async();
+
+    MainVerticle verticle = new MainVerticle();
+
+    // Setup Simple server to host properties file.
+    int port = TestUtils.getPort();
+
+    HttpServer server = vertx.createHttpServer();
+
+    Router router = Router.router(vertx);
+    router.route().handler(BodyHandler.create());
+    router.route(HttpMethod.GET, "/path/to/ephemeral.properties").handler(ctx -> {
+
+      String body = "";
+      try {
+        InputStream in = new FileInputStream("src/main/resources/ephemeral.properties");
+        StringBuilder resultStringBuilder = new StringBuilder();
+        try (BufferedReader reader = new BufferedReader(new InputStreamReader(in))) {
+          String line;
+          while ((line = reader.readLine()) != null) {
+            resultStringBuilder.append(line).append("\n");
+          }
+        }
+        body = resultStringBuilder.toString();
+      } catch (Exception e) {
+
+      }
+      ctx.response()
+        .setStatusCode(200)
+        .end(body);
+    });
+
+    final Async async = context.async();
+    server.requestHandler(router::accept).listen(port, result -> {
+      if (result.failed()) {
+        logger.warn(result.cause());
+      }
+      context.assertTrue(result.succeeded());
+      async.complete();
+    });
+
+    SecureStore fromHttp = verticle.initializeSecureStore("http://localhost:" + port + "/path/to/ephemeral.properties");
+    assertNotNull(fromHttp);
+    assertEquals(EphemeralStore.class, fromHttp.getClass());
+
+    server.close(res -> {
+      if (res.failed()) {
+        logger.error("Failed to shut down properties file server", res.cause());
+        fail(res.cause().getMessage());
+      } else {
+        logger.info("Successfully shut down properties file server");
+      }
+    });
+
+    testAsync.complete();
+  }
+
+  @Test
+  public void testInitializeSecureStoreLocal(TestContext context) throws Exception {
+    logger.info("=== Test initialize secure store from local file ===");
+    final Async testAsync = context.async();
+
+    MainVerticle verticle = new MainVerticle();
+
+    SecureStore fromLocal = verticle.initializeSecureStore("src/main/resources/ephemeral.properties");
+    assertNotNull(fromLocal);
+    assertEquals(EphemeralStore.class, fromLocal.getClass());
+
+    testAsync.complete();
   }
 }
