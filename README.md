@@ -69,6 +69,7 @@ Proprety              | Default     | Description
 `token_cache_ttl_ms`  | `3600000`   | How long to cache JWTs, in milliseconds (ms)
 `token_cache_capacity`| `100`       | Max token cache size
 `log_level`           | `INFO`      | Log4j Log Level
+`request_timeout_ms`  | `30000`     | Request Timeout
 
 ## Additional information
 
