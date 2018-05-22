@@ -1,6 +1,7 @@
 package org.folio.edge.rtac.utils;
 
 import static org.folio.edge.rtac.Constants.APPLICATION_JSON;
+import static org.folio.edge.rtac.Constants.DEFAULT_REQUEST_TIMEOUT_MS;
 import static org.folio.edge.rtac.Constants.TEXT_PLAIN;
 import static org.folio.edge.rtac.Constants.X_OKAPI_TENANT;
 import static org.folio.edge.rtac.Constants.X_OKAPI_TOKEN;
@@ -8,6 +9,7 @@ import static org.junit.Assert.fail;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.concurrent.CompletableFuture;
 
 import org.apache.log4j.Logger;
 import org.folio.edge.rtac.model.Holdings;
@@ -30,6 +32,14 @@ public class MockOkapi {
 
   private static final Logger logger = Logger.getLogger(MockOkapi.class);
 
+  /**
+   * Request header that tells MockOkapi to wait at least this long before
+   * processing a request.
+   * 
+   * Exists for the purposes of exercising timeouts
+   */
+  public static final String X_DURATION = "X-Duration";
+
   public static final String mockToken = "mynameisyonyonsonicomefromwisconsoniworkatalumbermillthereallthepeopleimeetasiwalkdownthestreetaskhowinthehelldidyougethereisaymynameisyonyonsonicomefromwisconson";
   public static final String titleId_notFound = "0c8e8ac5-6bcc-461e-a8d3-4b55a96addc9";
 
@@ -45,7 +55,7 @@ public class MockOkapi {
 
   public void close() {
     vertx.close(res -> {
-      if(res.failed()) {
+      if (res.failed()) {
         logger.error("Failed to shut down mock OKAPI server", res.cause());
         fail(res.cause().getMessage());
       } else {
@@ -105,64 +115,94 @@ public class MockOkapi {
   }
 
   public void loginHandler(RoutingContext ctx) {
-    JsonObject body = null;
-    try {
-      body = ctx.getBodyAsJson();
-    } catch (Exception e) {
+    handleDuration(ctx, () -> {
+      JsonObject body = null;
+      try {
+        body = ctx.getBodyAsJson();
+      } catch (Exception e) {
 
-    }
+      }
 
-    String tenant = ctx.request().getHeader(X_OKAPI_TENANT);
+      String tenant = ctx.request().getHeader(X_OKAPI_TENANT);
 
-    String contentType = TEXT_PLAIN;
-    int status;
-    String resp = null;
-    if (tenant == null) {
-      status = 400;
-      resp = "Unable to process request Tenant must be set";
-    } else if (body == null || !body.containsKey("username") || !body.containsKey("password")) {
-      status = 400;
-      resp = "Json content error";
-    } else if (ctx.request().getHeader(HttpHeaders.CONTENT_TYPE) == null ||
-        !ctx.request().getHeader(HttpHeaders.CONTENT_TYPE).equals(APPLICATION_JSON)) {
-      status = 400;
-      resp = String.format("Content-type header must be [\"%s\"]", APPLICATION_JSON);
-    } else if (!knownTenants.contains(tenant)) {
-      status = 400;
-      resp = String.format("no such tenant %s", tenant);
+      String contentType = TEXT_PLAIN;
+      int status;
+      String resp = null;
+      if (tenant == null) {
+        status = 400;
+        resp = "Unable to process request Tenant must be set";
+      } else if (body == null || !body.containsKey("username") || !body.containsKey("password")) {
+        status = 400;
+        resp = "Json content error";
+      } else if (ctx.request().getHeader(HttpHeaders.CONTENT_TYPE) == null ||
+          !ctx.request().getHeader(HttpHeaders.CONTENT_TYPE).equals(APPLICATION_JSON)) {
+        status = 400;
+        resp = String.format("Content-type header must be [\"%s\"]", APPLICATION_JSON);
+      } else if (!knownTenants.contains(tenant)) {
+        status = 400;
+        resp = String.format("no such tenant %s", tenant);
+      } else {
+        status = 201;
+        resp = body.toString();
+        contentType = APPLICATION_JSON;
+        ctx.response().putHeader(X_OKAPI_TOKEN, mockToken);
+      }
+
+      ctx.response()
+        .setStatusCode(status)
+        .putHeader(HttpHeaders.CONTENT_TYPE, contentType)
+        .end(resp);
+    });
+  }
+
+  private void handleDuration(RoutingContext ctx, Runnable doAfter) {
+    String duration = ctx.request().getHeader(X_DURATION);
+    if (duration != null && !duration.isEmpty()) {
+      long dur = DEFAULT_REQUEST_TIMEOUT_MS;
+      try {
+        dur = Long.parseLong(duration);
+      } catch (NumberFormatException e) {
+        logger.warn("Invalid value specified for " + X_DURATION + " sleeping default request timeout instead");
+      }
+      final long end = System.currentTimeMillis() + dur;
+      CompletableFuture<Void> future = CompletableFuture.runAsync(() -> {
+        while (System.currentTimeMillis() < end) {
+          try {
+            Thread.sleep(500);
+          } catch (InterruptedException e) {
+
+          }
+        }
+      });
+      future.thenRunAsync(doAfter);
     } else {
-      status = 201;
-      resp = body.toString();
-      contentType = APPLICATION_JSON;
-      ctx.response().putHeader(X_OKAPI_TOKEN, mockToken);
+      doAfter.run();
     }
-
-    ctx.response()
-      .setStatusCode(status)
-      .putHeader(HttpHeaders.CONTENT_TYPE, contentType)
-      .end(resp);
   }
 
   public void modRtacHandler(RoutingContext ctx) {
-    String titleId = ctx.request().getParam("titleid");
-    String token = ctx.request().getHeader(X_OKAPI_TOKEN);
-    if (token == null || !token.equals(mockToken)) {
-      ctx.response()
-        .setStatusCode(403)
-        .putHeader(HttpHeaders.CONTENT_TYPE, TEXT_PLAIN)
-        .end("Access requires permission: rtac.holdings.item.get");
-    } else if (titleId.equals(titleId_notFound)) {
-      // Magic titleID signifying we want to mock a "not found"
-      // response.
-      ctx.response()
-        .setStatusCode(404)
-        .putHeader(HttpHeaders.CONTENT_TYPE, TEXT_PLAIN)
-        .end("rtac not found");
-    } else {
-      ctx.response()
-        .setStatusCode(200)
-        .putHeader(HttpHeaders.CONTENT_TYPE, APPLICATION_JSON)
-        .end(getHoldingsJson(titleId));
-    }
+    handleDuration(ctx, () -> {
+      String titleId = ctx.request().getParam("titleid");
+      String token = ctx.request().getHeader(X_OKAPI_TOKEN);
+
+      if (token == null || !token.equals(mockToken)) {
+        ctx.response()
+          .setStatusCode(403)
+          .putHeader(HttpHeaders.CONTENT_TYPE, TEXT_PLAIN)
+          .end("Access requires permission: rtac.holdings.item.get");
+      } else if (titleId.equals(titleId_notFound)) {
+        // Magic titleID signifying we want to mock a "not found"
+        // response.
+        ctx.response()
+          .setStatusCode(404)
+          .putHeader(HttpHeaders.CONTENT_TYPE, TEXT_PLAIN)
+          .end("rtac not found");
+      } else {
+        ctx.response()
+          .setStatusCode(200)
+          .putHeader(HttpHeaders.CONTENT_TYPE, APPLICATION_JSON)
+          .end(getHoldingsJson(titleId));
+      }
+    });
   }
 }

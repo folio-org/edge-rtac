@@ -4,8 +4,10 @@ import static org.folio.edge.rtac.Constants.APPLICATION_XML;
 import static org.folio.edge.rtac.Constants.SYS_LOG_LEVEL;
 import static org.folio.edge.rtac.Constants.SYS_OKAPI_URL;
 import static org.folio.edge.rtac.Constants.SYS_PORT;
+import static org.folio.edge.rtac.Constants.SYS_REQUEST_TIMEOUT_MS;
 import static org.folio.edge.rtac.Constants.SYS_SECURE_STORE_PROP_FILE;
 import static org.folio.edge.rtac.Constants.TEXT_PLAIN;
+import static org.folio.edge.rtac.utils.MockOkapi.X_DURATION;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.fail;
@@ -57,6 +59,8 @@ public class MainVerticleTest {
   private static final String badApiKey = "ZnMwMDAwMDAwMA==0000";
   private static final String unknownTenantApiKey = "Ym9ndXN0ZW5hbnQ=";
 
+  private static final long requestTimeoutMs = 3000L;
+
   private static Vertx vertx;
   private static MockOkapi mockOkapi;
 
@@ -79,6 +83,7 @@ public class MainVerticleTest {
     System.setProperty(SYS_OKAPI_URL, "http://localhost:" + okapiPort);
     System.setProperty(SYS_SECURE_STORE_PROP_FILE, "src/main/resources/ephemeral.properties");
     System.setProperty(SYS_LOG_LEVEL, "DEBUG");
+    System.setProperty(SYS_REQUEST_TIMEOUT_MS, String.valueOf(requestTimeoutMs));
 
     final DeploymentOptions opt = new DeploymentOptions();
     vertx.deployVerticle(MainVerticle.class.getName(), opt, context.asyncAssertSuccess());
@@ -179,7 +184,6 @@ public class MainVerticleTest {
       .then()
       .contentType(APPLICATION_XML)
       .statusCode(200)
-      .header(HttpHeaders.CONTENT_TYPE, APPLICATION_XML)
       .extract()
       .response();
 
@@ -393,6 +397,28 @@ public class MainVerticleTest {
     SecureStore fromLocal = verticle.initializeSecureStore("src/main/resources/ephemeral.properties");
     assertNotNull(fromLocal);
     assertEquals(EphemeralStore.class, fromLocal.getClass());
+
+    testAsync.complete();
+  }
+
+  @Test
+  public void testRequestTimeout(TestContext context) throws Exception {
+    logger.info("=== Test request timeout ===");
+    final Async testAsync = context.async();
+
+    final Response resp = RestAssured
+      .with()
+      .header(X_DURATION, requestTimeoutMs * 2)
+      .get(String.format("/prod/rtac/folioRTAC?mms_id=%s&apikey=%s", titleId, apiKey))
+      .then()
+      .contentType(APPLICATION_XML)
+      .statusCode(200)
+      .extract()
+      .response();
+
+    Holdings expected = new Holdings();
+    Holdings actual = Holdings.fromXml(resp.body().asString());
+    assertEquals(expected, actual);
 
     testAsync.complete();
   }

@@ -60,7 +60,7 @@ public class RtacHandler {
         tokenFuture.thenAcceptAsync(token -> {
           client.setToken(token);
           // call mod-rtac
-          client.rtac(id).thenAcceptAsync(body -> {
+          client.rtac(id, ctx.request().headers()).thenAcceptAsync(body -> {
             String xml = null;
             try {
               xml = Holdings.fromJson(body).toXml();
@@ -72,8 +72,11 @@ public class RtacHandler {
             } catch (IOException e) {
               logger.error("Exception translating JSON -> XML: " + e.getMessage());
               returnEmptyResponse(ctx);
-              return;
             }
+          }).exceptionally(t -> {
+            logger.error("Exception calling mod-rtac", t);
+            returnEmptyResponse(ctx);
+            return null;
           });
         });
       }

@@ -5,13 +5,13 @@ import static org.folio.edge.rtac.Constants.TEXT_PLAIN;
 import static org.folio.edge.rtac.Constants.X_OKAPI_TENANT;
 import static org.folio.edge.rtac.Constants.X_OKAPI_TOKEN;
 
-import java.util.HashMap;
-import java.util.Map;
+import java.util.Map.Entry;
 import java.util.concurrent.CompletableFuture;
 
 import org.apache.log4j.Logger;
 
 import io.vertx.core.Handler;
+import io.vertx.core.MultiMap;
 import io.vertx.core.Vertx;
 import io.vertx.core.http.HttpClient;
 import io.vertx.core.http.HttpClientOptions;
@@ -29,7 +29,7 @@ public class OkapiClient {
   public final String tenant;
   public final long reqTimeout;
 
-  protected final Map<String, String> defaultHeaders = new HashMap<>();
+  protected final MultiMap defaultHeaders = MultiMap.caseInsensitiveMultiMap();
 
   protected OkapiClient(Vertx vertx, String okapiURL, String tenant, long timeout) {
     this.reqTimeout = timeout;
@@ -39,7 +39,20 @@ public class OkapiClient {
   }
 
   public CompletableFuture<String> login(String username, String password) {
+    return login(username, password, null);
+  }
+
+  public CompletableFuture<String> login(String username, String password, MultiMap headers) {
     CompletableFuture<String> future = new CompletableFuture<>();
+
+    MultiMap combined = null;
+    if (headers != null && headers.size() > 0) {
+      combined = MultiMap.caseInsensitiveMultiMap();
+      combined.addAll(headers);
+      for (Entry<String, String> entry : defaultHeaders.entries()) {
+        combined.set(entry.getKey(), entry.getValue());
+      }
+    }
 
     JsonObject payload = new JsonObject();
     payload.put("username", username);
@@ -49,56 +62,70 @@ public class OkapiClient {
         okapiURL + "/authn/login",
         tenant,
         payload.encode(),
+        combined != null ? combined : defaultHeaders,
         response -> response.bodyHandler(body -> {
-          try {
-            if (response.statusCode() == 201) {
-              logger.info("Successfully logged into FOLIO");
-              String token = response.getHeader(X_OKAPI_TOKEN);
-              setToken(token);
-              future.complete(token);
-            } else {
-              logger.warn(String.format(
-                  "Failed to log into FOLIO: (%s) %s",
-                  response.statusCode(),
-                  body.toString()));
-              future.complete(null);
-            }
-          } catch (Exception e) {
-            logger.warn("Exception during login: " + e.getMessage());
-            future.completeExceptionally(e);
+          if (response.statusCode() == 201) {
+            logger.info("Successfully logged into FOLIO");
+            String token = response.getHeader(X_OKAPI_TOKEN);
+            setToken(token);
+            future.complete(token);
+          } else {
+            logger.warn(String.format(
+                "Failed to log into FOLIO: (%s) %s",
+                response.statusCode(),
+                body.toString()));
+            future.complete(null);
           }
-        }));
+        }),
+        t -> {
+          logger.error("Exception: " + t.getMessage());
+          future.completeExceptionally(t);
+        });
     return future;
   }
 
   public CompletableFuture<String> rtac(String titleId) {
+    return rtac(titleId, null);
+  }
+
+  public CompletableFuture<String> rtac(String titleId, MultiMap headers) {
     CompletableFuture<String> future = new CompletableFuture<>();
+
+    MultiMap combined = null;
+    if (headers != null && headers.size() > 0) {
+      combined = MultiMap.caseInsensitiveMultiMap();
+      combined.addAll(headers);
+      for (Entry<String, String> entry : defaultHeaders.entries()) {
+        combined.set(entry.getKey(), entry.getValue());
+      }
+    }
+
     get(
         okapiURL + "/rtac/" + titleId,
         tenant,
-        defaultHeaders, response -> response.bodyHandler(body -> {
-          try {
-            int statusCode = response.statusCode();
-            if (statusCode == 200) {
-              String responseBody = body.toString();
-              logger.info(String.format(
-                  "Successfully retrieved title info from mod-rtac: (%s) %s",
-                  statusCode,
-                  responseBody));
-              future.complete(responseBody);
-            } else {
-              String err = String.format(
-                  "Failed to get title info from mod-rtac: (%s) %s",
-                  response.statusCode(),
-                  body.toString());
-              logger.error(err);
-              future.complete("{}");
-            }
-          } catch (Exception e) {
-            logger.error("Exception calling mod-rtac: " + e.getMessage());
+        combined != null ? combined : defaultHeaders,
+        response -> response.bodyHandler(body -> {
+          int statusCode = response.statusCode();
+          if (statusCode == 200) {
+            String responseBody = body.toString();
+            logger.info(String.format(
+                "Successfully retrieved title info from mod-rtac: (%s) %s",
+                statusCode,
+                responseBody));
+            future.complete(responseBody);
+          } else {
+            String err = String.format(
+                "Failed to get title info from mod-rtac: (%s) %s",
+                response.statusCode(),
+                body.toString());
+            logger.error(err);
             future.complete("{}");
           }
-        }));
+        }),
+        t -> {
+          logger.error("Exception: " + t.getMessage());
+          future.completeExceptionally(t);
+        });
     return future;
   }
 
@@ -107,32 +134,32 @@ public class OkapiClient {
     get(
         okapiURL + "/_/proxy/health",
         tenant, response -> response.bodyHandler(body -> {
-          try {
-            int status = response.statusCode();
-            if (status == 200) {
-              future.complete(true);
-            } else {
-              logger.error(String.format("OKAPI is unhealthy! status: %s body: %s", status, body.toString()));
-              future.complete(false);
-            }
-          } catch (Exception e) {
-            logger.error("Exception checking OKAPI's health: " + e.getMessage());
+          int status = response.statusCode();
+          if (status == 200) {
+            future.complete(true);
+          } else {
+            logger.error(String.format("OKAPI is unhealthy! status: %s body: %s", status, body.toString()));
             future.complete(false);
           }
-        }));
+        }),
+        t -> {
+          logger.error("Exception checking OKAPI's health: " + t.getMessage());
+          future.complete(false);
+        });
     return future;
   }
 
   public void setToken(String token) {
-    defaultHeaders.put(X_OKAPI_TOKEN, token == null ? "" : token);
+    defaultHeaders.set(X_OKAPI_TOKEN, token == null ? "" : token);
   }
 
-  public void post(String url, String tenant, String payload, Handler<HttpClientResponse> responseHandler) {
-    post(url, tenant, payload, null, responseHandler);
+  public void post(String url, String tenant, String payload, Handler<HttpClientResponse> responseHandler,
+      Handler<Throwable> exceptionHandler) {
+    post(url, tenant, payload, null, responseHandler, exceptionHandler);
   }
 
-  public void post(String url, String tenant, String payload, Map<String, String> headers,
-      Handler<HttpClientResponse> responseHandler) {
+  public void post(String url, String tenant, String payload, MultiMap headers,
+      Handler<HttpClientResponse> responseHandler, Handler<Throwable> exceptionHandler) {
 
     if (logger.isTraceEnabled())
       logger.trace("POST " + url + " Request: " + payload);
@@ -149,32 +176,31 @@ public class OkapiClient {
       request.headers().addAll(headers);
     }
 
-    request.handler(responseHandler);
-
-    request.setTimeout(reqTimeout)
+    request.handler(responseHandler)
+      .exceptionHandler(exceptionHandler)
+      .setTimeout(reqTimeout)
       .end(payload);
   }
 
-  public void get(String url, String tenant, Handler<HttpClientResponse> responseHandler) {
-    get(url, tenant, null, responseHandler);
+  public void get(String url, String tenant, Handler<HttpClientResponse> responseHandler,
+      Handler<Throwable> exceptionHandler) {
+    get(url, tenant, null, responseHandler, exceptionHandler);
   }
 
-  public void get(String url, String tenant, Map<String, String> headers,
-      Handler<HttpClientResponse> responseHandler) {
-
-    logger.info(String.format("GET %s tenant: %s token: %s", url, tenant,
-        (headers != null) ? headers.get(X_OKAPI_TOKEN) : ""));
+  public void get(String url, String tenant, MultiMap headers,
+      Handler<HttpClientResponse> responseHandler, Handler<Throwable> exceptionHandler) {
 
     final HttpClientRequest request = client.getAbs(url);
-
-    request.putHeader(HttpHeaders.ACCEPT.toString(), String.format("%s, %s", APPLICATION_JSON, TEXT_PLAIN))
-      .putHeader(X_OKAPI_TENANT, tenant);
 
     if (headers != null) {
       request.headers().addAll(headers);
     }
 
+    logger.info(String.format("GET %s tenant: %s token: %s", url, tenant,
+        request.headers().get(X_OKAPI_TOKEN)));
+
     request.handler(responseHandler)
+      .exceptionHandler(exceptionHandler)
       .setTimeout(reqTimeout)
       .end();
   }
