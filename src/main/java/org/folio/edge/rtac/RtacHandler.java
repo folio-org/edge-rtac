@@ -43,7 +43,6 @@ public class RtacHandler {
 
     if (id == null || id.isEmpty() || key == null || key.isEmpty()) {
       returnEmptyResponse(ctx);
-      return;
     } else {
       String tenant = getTenant(key);
       if (tenant == null) {
@@ -57,7 +56,6 @@ public class RtacHandler {
       CompletableFuture<String> tokenFuture = getToken(client, tenant, tenant);
       if (tokenFuture.isCompletedExceptionally()) {
         returnEmptyResponse(ctx);
-        return;
       } else {
         tokenFuture.thenAcceptAsync(token -> {
           client.setToken(token);
