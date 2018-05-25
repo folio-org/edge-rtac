@@ -1,21 +1,18 @@
 package org.folio.edge.rtac;
 
-import static org.folio.edge.rtac.Constants.APPLICATION_XML;
-import static org.folio.edge.rtac.Constants.PARAM_API_KEY;
-import static org.folio.edge.rtac.Constants.PARAM_TITLE_ID;
+import static org.folio.edge.core.Constants.APPLICATION_XML;
+import static org.folio.edge.core.Constants.PARAM_API_KEY;
 
 import java.io.IOException;
-import java.util.Base64;
 import java.util.concurrent.CompletableFuture;
 
 import org.apache.log4j.Logger;
-import org.folio.edge.rtac.cache.TokenCache;
-import org.folio.edge.rtac.cache.TokenCache.NotInitializedException;
+import org.folio.edge.core.InstitutionalUserHelper;
+import org.folio.edge.core.security.SecureStore;
+import org.folio.edge.core.utils.Mappers;
 import org.folio.edge.rtac.model.Holdings;
-import org.folio.edge.rtac.security.SecureStore;
-import org.folio.edge.rtac.utils.Mappers;
-import org.folio.edge.rtac.utils.OkapiClient;
-import org.folio.edge.rtac.utils.OkapiClientFactory;
+import org.folio.edge.rtac.utils.RtacOkapiClient;
+import org.folio.edge.rtac.utils.RtacOkapiClientFactory;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 
@@ -26,14 +23,16 @@ public class RtacHandler {
 
   private static final Logger logger = Logger.getLogger(RtacHandler.class);
 
-  private static final String FALLBACK_EMPTY_RESPONSE = Mappers.PROLOG + "\n<holdings/>";
+  private static final String FALLBACK_EMPTY_RESPONSE = Mappers.XML_PROLOG + "\n<holdings/>";
 
-  private final SecureStore secureStore;
-  private final OkapiClientFactory ocf;
+  public static final String PARAM_TITLE_ID = "mms_id";
 
-  public RtacHandler(SecureStore secureStore, OkapiClientFactory ocf) {
-    this.secureStore = secureStore;
+  private final RtacOkapiClientFactory ocf;
+  private final InstitutionalUserHelper iuHelper;
+
+  public RtacHandler(SecureStore secureStore, RtacOkapiClientFactory ocf) {
     this.ocf = ocf;
+    iuHelper = new InstitutionalUserHelper(secureStore);
   }
 
   protected void rtacHandler(RoutingContext ctx) {
@@ -44,16 +43,16 @@ public class RtacHandler {
     if (id == null || id.isEmpty() || key == null || key.isEmpty()) {
       returnEmptyResponse(ctx);
     } else {
-      String tenant = getTenant(key);
+      String tenant = iuHelper.getTenant(key);
       if (tenant == null) {
         returnEmptyResponse(ctx);
         return;
       }
 
-      final OkapiClient client = ocf.getOkapiClient(tenant);
+      final RtacOkapiClient client = ocf.getRtacOkapiClient(tenant);
 
       // get token via cache or logging in
-      CompletableFuture<String> tokenFuture = getToken(client, tenant, tenant);
+      CompletableFuture<String> tokenFuture = iuHelper.getToken(client, tenant, tenant);
       if (tokenFuture.isCompletedExceptionally()) {
         returnEmptyResponse(ctx);
       } else {
@@ -100,56 +99,4 @@ public class RtacHandler {
       .end(xml);
   }
 
-  private String getTenant(String apiKey) {
-    String tenant = null;
-    try {
-      tenant = new String(Base64.getUrlDecoder().decode(apiKey.getBytes()));
-      logger.info(String.format("API Key: %s, Tenant: %s", apiKey, tenant));
-
-    } catch (Exception e) {
-      logger.error(String.format("Failed to parse API Key %s", apiKey), e);
-    }
-    return tenant;
-  }
-
-  private CompletableFuture<String> getToken(OkapiClient client, String tenant, String username) {
-    CompletableFuture<String> future = new CompletableFuture<>();
-
-    String token = null;
-    try {
-      TokenCache cache = TokenCache.getInstance();
-      token = cache.get(tenant, username);
-    } catch (NotInitializedException e) {
-      logger.warn("Failed to access TokenCache", e);
-    }
-
-    if (token != null) {
-      logger.info("Using cached token");
-      future.complete(token);
-    } else {
-      String password = secureStore.get(tenant, username);
-
-      CompletableFuture<String> loginFuture = client.login(username, password);
-
-      if (loginFuture.isCompletedExceptionally()) {
-        try {
-          loginFuture.get();
-        } catch (Exception e) {
-          logger.error("Login Failed", e);
-          future.completeExceptionally(e);
-        }
-      } else {
-        loginFuture.thenAccept(t -> {
-          try {
-            TokenCache.getInstance().put(tenant, username, t);
-          } catch (NotInitializedException e) {
-            logger.warn("Failed to cache token", e);
-          }
-          future.complete(t);
-        });
-      }
-    }
-
-    return future;
-  }
 }

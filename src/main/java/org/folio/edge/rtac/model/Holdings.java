@@ -4,7 +4,9 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.folio.edge.rtac.utils.Mappers;
+import javax.annotation.Generated;
+
+import org.folio.edge.core.utils.Mappers;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonProperty;
@@ -125,6 +127,7 @@ public final class Holdings {
     }
 
     @Override
+    @Generated("Eclipse")
     public int hashCode() {
       final int prime = 31;
       int result = 1;
@@ -138,50 +141,66 @@ public final class Holdings {
     }
 
     @Override
+    @Generated("Eclipse")
     public boolean equals(Object obj) {
-      if (this == obj)
+      if (this == obj) {
         return true;
-      if (obj == null)
+      }
+      if (obj == null) {
         return false;
-      if (getClass() != obj.getClass())
+      }
+      if (!(obj instanceof Holding)) {
         return false;
+      }
       Holding other = (Holding) obj;
       if (callNumber == null) {
-        if (other.callNumber != null)
+        if (other.callNumber != null) {
           return false;
-      } else if (!callNumber.equals(other.callNumber))
+        }
+      } else if (!callNumber.equals(other.callNumber)) {
         return false;
+      }
       if (dueDate == null) {
-        if (other.dueDate != null)
+        if (other.dueDate != null) {
           return false;
-      } else if (!dueDate.equals(other.dueDate))
+        }
+      } else if (!dueDate.equals(other.dueDate)) {
         return false;
+      }
       if (id == null) {
-        if (other.id != null)
+        if (other.id != null) {
           return false;
-      } else if (!id.equals(other.id))
+        }
+      } else if (!id.equals(other.id)) {
         return false;
+      }
       if (location == null) {
-        if (other.location != null)
+        if (other.location != null) {
           return false;
-      } else if (!location.equals(other.location))
+        }
+      } else if (!location.equals(other.location)) {
         return false;
+      }
       if (status == null) {
-        if (other.status != null)
+        if (other.status != null) {
           return false;
-      } else if (!status.equals(other.status))
+        }
+      } else if (!status.equals(other.status)) {
         return false;
+      }
       if (tempLocation == null) {
-        if (other.tempLocation != null)
+        if (other.tempLocation != null) {
           return false;
-      } else if (!tempLocation.equals(other.tempLocation))
+        }
+      } else if (!tempLocation.equals(other.tempLocation)) {
         return false;
+      }
       return true;
     }
   }
 
   public String toXml() throws JsonProcessingException {
-    return Mappers.PROLOG + Mappers.xmlMapper.writeValueAsString(this);
+    return Mappers.XML_PROLOG + Mappers.xmlMapper.writeValueAsString(this);
   }
 
   public String toJson() throws JsonProcessingException {

@@ -8,22 +8,22 @@ import org.junit.Test;
 
 import io.vertx.core.Vertx;
 
-public class OkapiClientFactoryTest {
+public class RtacOkapiClientFactoryTest {
 
   private static final long reqTimeout = 5000L;
 
-  private OkapiClientFactory ocf;
+  private RtacOkapiClientFactory ocf;
 
   @Before
   public void setUp() throws Exception {
 
     Vertx vertx = Vertx.vertx();
-    ocf = new OkapiClientFactory(vertx, "http://mocked.okapi:9130", reqTimeout);
+    ocf = new RtacOkapiClientFactory(vertx, "http://mocked.okapi:9130", reqTimeout);
   }
 
   @Test
   public void testGetOkapiClient() {
-    OkapiClient client = ocf.getOkapiClient("tenant");
+    RtacOkapiClient client = ocf.getRtacOkapiClient("tenant");
     assertNotNull(client);
     assertEquals(reqTimeout, client.reqTimeout);
   }
