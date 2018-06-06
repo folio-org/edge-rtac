@@ -20,8 +20,8 @@ public class MainVerticle extends EdgeVerticle {
 
     Router router = Router.router(vertx);
     router.route().handler(BodyHandler.create());
-    router.route(HttpMethod.GET, "/admin/health").handler(this::healthCheckHandler);
-    router.route(HttpMethod.GET, "/prod/rtac/folioRTAC").handler(rtacHandler::rtacHandler);
+    router.route(HttpMethod.GET, "/admin/health").handler(this::handleHealthCheck);
+    router.route(HttpMethod.GET, "/prod/rtac/folioRTAC").handler(rtacHandler::handle);
     return router;
   }
 }

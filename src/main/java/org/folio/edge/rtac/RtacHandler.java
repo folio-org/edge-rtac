@@ -35,7 +35,7 @@ public class RtacHandler {
     iuHelper = new InstitutionalUserHelper(secureStore);
   }
 
-  protected void rtacHandler(RoutingContext ctx) {
+  protected void handle(RoutingContext ctx) {
 
     String key = ctx.request().getParam(PARAM_API_KEY);
     String id = ctx.request().getParam(PARAM_TITLE_ID);
