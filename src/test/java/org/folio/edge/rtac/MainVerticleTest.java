@@ -16,11 +16,11 @@ import static org.mockito.Mockito.spy;
 import static org.mockito.Mockito.verify;
 
 import java.util.ArrayList;
-import java.util.Base64;
 import java.util.List;
 
 import org.apache.http.HttpHeaders;
 import org.apache.log4j.Logger;
+import org.folio.edge.core.InstitutionalUserHelper;
 import org.folio.edge.core.utils.test.TestUtils;
 import org.folio.edge.rtac.model.Holdings;
 import org.folio.edge.rtac.utils.RtacMockOkapi;
@@ -43,9 +43,9 @@ public class MainVerticleTest {
   private static final Logger logger = Logger.getLogger(MainVerticleTest.class);
 
   private static final String titleId = "0c8e8ac5-6bcc-461e-a8d3-4b55a96addc8";
-  private static final String apiKey = "ZGlrdQ==";
+  private static final String apiKey = "Z1luMHVGdjNMZl9kaWt1X2Rpa3U=";
   private static final String badApiKey = "ZnMwMDAwMDAwMA==0000";
-  private static final String unknownTenantApiKey = "Ym9ndXN0ZW5hbnQ=";
+  private static final String unknownTenantApiKey = "Z1luMHVGdjNMZl9ib2d1c19ib2d1cw==";
 
   private static final long requestTimeoutMs = 3000L;
 
@@ -58,7 +58,7 @@ public class MainVerticleTest {
     int serverPort = TestUtils.getPort();
 
     List<String> knownTenants = new ArrayList<>();
-    knownTenants.add(new String(Base64.getUrlDecoder().decode(apiKey)));
+    knownTenants.add(InstitutionalUserHelper.parseApiKey(apiKey).tenantId);
 
     mockOkapi = spy(new RtacMockOkapi(okapiPort, knownTenants));
     mockOkapi.start(context);
