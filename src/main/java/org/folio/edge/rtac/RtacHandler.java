@@ -8,6 +8,8 @@ import java.util.concurrent.CompletableFuture;
 
 import org.apache.log4j.Logger;
 import org.folio.edge.core.InstitutionalUserHelper;
+import org.folio.edge.core.InstitutionalUserHelper.MalformedApiKeyException;
+import org.folio.edge.core.model.ClientInfo;
 import org.folio.edge.core.security.SecureStore;
 import org.folio.edge.core.utils.Mappers;
 import org.folio.edge.rtac.model.Holdings;
@@ -43,16 +45,21 @@ public class RtacHandler {
     if (id == null || id.isEmpty() || key == null || key.isEmpty()) {
       returnEmptyResponse(ctx);
     } else {
-      String tenant = iuHelper.getTenant(key);
-      if (tenant == null) {
+      ClientInfo clientInfo;
+      try {
+        clientInfo = InstitutionalUserHelper.parseApiKey(key);
+      } catch (MalformedApiKeyException e) {
         returnEmptyResponse(ctx);
         return;
       }
 
-      final RtacOkapiClient client = ocf.getRtacOkapiClient(tenant);
+      final RtacOkapiClient client = ocf.getRtacOkapiClient(clientInfo.tenantId);
 
       // get token via cache or logging in
-      CompletableFuture<String> tokenFuture = iuHelper.getToken(client, tenant, tenant);
+      CompletableFuture<String> tokenFuture = iuHelper.getToken(client,
+          clientInfo.clientId,
+          clientInfo.tenantId,
+          clientInfo.username);
       if (tokenFuture.isCompletedExceptionally()) {
         returnEmptyResponse(ctx);
       } else {
