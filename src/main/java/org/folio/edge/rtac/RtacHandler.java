@@ -56,8 +56,8 @@ public class RtacHandler {
       final RtacOkapiClient client = ocf.getRtacOkapiClient(clientInfo.tenantId);
 
       // get token via cache or logging in
-      CompletableFuture<String> tokenFuture = iuHelper.getToken(client, 
-          clientInfo.clientId, 
+      CompletableFuture<String> tokenFuture = iuHelper.getToken(client,
+          clientInfo.clientId,
           clientInfo.tenantId,
           clientInfo.username);
       if (tokenFuture.isCompletedExceptionally()) {
