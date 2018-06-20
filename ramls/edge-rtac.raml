@@ -20,7 +20,7 @@ schemas:
         body:
           application/xml:
             schema: holdings
-    uriParameters:
+    queryParameters:
       mms_id:
         description: "The UUID of a FOLIO instance"
         type: string
@@ -36,4 +36,4 @@ schemas:
       200:
         description: "Success"
         body:
-          text/plain
+          text/plain:
