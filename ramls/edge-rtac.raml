@@ -10,7 +10,7 @@ documentation:
 schemas:
   - holdings: !include holdings.xsd
 
-/prod/rtac:
+/prod/rtac/folioRTAC:
   displayName: RTAC
   get:
     description: RTAC for the specified holding id
@@ -31,7 +31,7 @@ schemas:
 /admin/health:
   displayName: Health Check
   get:
-    description: RTAC for the specified holding id
+    description: Health Check
     responses:
       200:
         description: "Success"
