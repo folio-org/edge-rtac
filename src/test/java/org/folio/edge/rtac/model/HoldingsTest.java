@@ -38,7 +38,6 @@ public class HoldingsTest {
       .callNumber("PS3552.E796 D44x 1975")
       .location("LC General Collection Millersville University Library")
       .status("Item in place")
-      .tempLocation("")
       .dueDate("")
       .build();
 
@@ -47,7 +46,6 @@ public class HoldingsTest {
       .callNumber("PS3552.E796 D44x 1975")
       .location("LC General Collection Millersville University Library")
       .status("Item in place")
-      .tempLocation("")
       .dueDate("2018-04-23 12:00:00")
       .build();
 
