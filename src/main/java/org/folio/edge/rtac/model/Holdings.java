@@ -9,6 +9,8 @@ import javax.annotation.Generated;
 import org.folio.edge.core.utils.Mappers;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+import com.fasterxml.jackson.annotation.JsonInclude;
+import com.fasterxml.jackson.annotation.JsonInclude.Include;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
@@ -54,6 +56,7 @@ public final class Holdings {
     return true;
   }
 
+  @JsonInclude(Include.NON_NULL)
   @JacksonXmlRootElement(localName = "holding")
   @JsonDeserialize(builder = Holding.Builder.class)
   public static final class Holding {
