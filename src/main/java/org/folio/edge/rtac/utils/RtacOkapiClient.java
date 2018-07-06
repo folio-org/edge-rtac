@@ -13,6 +13,10 @@ public class RtacOkapiClient extends OkapiClient {
 
   private static final Logger logger = Logger.getLogger(RtacOkapiClient.class);
 
+  public RtacOkapiClient(OkapiClient client) {
+    super(client);
+  }
+
   protected RtacOkapiClient(Vertx vertx, String okapiURL, String tenant, long timeout) {
     super(vertx, okapiURL, tenant, timeout);
   }
