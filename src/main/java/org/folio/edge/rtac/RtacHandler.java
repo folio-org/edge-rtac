@@ -85,20 +85,4 @@ public class RtacHandler extends Handler {
   protected void badRequest(RoutingContext ctx, String body) {
     returnEmptyResponse(ctx);
   }
-
-  @Override
-  protected void notFound(RoutingContext ctx, String body) {
-    returnEmptyResponse(ctx);
-  }
-
-  @Override
-  protected void requestTimeout(RoutingContext ctx, String body) {
-    returnEmptyResponse(ctx);
-  }
-
-  @Override
-  protected void internalServerError(RoutingContext ctx, String body) {
-    returnEmptyResponse(ctx);
-  }
-
 }
