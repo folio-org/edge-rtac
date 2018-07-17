@@ -77,6 +77,11 @@ public class RtacHandler extends Handler {
   }
 
   @Override
+  protected void invalidApiKey(RoutingContext ctx, String msg) {
+    returnEmptyResponse(ctx);
+  }
+
+  @Override
   protected void accessDenied(RoutingContext ctx, String body) {
     returnEmptyResponse(ctx);
   }
