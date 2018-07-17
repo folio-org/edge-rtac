@@ -41,18 +41,23 @@ public final class Holdings {
 
   @Override
   public boolean equals(Object obj) {
-    if (this == obj)
+    if (this == obj) {
       return true;
-    if (obj == null)
+    }
+    if (obj == null) {
       return false;
-    if (getClass() != obj.getClass())
+    }
+    if (getClass() != obj.getClass()) {
       return false;
+    }
     Holdings other = (Holdings) obj;
     if (holdingRecords == null) {
-      if (other.holdingRecords != null)
+      if (other.holdingRecords != null) {
         return false;
-    } else if (!holdingRecords.equals(other.holdingRecords))
+      }
+    } else if (!holdingRecords.equals(other.holdingRecords)) {
       return false;
+    }
     return true;
   }
 
