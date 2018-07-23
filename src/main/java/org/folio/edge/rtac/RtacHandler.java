@@ -67,7 +67,7 @@ public class RtacHandler extends Handler {
     try {
       xml = new Holdings().toXml();
     } catch (JsonProcessingException e) {
-      // OK, we'll doing ourselves then
+      // OK, we'll do it ourselves then
       xml = FALLBACK_EMPTY_RESPONSE;
     }
     ctx.response()

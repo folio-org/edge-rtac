@@ -1,6 +1,5 @@
 package org.folio.edge.rtac.utils;
 
-import java.util.Map.Entry;
 import java.util.concurrent.CompletableFuture;
 
 import org.apache.log4j.Logger;
@@ -8,6 +7,7 @@ import org.folio.edge.core.utils.OkapiClient;
 
 import io.vertx.core.MultiMap;
 import io.vertx.core.Vertx;
+import me.escoffier.vertx.completablefuture.VertxCompletableFuture;
 
 public class RtacOkapiClient extends OkapiClient {
 
@@ -26,21 +26,12 @@ public class RtacOkapiClient extends OkapiClient {
   }
 
   public CompletableFuture<String> rtac(String titleId, MultiMap headers) {
-    CompletableFuture<String> future = new CompletableFuture<>();
-
-    MultiMap combined = null;
-    if (headers != null && headers.size() > 0) {
-      combined = MultiMap.caseInsensitiveMultiMap();
-      combined.addAll(headers);
-      for (Entry<String, String> entry : defaultHeaders.entries()) {
-        combined.set(entry.getKey(), entry.getValue());
-      }
-    }
+    VertxCompletableFuture<String> future = new VertxCompletableFuture<>(vertx);
 
     get(
         okapiURL + "/rtac/" + titleId,
         tenant,
-        combined != null ? combined : defaultHeaders,
+        combineHeadersWithDefaults(headers),
         response -> response.bodyHandler(body -> {
           int statusCode = response.statusCode();
           if (statusCode == 200) {
