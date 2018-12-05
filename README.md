@@ -27,7 +27,7 @@ See [edge-common](https://github.com/folio-org/edge-common) for a description of
 
 ### Issue tracker
 
-See project [FOLIO](https://issues.folio.org/browse/FOLIO)
+See project [EDGRTAC](https://issues.folio.org/browse/EDGRTAC)
 at the [FOLIO issue tracker](https://dev.folio.org/guidelines/issue-tracker).
 
 ### Other documentation

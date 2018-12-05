@@ -31,21 +31,32 @@
   <properties>
     <maven.compiler.source>1.8</maven.compiler.source>
     <maven.compiler.target>1.8</maven.compiler.target>
+    <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 
     <!-- the main class -->
     <exec.mainClass>org.folio.edge.rtac.MainVerticle</exec.mainClass>
   </properties>
 
+  <dependencyManagement>
+    <dependencies>
+      <dependency>
+        <groupId>io.vertx</groupId>
+        <artifactId>vertx-stack-depchain</artifactId>
+        <version>3.4.0</version>
+        <type>pom</type>
+        <scope>import</scope>
+      </dependency>
+    </dependencies>
+  </dependencyManagement>
+
   <dependencies>
     <dependency>
       <groupId>io.vertx</groupId>
       <artifactId>vertx-core</artifactId>
-      <version>3.4.0</version>
     </dependency>
     <dependency>
       <groupId>io.vertx</groupId>
       <artifactId>vertx-web</artifactId>
-      <version>3.4.0</version>
     </dependency>
     <dependency>
       <groupId>io.jsonwebtoken</groupId>
@@ -65,7 +76,7 @@
     <dependency>
       <groupId>org.folio</groupId>
       <artifactId>edge-common</artifactId>
-      <version>0.3.4-SNAPSHOT</version>
+      <version>1.0.0</version>
     </dependency>
 
     <!-- Only needed for AwsParamStore -->
@@ -73,6 +84,12 @@
       <groupId>com.amazonaws</groupId>
       <artifactId>aws-java-sdk-ssm</artifactId>
       <version>1.11.313</version>
+      <exclusions>
+        <exclusion>
+          <groupId>commons-logging</groupId>
+          <artifactId>commons-logging</artifactId>
+        </exclusion>
+      </exclusions>
     </dependency>
     <dependency>
       <groupId>org.apache.httpcomponents</groupId>
@@ -137,7 +154,6 @@
     <dependency>
       <groupId>io.vertx</groupId>
       <artifactId>vertx-unit</artifactId>
-      <version>3.2.1</version>
       <scope>test</scope>
     </dependency>
     <dependency>
@@ -151,47 +167,48 @@
       <artifactId>rest-assured</artifactId>
       <version>2.9.0</version>
       <scope>test</scope>
+      <exclusions>
+        <exclusion>
+          <groupId>commons-logging</groupId>
+          <artifactId>commons-logging</artifactId>
+        </exclusion>
+      </exclusions>
     </dependency>
 
   </dependencies>
 
   <build>
-    <pluginManagement>
-      <plugins>
-        <!-- We specify the Maven compiler plugin as we need to set it to
-          Java 1.8 -->
-        <plugin>
-          <artifactId>maven-compiler-plugin</artifactId>
-          <version>3.1</version>
-          <configuration>
-            <source>${maven.compiler.source}</source>
-            <target>${maven.compiler.target}</target>
-          </configuration>
-        </plugin>
+    <plugins>
+      <!-- We specify the Maven compiler plugin as we need to set it to
+        Java 1.8 -->
+      <plugin>
+        <artifactId>maven-compiler-plugin</artifactId>
+        <version>3.1</version>
+        <configuration>
+          <source>${maven.compiler.source}</source>
+          <target>${maven.compiler.target}</target>
+        </configuration>
+      </plugin>
 
-        <plugin>
-          <groupId>org.apache.maven.plugins</groupId>
-          <artifactId>maven-surefire-plugin</artifactId>
-          <version>2.22.1</version>
-          <configuration>
-            <!-- TODO: update to version 3.0.0 and remove useSystemClassLoader
-                 https://issues.folio.org/browse/FOLIO-1609
-                 https://issues.apache.org/jira/browse/SUREFIRE-1588
-            -->
-            <useSystemClassLoader>false</useSystemClassLoader>
-          </configuration>
-        </plugin>
-      </plugins>
-    </pluginManagement>
-
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-surefire-plugin</artifactId>
+        <version>2.22.1</version>
+        <configuration>
+          <!-- TODO: update to version 3.0.0 and remove useSystemClassLoader
+               https://issues.folio.org/browse/FOLIO-1609
+               https://issues.apache.org/jira/browse/SUREFIRE-1588
+          -->
+          <useSystemClassLoader>false</useSystemClassLoader>
+        </configuration>
+      </plugin>
     <!-- You only need the part below if you want to build your application
       into a fat executable jar. This is a jar that contains all the dependencies
       required to run it, so you can just run it with java -jar -->
-    <plugins>
       <plugin>
         <groupId>org.apache.maven.plugins</groupId>
         <artifactId>maven-shade-plugin</artifactId>
-        <version>2.4</version>
+        <version>3.2.1</version>
         <executions>
           <execution>
             <phase>package</phase>
