@@ -5,7 +5,11 @@
   "requires": [
     {
       "id": "rtac",
-      "version": "1.1"
+      "version": "1.2"
+    },
+    {
+      "id": "login",
+      "version": "5.0"
     }
   ],
   "permissionSets": [],
