@@ -51,7 +51,7 @@ public class RtacOkapiClientTest {
 
   @After
   public void tearDown(TestContext context) {
-    mockOkapi.close();
+    mockOkapi.close(context);
   }
 
   @Test
