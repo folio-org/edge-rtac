@@ -19,6 +19,11 @@ In order to reduce the amount of integration work on the discovery side, the API
 
 See [edge-common](https://github.com/folio-org/edge-common) for a description of the security model.
 
+## Requires Permissions
+
+Intitutional users should be granted the following permission in order to use this edge API:
+- `rtac.all`
+
 ## Configuration
 
 See [edge-common](https://github.com/folio-org/edge-common) for a description of how configuration works.
