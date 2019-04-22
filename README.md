@@ -21,7 +21,7 @@ See [edge-common](https://github.com/folio-org/edge-common) for a description of
 
 ## Requires Permissions
 
-Intitutional users should be granted the following permission in order to use this edge API:
+Institutional users should be granted the following permission in order to use this edge API:
 - `rtac.all`
 
 ## Configuration
