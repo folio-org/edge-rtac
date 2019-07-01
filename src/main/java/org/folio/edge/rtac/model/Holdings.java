@@ -71,14 +71,16 @@ public final class Holdings {
     public final String status;
     public final String dueDate;
     public final String tempLocation;
+    public final String volume;
 
-    private Holding(String id, String callNumber, String location, String status, String dueDate, String tempLocation) {
+    private Holding(String id, String callNumber, String location, String status, String dueDate, String tempLocation, String volume) {
       this.id = id;
       this.callNumber = callNumber;
       this.location = location;
       this.status = status;
       this.dueDate = dueDate;
       this.tempLocation = tempLocation;
+      this.volume = volume;
     }
 
     public static Builder builder() {
@@ -92,6 +94,7 @@ public final class Holdings {
       private String status;
       private String dueDate;
       private String tempLocation;
+      private String volume;
 
       @JsonProperty("id")
       public Builder id(String id) {
@@ -129,8 +132,14 @@ public final class Holdings {
         return this;
       }
 
+      @JsonProperty("volume")
+      public Builder volume(String volume) {
+        this.volume = volume;
+        return this;
+      }
+
       public Holding build() {
-        return new Holding(id, callNumber, location, status, dueDate, tempLocation);
+        return new Holding(id, callNumber, location, status, dueDate, tempLocation, volume);
       }
     }
 
@@ -145,6 +154,7 @@ public final class Holdings {
       result = prime * result + ((location == null) ? 0 : location.hashCode());
       result = prime * result + ((status == null) ? 0 : status.hashCode());
       result = prime * result + ((tempLocation == null) ? 0 : tempLocation.hashCode());
+      result = prime * result + ((volume == null) ? 0 : volume.hashCode());
       return result;
     }
 
@@ -201,6 +211,13 @@ public final class Holdings {
           return false;
         }
       } else if (!tempLocation.equals(other.tempLocation)) {
+        return false;
+      }
+      if (volume == null) {
+        if (other.volume != null) {
+          return false;
+        }
+      } else if (!volume.equals(other.volume)) {
         return false;
       }
       return true;

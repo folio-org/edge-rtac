@@ -39,6 +39,7 @@ public class HoldingsTest {
       .location("LC General Collection Millersville University Library")
       .status("Item in place")
       .dueDate("")
+      .volume("v.10:no.2")
       .build();
 
     Holding h2 = Holding.builder()
