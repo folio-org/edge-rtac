@@ -67,6 +67,7 @@ public class RtacMockOkapi extends MockOkapi {
       .status("Item in place")
       .tempLocation("")
       .dueDate("")
+      .volume("v.5:no.2-6")
       .build();
 
     Holdings holdings = new Holdings();
