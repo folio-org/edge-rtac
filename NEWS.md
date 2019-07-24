@@ -1,4 +1,7 @@
-## 2.0.1 Unreleased
+## 2.0.1 2019-07-24
+ * [EDGRERTAC-11](https://issues.folio.org/browse/EDGRTAC-11): Provide "volume" in RTAC response
+ * [EDGRERTAC-12](https://issues.folio.org/browse/EDGRTAC-12): Add `6.0` to the `login` interface
+ * [EDGRERTAC-13](https://issues.folio.org/browse/EDGRTAC-13): Support HTTP compression
 
 ## 2.0.0 2019-02-15
 
