@@ -58,6 +58,15 @@ public class RtacOkapiClientCompressionTest {
     vertx.close(context.asyncAssertSuccess());
   }
 
+  /**
+   * This test will ensure that if compression is requested via the "Accept-Encoding" header and
+   * the server responds with compressed data, then the edge-common Okapi client will be able to
+   * decompress the data before it is available for use by the handlers. Test failure here
+   * indicates that compression is not working via edge-common.
+   *
+   * @param context test context
+   * @throws Exception unexpected failure
+   */
   @Test
   public void testCompression(TestContext context) throws Exception {
     logger.info("=== Test Compression ===");
