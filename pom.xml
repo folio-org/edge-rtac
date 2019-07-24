@@ -76,7 +76,7 @@
     <dependency>
       <groupId>org.folio</groupId>
       <artifactId>edge-common</artifactId>
-      <version>2.0.1</version>
+      <version>2.0.2</version>
     </dependency>
 
     <!-- Only needed for AwsParamStore -->
@@ -308,7 +308,6 @@
       <plugin>
         <groupId>org.apache.maven.plugins</groupId>
         <artifactId>maven-release-plugin</artifactId>
-        <version>2.5.3</version>
         <configuration>
           <preparationGoals>clean verify</preparationGoals>
           <tagNameFormat>v@{project.version}</tagNameFormat>
@@ -317,6 +316,20 @@
         </configuration>
       </plugin>
     </plugins>
+    <pluginManagement>
+      <!--
+           The super pom declares these dependencies and versions. Eclipse warns when versions
+           are specified for plugins that are controlled by pluginManagement. By declaring them
+           here we avoid these warnings and ensure we are getting the expected versions, in case
+           the super pom changes versions for some reason.
+      -->
+      <plugins>
+        <plugin>
+          <artifactId>maven-release-plugin</artifactId>
+          <version>2.5.3</version>
+        </plugin>
+      </plugins>
+    </pluginManagement>
   </build>
 
   <repositories>
