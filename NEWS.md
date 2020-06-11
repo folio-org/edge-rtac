@@ -1,9 +1,10 @@
 ## 2.0.2 2020-06-11
-Maintenance release to keep interfaces up-to-date.
 
 Full [Changelog](https://github.com/folio-org/edge-rtac/compare/v2.0.1...v2.0.2)
 
  * [EDGRERTAC-23](https://issues.folio.org/browse/EDGRTAC-23): Add 7.0 as acceptable login interface version
+ * [FOLIO-2358](https://issues.folio.org/browse/FOLIO-2358): Use JVM features (UseContainerSupport, MaxRAMPercentage) to manage container memory
+ * [FOLIO-2235](https://issues.folio.org/browse/FOLIO-2235): Add LaunchDescriptor settings to each backend non-core module repository
 
 ## 2.0.1 2019-07-24
 
