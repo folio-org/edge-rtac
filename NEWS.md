@@ -1,4 +1,14 @@
+## 2.0.2 2020-06-11
+Maintenance release to keep interfaces up-to-date.
+
+Full [Changelog](https://github.com/folio-org/edge-rtac/compare/v2.0.1...v2.0.2)
+
+ * [EDGRERTAC-23](https://issues.folio.org/browse/EDGRTAC-23): Add 7.0 as acceptable login interface version
+
 ## 2.0.1 2019-07-24
+
+Full [Changelog](https://github.com/folio-org/edge-rtac/compare/v2.0.0...v2.0.1)
+
  * [EDGRERTAC-11](https://issues.folio.org/browse/EDGRTAC-11): Provide "volume" in RTAC response
  * [EDGRERTAC-12](https://issues.folio.org/browse/EDGRTAC-12): Add `6.0` to the `login` interface
  * [EDGRERTAC-13](https://issues.folio.org/browse/EDGRTAC-13): Support HTTP compression
