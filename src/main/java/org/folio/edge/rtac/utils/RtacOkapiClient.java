@@ -1,8 +1,10 @@
 package org.folio.edge.rtac.utils;
 
+import java.util.Map;
 import java.util.concurrent.CompletableFuture;
 
 import org.apache.log4j.Logger;
+import org.folio.edge.core.utils.Mappers;
 import org.folio.edge.core.utils.OkapiClient;
 
 import io.vertx.core.MultiMap;
@@ -25,12 +27,13 @@ public class RtacOkapiClient extends OkapiClient {
     return rtac(titleId, null);
   }
 
-  public CompletableFuture<String> rtac(String titleId, MultiMap headers) {
+  public CompletableFuture<String> rtac(String requestBody, MultiMap headers) {
     VertxCompletableFuture<String> future = new VertxCompletableFuture<>(vertx);
 
-    get(
-        okapiURL + "/rtac/" + titleId,
+    post(
+        okapiURL + "/rtac/batch",
         tenant,
+        requestBody,
         combineHeadersWithDefaults(headers),
         response -> response.bodyHandler(body -> {
           int statusCode = response.statusCode();
