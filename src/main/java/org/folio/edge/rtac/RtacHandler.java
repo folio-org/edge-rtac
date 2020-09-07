@@ -1,7 +1,5 @@
 package org.folio.edge.rtac;
 
-import static org.folio.edge.core.Constants.APPLICATION_XML;
-
 import java.io.IOException;
 
 import org.apache.log4j.Logger;
@@ -16,6 +14,8 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 
 import io.vertx.core.http.HttpHeaders;
 import io.vertx.ext.web.RoutingContext;
+import static java.util.Collections.singletonMap;
+import static org.folio.edge.core.Constants.APPLICATION_XML;
 
 public class RtacHandler extends Handler {
 
@@ -31,32 +31,40 @@ public class RtacHandler extends Handler {
 
   protected void handle(RoutingContext ctx) {
     super.handleCommon(ctx,
-        new String[] { PARAM_TITLE_ID },
-        new String[] {},
-        (client, params) -> {
-          RtacOkapiClient rtacClient = new RtacOkapiClient(client);
-
-          rtacClient.rtac(params.get(PARAM_TITLE_ID), ctx.request().headers())
-            .thenAcceptAsync(body -> {
-              String xml = null;
-              try {
-                xml = Holdings.fromJson(body).toXml();
-                logger.info("Converted Response: \n" + xml);
-                ctx.response()
-                  .setStatusCode(200)
-                  .putHeader(HttpHeaders.CONTENT_TYPE, APPLICATION_XML)
-                  .end(xml);
-              } catch (IOException e) {
-                logger.error("Exception translating JSON -> XML: " + e.getMessage());
-                returnEmptyResponse(ctx);
-              }
-            })
-            .exceptionally(t -> {
-              logger.error("Exception calling mod-rtac", t);
+      new String[]{PARAM_TITLE_ID},
+      new String[]{},
+      (client, params) -> {
+        RtacOkapiClient rtacClient = new RtacOkapiClient(client);
+        String instanceIds;
+        try {
+          instanceIds = Mappers.jsonMapper
+            .writeValueAsString(singletonMap("instanceIds",
+              params.get(PARAM_TITLE_ID)));
+        } catch (JsonProcessingException e) {
+          logger.error("Exception during serialization in mod-rtac", e);
+          returnEmptyResponse(ctx);
+          return;
+        }
+        rtacClient.rtac(instanceIds, ctx.request().headers())
+          .thenAcceptAsync(body -> {
+            try {
+              String xml = Holdings.fromJson(body).toXml();
+              logger.info("Converted Response: \n" + xml);
+              ctx.response()
+                .setStatusCode(200)
+                .putHeader(HttpHeaders.CONTENT_TYPE, APPLICATION_XML)
+                .end(xml);
+            } catch (IOException e) {
+              logger.error("Exception translating JSON -> XML: " + e.getMessage());
               returnEmptyResponse(ctx);
-              return null;
-            });
-        });
+            }
+          })
+          .exceptionally(t -> {
+            logger.error("Exception calling mod-rtac", t);
+            returnEmptyResponse(ctx);
+            return null;
+          });
+      });
   }
 
   private void returnEmptyResponse(RoutingContext ctx) {

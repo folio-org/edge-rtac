@@ -23,10 +23,10 @@ public class MainVerticle extends EdgeVerticle {
     router.route().handler(BodyHandler.create());
     router.route(HttpMethod.GET, "/admin/health").handler(this::handleHealthCheck);
 
-    // Simplify to /rtac someday...  requires config changes on the EDS side though
+
     router.route(HttpMethod.GET, "/prod/rtac/folioRTAC").handler(rtacHandler::handle);
-    // Simplify to /rtac someday...  requires config changes on the EDS side though
-    router.route(HttpMethod.GET, "/prod/rtac/instances").handler(batchHandler::handle);
+
+    router.route(HttpMethod.GET, "/rtac").handler(batchHandler::handle);
     return router;
   }
 }
