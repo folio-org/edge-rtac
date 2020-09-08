@@ -1,5 +1,6 @@
 package org.folio.edge.rtac.model;
 
+import static java.util.Arrays.asList;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.fail;
 
@@ -15,7 +16,6 @@ import javax.xml.validation.SchemaFactory;
 import javax.xml.validation.Validator;
 
 import org.apache.log4j.Logger;
-import org.folio.edge.rtac.model.Holdings.Holding;
 import org.junit.Before;
 import org.junit.Test;
 import org.xml.sax.SAXException;
@@ -29,7 +29,7 @@ public class HoldingsTest {
   private static final String holdingsXSD = "ramls/holdings.xsd";
   private Validator validator;
 
-  private Holdings holdings;
+  private Instances holdings;
 
   @Before
   public void setUp() throws Exception {
@@ -50,9 +50,9 @@ public class HoldingsTest {
       .dueDate("2018-04-23 12:00:00")
       .build();
 
-    holdings = new Holdings();
-    holdings.holdingRecords.add(h1);
-    holdings.holdingRecords.add(h2);
+    holdings = new Instances();
+
+    holdings.holdings.add(new Holdings(asList(h1,h2)));
 
     SchemaFactory schemaFactory = SchemaFactory
       .newInstance(XMLConstants.W3C_XML_SCHEMA_NS_URI);
@@ -64,7 +64,7 @@ public class HoldingsTest {
   @Test
   public void testEqualsContract() {
     EqualsVerifier.forClass(Holding.class).verify();
-    EqualsVerifier.forClass(Holdings.class).verify();
+    EqualsVerifier.forClass(Instances.class).verify();
   }
 
   @Test
@@ -72,7 +72,7 @@ public class HoldingsTest {
     String json = holdings.toJson();
     logger.info("JSON: " + json);
 
-    Holdings fromJson = Holdings.fromJson(json);
+    Instances fromJson = Instances.fromJson(json);
     assertEquals(holdings, fromJson);
   }
 
@@ -88,16 +88,16 @@ public class HoldingsTest {
       fail("XML validation failed: " + e.getMessage());
     }
 
-    Holdings fromXml = Holdings.fromXml(xml);
+    Instances fromXml = Instances.fromXml(xml);
     assertEquals(holdings, fromXml);
   }
 
   @Test
   public void testJsonToXml() throws IOException {
     String json = holdings.toJson();
-    Holdings fromJson = Holdings.fromJson(json);
+    Instances fromJson = Instances.fromJson(json);
     String xml = fromJson.toXml();
-    Holdings fromXml = Holdings.fromXml(xml);
+    Instances fromXml = Instances.fromXml(xml);
 
     logger.info(json);
     logger.info(xml);
@@ -108,7 +108,7 @@ public class HoldingsTest {
 
   @Test
   public void testEmpty() throws IOException {
-    String xml = new Holdings().toXml();
+    String xml = new Instances().toXml();
     logger.info("XML: " + xml);
 
     Source source = new StreamSource(new StringReader(xml));

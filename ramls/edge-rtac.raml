@@ -9,7 +9,7 @@ documentation:
 
 schemas:
   holdings: !include holdings.xsd
-  batchHoldings: !include batchHoldings.xsd
+  batchHoldings: !include batch-holdings.xsd
 
 /prod/rtac/folioRTAC:
   displayName: RTAC
@@ -40,12 +40,15 @@ schemas:
         description: "Success"
         body:
           application/xml:
-            type: holdings
+            type: batch-holdings
     queryParameters:
-      mms_ids:
+      mms_id:
         description: "List of the UUIDs of FOLIO instances"
         type: string
-        pattern: "^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[1-5][0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}$"
+        pattern: "^([0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[1-5][0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}[, ]*)+$"
+      fullPeriodicals:
+        description: "Flag for including items data"
+        type: boolean
       apikey:
         description: "API Key"
         type: string

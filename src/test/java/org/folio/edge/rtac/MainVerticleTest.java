@@ -22,7 +22,7 @@ import org.apache.http.HttpHeaders;
 import org.apache.log4j.Logger;
 import org.folio.edge.core.utils.ApiKeyUtils;
 import org.folio.edge.core.utils.test.TestUtils;
-import org.folio.edge.rtac.model.Holdings;
+import org.folio.edge.rtac.model.Instances;
 import org.folio.edge.rtac.utils.RtacMockOkapi;
 import org.junit.AfterClass;
 import org.junit.BeforeClass;
@@ -127,7 +127,7 @@ public class MainVerticleTest {
       .extract()
       .response();
 
-    String expected = new Holdings().toXml();
+    String expected = new Instances().toXml();
     String actual = resp.body().asString();
     assertEquals(expected, actual);
   }
@@ -145,7 +145,7 @@ public class MainVerticleTest {
       .extract()
       .response();
 
-    String expected = new Holdings().toXml();
+    String expected = new Instances().toXml();
     String actual = resp.body().asString();
 
     assertEquals(expected, actual);
@@ -163,8 +163,8 @@ public class MainVerticleTest {
       .extract()
       .response();
 
-    Holdings expected = Holdings.fromJson(RtacMockOkapi.getHoldingsJson(titleId));
-    Holdings actual = Holdings.fromXml(resp.body().asString());
+    Instances expected = Instances.fromJson(RtacMockOkapi.getHoldingsJson(titleId));
+    Instances actual = Instances.fromXml(resp.body().asString());
     assertEquals(expected, actual);
   }
 
@@ -182,8 +182,8 @@ public class MainVerticleTest {
       .extract()
       .response();
 
-    Holdings expected = new Holdings();
-    Holdings actual = Holdings.fromXml(resp.body().asString());
+    Instances expected = new Instances();
+    Instances actual = Instances.fromXml(resp.body().asString());
     assertEquals(expected, actual);
   }
 
@@ -200,8 +200,8 @@ public class MainVerticleTest {
       .extract()
       .response();
 
-    Holdings expected = new Holdings();
-    Holdings actual = Holdings.fromXml(resp.body().asString());
+    Instances expected = new Instances();
+    Instances actual = Instances.fromXml(resp.body().asString());
     assertEquals(expected, actual);
   }
 
@@ -218,8 +218,8 @@ public class MainVerticleTest {
       .extract()
       .response();
 
-    Holdings expected = new Holdings();
-    Holdings actual = Holdings.fromXml(resp.body().asString());
+    Instances expected = new Instances();
+    Instances actual = Instances.fromXml(resp.body().asString());
     assertEquals(expected, actual);
   }
 
@@ -236,8 +236,8 @@ public class MainVerticleTest {
       .extract()
       .response();
 
-    Holdings expected = new Holdings();
-    Holdings actual = Holdings.fromXml(resp.body().asString());
+    Instances expected = new Instances();
+    Instances actual = Instances.fromXml(resp.body().asString());
     assertEquals(expected, actual);
   }
 
@@ -254,8 +254,8 @@ public class MainVerticleTest {
       .extract()
       .response();
 
-    Holdings expected = new Holdings();
-    Holdings actual = Holdings.fromXml(resp.body().asString());
+    Instances expected = new Instances();
+    Instances actual = Instances.fromXml(resp.body().asString());
     assertEquals(expected, actual);
   }
 
@@ -263,7 +263,7 @@ public class MainVerticleTest {
   public void testCachedToken(TestContext context) throws Exception {
     logger.info("=== Test the tokens are cached and reused ===");
 
-    Holdings expected = Holdings.fromJson(RtacMockOkapi.getHoldingsJson(titleId));
+    Instances expected = Instances.fromJson(RtacMockOkapi.getHoldingsJson(titleId));
     int iters = 5;
 
     for (int i = 0; i < iters; i++) {
@@ -276,7 +276,7 @@ public class MainVerticleTest {
         .extract()
         .response();
 
-      assertEquals(expected, Holdings.fromXml(resp.body().asString()));
+      assertEquals(expected, Instances.fromXml(resp.body().asString()));
     }
 
     verify(mockOkapi).loginHandler(any());
@@ -297,8 +297,8 @@ public class MainVerticleTest {
       .extract()
       .response();
 
-    Holdings expected = new Holdings();
-    Holdings actual = Holdings.fromXml(resp.body().asString());
+    Instances expected = new Instances();
+    Instances actual = Instances.fromXml(resp.body().asString());
     assertEquals(expected, actual);
   }
 }

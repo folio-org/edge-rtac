@@ -1,5 +1,6 @@
 package org.folio.edge.rtac.utils;
 
+import static org.codehaus.groovy.runtime.InvokerHelper.asList;
 import static org.folio.edge.core.Constants.APPLICATION_JSON;
 import static org.folio.edge.core.Constants.TEXT_PLAIN;
 import static org.folio.edge.core.Constants.X_OKAPI_TOKEN;
@@ -8,8 +9,9 @@ import java.util.List;
 
 import org.apache.log4j.Logger;
 import org.folio.edge.core.utils.test.MockOkapi;
+import org.folio.edge.rtac.model.Holding;
 import org.folio.edge.rtac.model.Holdings;
-import org.folio.edge.rtac.model.Holdings.Holding;
+import org.folio.edge.rtac.model.Instances;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 
@@ -70,8 +72,8 @@ public class RtacMockOkapi extends MockOkapi {
       .volume("v.5:no.2-6")
       .build();
 
-    Holdings holdings = new Holdings();
-    holdings.holdingRecords.add(h);
+    Instances holdings = new Instances();
+    holdings.holdings.add(new Holdings(asList(h)));
 
     String ret = null;
     try {

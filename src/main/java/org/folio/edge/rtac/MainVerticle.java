@@ -17,16 +17,17 @@ public class MainVerticle extends EdgeVerticle {
   public Router defineRoutes() {
     RtacOkapiClientFactory ocf = new RtacOkapiClientFactory(vertx, okapiURL, reqTimeoutMs);
     RtacHandler rtacHandler = new RtacHandler(secureStore, ocf);
-    BatchHandler batchHandler = new BatchHandler(secureStore, ocf);
 
     Router router = Router.router(vertx);
     router.route().handler(BodyHandler.create());
     router.route(HttpMethod.GET, "/admin/health").handler(this::handleHealthCheck);
 
 
-    router.route(HttpMethod.GET, "/prod/rtac/folioRTAC").handler(rtacHandler::handle);
+    router.route(HttpMethod.GET, "/prod/rtac/folioRTAC")
+      .handler(ctx -> rtacHandler.handle(ctx, false));
 
-    router.route(HttpMethod.GET, "/rtac").handler(batchHandler::handle);
+    router.route(HttpMethod.GET, "/rtac")
+      .handler(ctx -> rtacHandler.handle(ctx, true));
     return router;
   }
 }
