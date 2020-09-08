@@ -236,7 +236,7 @@
                   </manifestEntries>
                 </transformer>
                 <transformer implementation="org.apache.maven.plugins.shade.resource.IncludeResourceTransformer">
-                  <file>log4j.properties</file>
+                  <file>log4j2.properties</file>
                 </transformer>
               </transformers>
               <artifactSet />
