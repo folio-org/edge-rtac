@@ -1,19 +1,20 @@
 package org.folio.edge.rtac.utils;
 
-import java.util.Map;
 import java.util.concurrent.CompletableFuture;
 
-import org.apache.log4j.Logger;
-import org.folio.edge.core.utils.Mappers;
 import org.folio.edge.core.utils.OkapiClient;
 
 import io.vertx.core.MultiMap;
 import io.vertx.core.Vertx;
+import io.vertx.core.json.JsonArray;
+import io.vertx.core.json.JsonObject;
+import io.vertx.core.logging.Logger;
+import io.vertx.core.logging.LoggerFactory;
 import me.escoffier.vertx.completablefuture.VertxCompletableFuture;
 
 public class RtacOkapiClient extends OkapiClient {
 
-  private static final Logger logger = Logger.getLogger(RtacOkapiClient.class);
+  private final Logger logger = LoggerFactory.getLogger(getClass());
 
   public RtacOkapiClient(OkapiClient client) {
     super(client);
@@ -27,13 +28,13 @@ public class RtacOkapiClient extends OkapiClient {
     return rtac(titleId, null);
   }
 
-  public CompletableFuture<String> rtac(String requestBody, MultiMap headers) {
+  public CompletableFuture<String> rtac(String instanceId, MultiMap headers) {
     VertxCompletableFuture<String> future = new VertxCompletableFuture<>(vertx);
 
     post(
         okapiURL + "/rtac/batch",
         tenant,
-        requestBody,
+        createRequestBody(instanceId),
         combineHeadersWithDefaults(headers),
         response -> response.bodyHandler(body -> {
           int statusCode = response.statusCode();
@@ -60,5 +61,10 @@ public class RtacOkapiClient extends OkapiClient {
     return future;
   }
 
-
+  private String createRequestBody(String instanceIds) {
+    final var payload = new JsonObject();
+    payload.put("instanceIds", new JsonArray().add(instanceIds));
+    logger.debug("request body to rtac {}", payload.toString());
+    return payload.toString();
+  }
 }

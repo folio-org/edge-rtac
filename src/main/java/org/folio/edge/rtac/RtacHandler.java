@@ -1,5 +1,7 @@
 package org.folio.edge.rtac;
 
+import static org.folio.edge.core.Constants.APPLICATION_XML;
+
 import java.io.IOException;
 
 import org.apache.log4j.Logger;
@@ -14,8 +16,6 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 
 import io.vertx.core.http.HttpHeaders;
 import io.vertx.ext.web.RoutingContext;
-import static java.util.Collections.singletonMap;
-import static org.folio.edge.core.Constants.APPLICATION_XML;
 
 public class RtacHandler extends Handler {
 
@@ -35,17 +35,7 @@ public class RtacHandler extends Handler {
       new String[]{},
       (client, params) -> {
         RtacOkapiClient rtacClient = new RtacOkapiClient(client);
-        String instanceIds;
-        try {
-          instanceIds = Mappers.jsonMapper
-            .writeValueAsString(singletonMap("instanceIds",
-              params.get(PARAM_TITLE_ID)));
-        } catch (JsonProcessingException e) {
-          logger.error("Exception during serialization in mod-rtac", e);
-          returnEmptyResponse(ctx);
-          return;
-        }
-        rtacClient.rtac(instanceIds, ctx.request().headers())
+         rtacClient.rtac(params.get(PARAM_TITLE_ID), ctx.request().headers())
           .thenAcceptAsync(body -> {
             try {
               String xml = Holdings.fromJson(body).toXml();
