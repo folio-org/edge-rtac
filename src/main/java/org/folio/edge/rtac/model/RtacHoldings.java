@@ -18,10 +18,12 @@ import com.fasterxml.jackson.dataformat.xml.annotation.JacksonXmlProperty;
 import com.fasterxml.jackson.dataformat.xml.annotation.JacksonXmlRootElement;
 
 import lombok.Builder;
+import lombok.Data;
 
 @JsonIgnoreProperties(ignoreUnknown = true)
 @JacksonXmlRootElement(localName = "holdings")
 @Builder
+@Data
 public final class RtacHoldings {
 
   @JsonProperty("holdings")
@@ -29,35 +31,6 @@ public final class RtacHoldings {
   @JacksonXmlElementWrapper(useWrapping = false)
   public final List<RtacHolding> holdingRecords = new ArrayList<>();;
 
-  @Override
-  public int hashCode() {
-    final int prime = 31;
-    int result = 1;
-    result = prime * result + ((holdingRecords == null) ? 0 : holdingRecords.hashCode());
-    return result;
-  }
-
-  @Override
-  public boolean equals(Object obj) {
-    if (this == obj) {
-      return true;
-    }
-    if (obj == null) {
-      return false;
-    }
-    if (getClass() != obj.getClass()) {
-      return false;
-    }
-    RtacHoldings other = (RtacHoldings) obj;
-    if (holdingRecords == null) {
-      if (other.holdingRecords != null) {
-        return false;
-      }
-    } else if (!holdingRecords.equals(other.holdingRecords)) {
-      return false;
-    }
-    return true;
-  }
 
 
 

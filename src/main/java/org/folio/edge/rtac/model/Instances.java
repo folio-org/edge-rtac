@@ -4,8 +4,6 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
-import javax.annotation.Generated;
-
 import org.folio.edge.core.utils.Mappers;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
@@ -23,7 +21,7 @@ import com.fasterxml.jackson.dataformat.xml.annotation.JacksonXmlRootElement;
 @JacksonXmlRootElement(localName = "instances")
 public final class Instances {
 
-  @JsonProperty("holdings")
+  @JsonProperty("records")
   @JacksonXmlProperty(localName = "holding")
   public final List<Holdings> holdings = new ArrayList<>();
 

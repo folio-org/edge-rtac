@@ -11,8 +11,13 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.dataformat.xml.annotation.JacksonXmlProperty;
 import com.fasterxml.jackson.dataformat.xml.annotation.JacksonXmlRootElement;
 
+import lombok.Builder;
+import lombok.Data;
+
 @JsonIgnoreProperties(ignoreUnknown = true)
 @JacksonXmlRootElement(localName = "holdings")
+@Builder
+@Data
 public final class Holdings {
 
   @JsonProperty("holdings")
@@ -35,36 +40,6 @@ public final class Holdings {
   @JsonProperty("instanceId")
   @JacksonXmlProperty(localName = "instanceId")
   public String instanceId = null;
-
-  @Override
-  public int hashCode() {
-    final int prime = 31;
-    int result = 1;
-    result = prime * result + ((holdingRecords == null) ? 0 : holdingRecords.hashCode());
-    return result;
-  }
-
-  @Override
-  public boolean equals(Object obj) {
-    if (this == obj) {
-      return true;
-    }
-    if (obj == null) {
-      return false;
-    }
-    if (getClass() != obj.getClass()) {
-      return false;
-    }
-    Holdings other = (Holdings) obj;
-    if (holdingRecords == null) {
-      if (other.holdingRecords != null) {
-        return false;
-      }
-    } else if (!holdingRecords.equals(other.holdingRecords)) {
-      return false;
-    }
-    return true;
-  }
 
   public String toXml() throws JsonProcessingException {
     return Mappers.XML_PROLOG + Mappers.xmlMapper.writeValueAsString(this);
