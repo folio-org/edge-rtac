@@ -12,7 +12,7 @@
   <xs:element name="holdings">
     <xs:complexType>
       <xs:sequence>
-        <xs:element name="instanceId" type="xs:string"/>
+        <xs:element name="instanceId" minOccurs="0" type="xs:string"/>
         <xs:element ref="holding" maxOccurs="unbounded" minOccurs="0"/>
       </xs:sequence>
     </xs:complexType>
@@ -28,6 +28,8 @@
         <xs:element name="dueDate" type="xs:string"/>
         <xs:element name="tempLocation" type="xs:string" minOccurs="0"/>
         <xs:element name="volume" type="xs:string" minOccurs="0"/>
+        <xs:element name="temporaryLoanType" type="xs:string" minOccurs="0"/>
+        <xs:element name="permanentLoanType" type="xs:string" minOccurs="0"/>
       </xs:sequence>
     </xs:complexType>
   </xs:element>

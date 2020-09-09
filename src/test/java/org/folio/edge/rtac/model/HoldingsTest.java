@@ -52,7 +52,7 @@ public class HoldingsTest {
 
     holdings = new Instances();
 
-    holdings.holdings.add(new Holdings(asList(h1,h2)));
+    holdings.getHoldings().add(new Holdings(asList(h1,h2)));
 
     SchemaFactory schemaFactory = SchemaFactory
       .newInstance(XMLConstants.W3C_XML_SCHEMA_NS_URI);

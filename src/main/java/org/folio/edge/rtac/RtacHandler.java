@@ -52,7 +52,7 @@ public class RtacHandler extends Handler {
             .map(String::trim).collect(toList());
 
           inventoryParams.put("instanceIds", ids);
-          inventoryParams.put("fullPeriodicals", Boolean.valueOf(params.get(PARAM_FULL_PERIODICALS)));
+          inventoryParams.put(PARAM_FULL_PERIODICALS, Boolean.valueOf(params.get(PARAM_FULL_PERIODICALS)));
           instanceIds = Mappers.jsonMapper
             .writeValueAsString(inventoryParams);
         } catch (JsonProcessingException e) {
@@ -68,7 +68,8 @@ public class RtacHandler extends Handler {
               if (isBatch) {
                 xml = holdings.toXml();
               } else {
-                Holdings holding = holdings.getHoldings().size() > 0 ? holdings.getHoldings().get(0) : new Holdings();
+                Holdings holding = !holdings.getHoldings().isEmpty() ? holdings.getHoldings().get(0) : new Holdings();
+                holding.setInstanceId(null);
                 xml = holding.toXml();
               }
               logger.info("Converted Response: \n" + xml);
@@ -77,7 +78,7 @@ public class RtacHandler extends Handler {
                 .putHeader(HttpHeaders.CONTENT_TYPE, APPLICATION_XML)
                 .end(xml);
             } catch (IOException e) {
-              logger.error("Exception translating JSON -> XML: " + e.getMessage());
+              logger.error("Exception translating JSON -> XML: " + e.getMessage(), e);
               returnEmptyResponse(ctx);
             }
           })

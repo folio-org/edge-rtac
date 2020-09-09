@@ -8,32 +8,35 @@ import org.folio.edge.core.utils.Mappers;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.dataformat.xml.annotation.JacksonXmlElementWrapper;
 import com.fasterxml.jackson.dataformat.xml.annotation.JacksonXmlProperty;
 import com.fasterxml.jackson.dataformat.xml.annotation.JacksonXmlRootElement;
 
 import lombok.Builder;
 import lombok.Data;
+import lombok.Setter;
 
 @JsonIgnoreProperties(ignoreUnknown = true)
 @JacksonXmlRootElement(localName = "holdings")
 @Builder
-@Data
+@Setter
 public final class Holdings {
 
   @JsonProperty("holdings")
   @JacksonXmlProperty(localName = "holding")
-  public List<Holding> holdingRecords;
+  @JacksonXmlElementWrapper(useWrapping =false)
+  private List<Holding> holdings;
 
   public Holdings() {
-    holdingRecords = new ArrayList<>();
+    holdings = new ArrayList<>();
   }
 
-  public Holdings(List<Holding> holdingRecords) {
-    this.holdingRecords = holdingRecords;
+  public Holdings(List<Holding> holdings) {
+    this.holdings = holdings;
   }
 
-  public Holdings(List<Holding> holdingRecords, String instanceId) {
-    this.holdingRecords = holdingRecords;
+  public Holdings(List<Holding> holdings, String instanceId) {
+    this.holdings = holdings;
     this.instanceId = instanceId;
   }
 

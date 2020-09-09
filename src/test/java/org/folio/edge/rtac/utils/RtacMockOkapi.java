@@ -73,7 +73,7 @@ public class RtacMockOkapi extends MockOkapi {
       .build();
 
     Instances holdings = new Instances();
-    holdings.holdings.add(new Holdings(asList(h)));
+    holdings.getHoldings().add(new Holdings(asList(h)));
 
     String ret = null;
     try {

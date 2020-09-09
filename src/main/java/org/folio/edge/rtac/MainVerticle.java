@@ -1,7 +1,10 @@
 package org.folio.edge.rtac;
 
 import org.folio.edge.core.EdgeVerticle;
+import org.folio.edge.core.utils.Mappers;
 import org.folio.edge.rtac.utils.RtacOkapiClientFactory;
+
+import com.fasterxml.jackson.annotation.JsonInclude;
 
 import io.vertx.core.http.HttpMethod;
 import io.vertx.ext.web.Router;
@@ -11,6 +14,11 @@ public class MainVerticle extends EdgeVerticle {
 
   public MainVerticle() {
     super();
+  }
+
+
+  static {
+    Mappers.xmlMapper.setSerializationInclusion(JsonInclude.Include.NON_NULL);
   }
 
   @Override
