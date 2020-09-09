@@ -67,14 +67,14 @@ public class HoldingsTest {
     EqualsVerifier.forClass(Holdings.class).verify();
   }
 
-  @Test
-  public void testToFromJson() throws IOException {
-    String json = holdings.toJson();
-    logger.info("JSON: " + json);
-
-    Holdings fromJson = Holdings.fromJson(json);
-    assertEquals(holdings, fromJson);
-  }
+//  @Test
+//  public void testToFromJson() throws IOException {
+//    String json = holdings.toJson();
+//    logger.info("JSON: " + json);
+//
+//    Holdings fromJson = Holdings.fromJson(json);
+//    assertEquals(holdings, fromJson);
+//  }
 
   @Test
   public void testToFromXml() throws IOException {
@@ -92,19 +92,19 @@ public class HoldingsTest {
     assertEquals(holdings, fromXml);
   }
 
-  @Test
-  public void testJsonToXml() throws IOException {
-    String json = holdings.toJson();
-    Holdings fromJson = Holdings.fromJson(json);
-    String xml = fromJson.toXml();
-    Holdings fromXml = Holdings.fromXml(xml);
-
-    logger.info(json);
-    logger.info(xml);
-
-    assertEquals(holdings, fromJson);
-    assertEquals(holdings, fromXml);
-  }
+//  @Test
+//  public void testJsonToXml() throws IOException {
+//    String json = holdings.toJson();
+//    Holdings fromJson = Holdings.fromJson(json);
+//    String xml = fromJson.toXml();
+//    Holdings fromXml = Holdings.fromXml(xml);
+//
+//    logger.info(json);
+//    logger.info(xml);
+//
+//    assertEquals(holdings, fromJson);
+//    assertEquals(holdings, fromXml);
+//  }
 
   @Test
   public void testEmpty() throws IOException {

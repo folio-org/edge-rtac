@@ -10,6 +10,7 @@ import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonInclude.Include;
 import com.fasterxml.jackson.annotation.JsonProperty;
+import com.fasterxml.jackson.annotation.JsonPropertyDescription;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import com.fasterxml.jackson.dataformat.xml.annotation.JacksonXmlElementWrapper;
@@ -18,6 +19,7 @@ import com.fasterxml.jackson.dataformat.xml.annotation.JacksonXmlRootElement;
 
 @JsonIgnoreProperties(ignoreUnknown = true)
 @JacksonXmlRootElement(localName = "holdings")
+@Deprecated
 public final class Holdings {
 
   @JsonProperty("holdings")
@@ -70,6 +72,7 @@ public final class Holdings {
     public final String dueDate;
     public final String tempLocation;
     public final String volume;
+    private String temporaryLoanType;
 
     private Holding(String id, String callNumber, String location, String status, String dueDate, String tempLocation, String volume) {
       this.id = id;
@@ -93,10 +96,20 @@ public final class Holdings {
       private String dueDate;
       private String tempLocation;
       private String volume;
+      private String temporaryLoanType;
+
 
       @JsonProperty("id")
       public Builder id(String id) {
         this.id = id;
+        return this;
+      }
+
+
+      @JsonProperty("temporaryLoanType")
+      @JsonPropertyDescription("Name of the temporary loan type for a given item")
+      public Builder temporaryLoanType(String loanType) {
+        this.temporaryLoanType = loanType;
         return this;
       }
 

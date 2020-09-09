@@ -9,6 +9,7 @@ import org.folio.edge.core.Handler;
 import org.folio.edge.core.security.SecureStore;
 import org.folio.edge.core.utils.Mappers;
 import org.folio.edge.rtac.model.Holdings;
+import org.folio.edge.rtac.model.RtacHoldingsBatch;
 import org.folio.edge.rtac.utils.RtacOkapiClient;
 import org.folio.edge.rtac.utils.RtacOkapiClientFactory;
 
@@ -35,17 +36,19 @@ public class RtacHandler extends Handler {
       new String[]{},
       (client, params) -> {
         RtacOkapiClient rtacClient = new RtacOkapiClient(client);
-         rtacClient.rtac(params.get(PARAM_TITLE_ID), ctx.request().headers())
+        final var instanceIds = params.get(PARAM_TITLE_ID);
+        final var isBatchResponse = instanceIds.contains(",");
+        rtacClient.rtac(instanceIds, ctx.request().headers())
           .thenAcceptAsync(body -> {
             try {
-              String xml = Holdings.fromJson(body).toXml();
+              String xml = RtacHoldingsBatch.fromJson(body).toXml(isBatchResponse);
               logger.info("Converted Response: \n" + xml);
               ctx.response()
                 .setStatusCode(200)
                 .putHeader(HttpHeaders.CONTENT_TYPE, APPLICATION_XML)
                 .end(xml);
             } catch (IOException e) {
-              logger.error("Exception translating JSON -> XML: " + e.getMessage());
+              logger.error("Exception translating JSON -> XML: " + e.getMessage(), e);
               returnEmptyResponse(ctx);
             }
           })
