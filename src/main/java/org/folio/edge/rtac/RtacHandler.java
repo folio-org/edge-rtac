@@ -45,16 +45,16 @@ public class RtacHandler extends Handler {
         RtacOkapiClient rtacClient = new RtacOkapiClient(client);
         String instanceIds;
         try {
-          Map<String, Object> inventoryParams = new HashMap<>();
+          Map<String, Object> rtacParams = new HashMap<>();
 
           List<String> ids = Arrays.stream(params.get(PARAM_TITLE_ID)
             .split(",")).filter(Objects::nonNull)
             .map(String::trim).collect(toList());
 
-          inventoryParams.put("instanceIds", ids);
-          inventoryParams.put(PARAM_FULL_PERIODICALS, Boolean.valueOf(params.get(PARAM_FULL_PERIODICALS)));
+          rtacParams.put("instanceIds", ids);
+          rtacParams.put(PARAM_FULL_PERIODICALS, Boolean.valueOf(params.get(PARAM_FULL_PERIODICALS)));
           instanceIds = Mappers.jsonMapper
-            .writeValueAsString(inventoryParams);
+            .writeValueAsString(rtacParams);
         } catch (JsonProcessingException e) {
           logger.error("Exception during serialization in mod-rtac", e);
           returnEmptyResponse(ctx);
