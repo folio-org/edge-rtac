@@ -1,5 +1,7 @@
 package org.folio.edge.rtac.model;
 
+import java.util.Objects;
+
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;
@@ -33,4 +35,24 @@ public final class Holding {
   @JsonProperty("permanentLoanType")
   private final String permanentLoanType;
 
+  @Override
+  public boolean equals(Object o) {
+    if (this == o) return true;
+    if (o == null || getClass() != o.getClass()) return false;
+    Holding holding = (Holding) o;
+    return Objects.equals(id, holding.id) &&
+      Objects.equals(callNumber, holding.callNumber) &&
+      Objects.equals(location, holding.location) &&
+      Objects.equals(status, holding.status) &&
+      Objects.equals(dueDate, holding.dueDate) &&
+      Objects.equals(tempLocation, holding.tempLocation) &&
+      Objects.equals(volume, holding.volume) &&
+      Objects.equals(temporaryLoanType, holding.temporaryLoanType) &&
+      Objects.equals(permanentLoanType, holding.permanentLoanType);
+  }
+
+  @Override
+  public int hashCode() {
+    return Objects.hash(id, callNumber, location, status, dueDate, tempLocation, volume, temporaryLoanType, permanentLoanType);
+  }
 }

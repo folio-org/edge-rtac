@@ -1,6 +1,5 @@
 package org.folio.edge.rtac.utils;
 
-import static org.codehaus.groovy.runtime.InvokerHelper.asList;
 import static org.folio.edge.core.Constants.APPLICATION_JSON;
 import static org.folio.edge.core.Constants.TEXT_PLAIN;
 import static org.folio.edge.core.Constants.X_OKAPI_TOKEN;
@@ -71,13 +70,15 @@ public class RtacMockOkapi extends MockOkapi {
       .dueDate("")
       .volume("v.5:no.2-6")
       .build();
-
-    Instances holdings = new Instances();
-    holdings.getHoldings().add(new Holdings(asList(h)));
+    final var holdings = new Holdings();
+    holdings.setInstanceId(null);
+    holdings.setHoldings(List.of(h));
+    Instances instances = new Instances();
+    instances.setHoldings(List.of(holdings));
 
     String ret = null;
     try {
-      ret = holdings.toJson();
+      ret = instances.toJson();
     } catch (JsonProcessingException e) {
       logger.warn("Failed to generate holdings JSON", e);
     }

@@ -1,5 +1,8 @@
 package org.folio.edge.rtac;
 
+import static java.util.stream.Collectors.toList;
+import static org.folio.edge.core.Constants.APPLICATION_XML;
+
 import java.io.IOException;
 import java.util.Arrays;
 import java.util.HashMap;
@@ -20,8 +23,6 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 
 import io.vertx.core.http.HttpHeaders;
 import io.vertx.ext.web.RoutingContext;
-import static java.util.stream.Collectors.toList;
-import static org.folio.edge.core.Constants.APPLICATION_XML;
 
 public class RtacHandler extends Handler {
 
@@ -64,13 +65,12 @@ public class RtacHandler extends Handler {
           .thenAcceptAsync(body -> {
             try {
               String xml;
-              final Instances holdings = Instances.fromJson(body);
+              final var instances = Instances.fromJson(body);
               if (isBatch) {
-                xml = holdings.toXml();
+                xml = instances.toXml();
               } else {
-                Holdings holding = !holdings.getHoldings().isEmpty() ? holdings.getHoldings().get(0) : new Holdings();
-                holding.setInstanceId(null);
-                xml = holding.toXml();
+                var holdings = instances.getHoldings().isEmpty() ? new Holdings() : instances.getHoldings().get(0);
+                xml = holdings.toXml();
               }
               logger.info("Converted Response: \n" + xml);
               ctx.response()

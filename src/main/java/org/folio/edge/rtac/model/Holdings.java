@@ -1,7 +1,9 @@
 package org.folio.edge.rtac.model;
 
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 
 import org.folio.edge.core.utils.Mappers;
 
@@ -12,39 +14,45 @@ import com.fasterxml.jackson.dataformat.xml.annotation.JacksonXmlElementWrapper;
 import com.fasterxml.jackson.dataformat.xml.annotation.JacksonXmlProperty;
 import com.fasterxml.jackson.dataformat.xml.annotation.JacksonXmlRootElement;
 
-import lombok.Builder;
-import lombok.Data;
-import lombok.Setter;
-
 @JsonIgnoreProperties(ignoreUnknown = true)
 @JacksonXmlRootElement(localName = "holdings")
-@Builder
-@Setter
 public final class Holdings {
-
-  @JsonProperty("holdings")
-  @JacksonXmlProperty(localName = "holding")
-  @JacksonXmlElementWrapper(useWrapping =false)
-  private List<Holding> holdings;
-
-  public Holdings() {
-    holdings = new ArrayList<>();
-  }
-
-  public Holdings(List<Holding> holdings) {
-    this.holdings = holdings;
-  }
-
-  public Holdings(List<Holding> holdings, String instanceId) {
-    this.holdings = holdings;
-    this.instanceId = instanceId;
-  }
 
   @JsonProperty("instanceId")
   @JacksonXmlProperty(localName = "instanceId")
-  public String instanceId = null;
+  private String instanceId;
+
+  @JsonProperty("holdings")
+  @JacksonXmlProperty(localName = "holding")
+  @JacksonXmlElementWrapper(useWrapping = false)
+  private List<Holding> holdings = new ArrayList<>();
+
+  public Holdings() {
+  }
+
+  public void setInstanceId(String instanceId) {
+    this.instanceId = instanceId;
+  }
+
+  public void setHoldings(List<Holding> holdings) {
+    this.holdings = holdings;
+  }
 
   public String toXml() throws JsonProcessingException {
     return Mappers.XML_PROLOG + Mappers.xmlMapper.writeValueAsString(this);
+  }
+
+  @Override
+  public boolean equals(Object o) {
+    if (this == o) return true;
+    if (o == null || getClass() != o.getClass()) return false;
+    Holdings holdings1 = (Holdings) o;
+    return Objects.equals(holdings, holdings1.holdings) &&
+      Objects.equals(instanceId, holdings1.instanceId);
+  }
+
+  @Override
+  public int hashCode() {
+    return Objects.hash(holdings, instanceId);
   }
 }
