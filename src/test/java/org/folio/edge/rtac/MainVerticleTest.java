@@ -38,6 +38,7 @@ import io.vertx.core.Vertx;
 import io.vertx.ext.unit.Async;
 import io.vertx.ext.unit.TestContext;
 import io.vertx.ext.unit.junit.VertxUnitRunner;
+import lombok.SneakyThrows;
 
 @RunWith(VertxUnitRunner.class)
 public class MainVerticleTest {
@@ -331,5 +332,21 @@ public class MainVerticleTest {
     Instances expected = new Instances();
     Instances actual = Instances.fromXml(resp.body().asString());
     assertEquals(expected, actual);
+  }
+
+  @Test
+  @SneakyThrows
+  public void testJsonDeserializationException(){
+    final Response resp = RestAssured
+      .get(String.format("/prod/rtac/folioRTAC?mms_id=%s&apikey=%s", RtacMockOkapi.titleId_InvalidResponse, apiKey))
+      .then()
+      .contentType(APPLICATION_XML)
+      .statusCode(200)
+      .extract()
+      .response();
+
+    final var xml = resp.body().asString();
+    var actual = Holdings.fromXml(xml);
+    assertEquals(new Holdings(), actual);
   }
 }

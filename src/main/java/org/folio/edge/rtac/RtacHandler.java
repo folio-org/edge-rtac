@@ -54,8 +54,7 @@ public class RtacHandler extends Handler {
 
           rtacParams.put("instanceIds", ids);
           rtacParams.put(PARAM_FULL_PERIODICALS, Boolean.valueOf(params.get(PARAM_FULL_PERIODICALS)));
-          instanceIds = Mappers.jsonMapper
-            .writeValueAsString(rtacParams);
+          instanceIds = Mappers.jsonMapper.writeValueAsString(rtacParams);
         } catch (JsonProcessingException e) {
           logger.error("Exception during serialization in mod-rtac", e);
           returnEmptyResponse(ctx);

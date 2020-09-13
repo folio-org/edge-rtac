@@ -24,6 +24,7 @@ public class RtacMockOkapi extends MockOkapi {
   private static final Logger logger = Logger.getLogger(RtacMockOkapi.class);
 
   public static final String titleId_notFound = "0c8e8ac5-6bcc-461e-a8d3-4b55a96addc9";
+  public static final String titleId_InvalidResponse = "0c8e8ac5-6bcc-461e-a8d3-4b55a96add10";
 
   public RtacMockOkapi(int port, List<String> knownTenants) {
     super(port, knownTenants);
@@ -60,11 +61,22 @@ public class RtacMockOkapi extends MockOkapi {
       var instances = new Instances();
       instances.setHoldings(holdings);
 
-      if (holdings.isEmpty()) {
-        ctx.response()
-          .setStatusCode(404)
-          .putHeader(HttpHeaders.CONTENT_TYPE, TEXT_PLAIN)
-          .end("rtac not found");
+      if (instanceIds.size() == 1){
+        if (instanceIds.getString(0).equals(titleId_notFound)){
+          ctx.response()
+            .setStatusCode(404)
+            .putHeader(HttpHeaders.CONTENT_TYPE, TEXT_PLAIN)
+            .end("rtac not found");
+        } else if (instanceIds.getString(0).equals(titleId_InvalidResponse)){
+          ctx.response()
+            .setStatusCode(200)
+            .end("invalid response");
+        } else{
+          ctx.response()
+            .setStatusCode(200)
+            .putHeader(HttpHeaders.CONTENT_TYPE, APPLICATION_JSON)
+            .end(instances.toJson());
+        }
       } else {
         ctx.response()
           .setStatusCode(200)
