@@ -133,4 +133,13 @@ public class InstancesTest {
     h1.setInstanceId("test");
     assertNotEquals(instances.getHoldings().get(0), h1);
   }
+
+  @Test
+  public void testHoldingEquals(){
+    var h1 = Holding.builder().build();
+    var h2 = Holding.builder().build();
+    assertEquals(h1, h2);
+    h2 = Holding.builder().id("test").build();
+    assertNotEquals(h1, h2);
+  }
 }
