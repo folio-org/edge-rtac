@@ -1,6 +1,7 @@
 package org.folio.edge.rtac.model;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotEquals;
 import static org.junit.Assert.fail;
 
 import java.io.File;
@@ -113,5 +114,23 @@ public class InstancesTest {
     } catch (SAXException e) {
       fail("XML validation failed: " + e.getMessage());
     }
+  }
+
+  @Test
+  public void testInstancesEquals(){
+    assertNotEquals(instances, new Object());
+  }
+
+  @Test
+  public void testInstancesHashCode(){
+    final var i2 = new Instances();
+    assertNotEquals(instances.hashCode(), i2.hashCode());
+  }
+
+  @Test
+  public void testHoldingsEquals(){
+    final var h1 = new Holdings();
+    h1.setInstanceId("test");
+    assertNotEquals(instances.getHoldings().get(0), h1);
   }
 }
