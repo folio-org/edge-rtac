@@ -22,6 +22,7 @@ import org.apache.http.HttpHeaders;
 import org.apache.log4j.Logger;
 import org.folio.edge.core.utils.ApiKeyUtils;
 import org.folio.edge.core.utils.test.TestUtils;
+import org.folio.edge.rtac.model.Holdings;
 import org.folio.edge.rtac.model.Instances;
 import org.folio.edge.rtac.utils.RtacMockOkapi;
 import org.junit.AfterClass;
@@ -162,8 +163,9 @@ public class MainVerticleTest {
       .extract()
       .response();
 
-    Instances expected = Instances.fromJson(RtacMockOkapi.getHoldingsJson(titleId));
-    Instances actual = Instances.fromXml(resp.body().asString());
+    var expected = RtacMockOkapi.getHoldings(titleId);
+    final var xml = resp.body().asString();
+    var actual = Holdings.fromXml(xml);
     assertEquals(expected, actual);
   }
 
@@ -181,8 +183,9 @@ public class MainVerticleTest {
       .extract()
       .response();
 
-    Instances expected = new Instances();
-    Instances actual = Instances.fromXml(resp.body().asString());
+    var expected = new Holdings();
+    final var xml = resp.body().asString();
+    var actual = Holdings.fromXml(xml);
     assertEquals(expected, actual);
   }
 
@@ -262,7 +265,7 @@ public class MainVerticleTest {
   public void testCachedToken(TestContext context) throws Exception {
     logger.info("=== Test the tokens are cached and reused ===");
 
-    Instances expected = Instances.fromJson(RtacMockOkapi.getHoldingsJson(titleId));
+    var expected = RtacMockOkapi.getHoldings(titleId);
     int iters = 5;
 
     for (int i = 0; i < iters; i++) {
@@ -275,7 +278,7 @@ public class MainVerticleTest {
         .extract()
         .response();
 
-      assertEquals(expected, Instances.fromXml(resp.body().asString()));
+      assertEquals(expected, Holdings.fromXml(resp.body().asString()));
     }
 
     verify(mockOkapi).loginHandler(any());

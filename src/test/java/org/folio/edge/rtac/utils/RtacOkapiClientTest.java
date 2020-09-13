@@ -57,7 +57,7 @@ public class RtacOkapiClientTest {
   @Test
   public void testRtac(TestContext context) {
     logger.info("=== Test successful RTAC request ===");
-    
+
     Async async = context.async();
     client.login("admin", "password").thenAcceptAsync(v -> {
       // Redundant - also checked in testLogin(...), but can't hurt
@@ -65,7 +65,7 @@ public class RtacOkapiClientTest {
 
       client.rtac(titleId).thenAcceptAsync(body -> {
         logger.info("mod-rtac response body: " + body);
-        assertEquals(body, RtacMockOkapi.getHoldingsJson(titleId));
+        assertEquals(body, RtacMockOkapi.getHoldings(titleId));
         async.complete();
       });
     });
@@ -74,7 +74,7 @@ public class RtacOkapiClientTest {
   @Test
   public void testRtacTimeout(TestContext context) throws Exception {
     logger.info("=== Test RTAC timeout ===");
-    
+
     MultiMap headers = MultiMap.caseInsensitiveMultiMap();
     headers.set(X_DURATION, String.valueOf(reqTimeout * 2));
     CompletableFuture<String> future = client.rtac(titleId, headers);

@@ -42,12 +42,17 @@ public final class Holdings {
     return Mappers.XML_PROLOG + Mappers.xmlMapper.writeValueAsString(this);
   }
 
+  public static Holdings fromXml(String xml) throws IOException {
+    return Mappers.xmlMapper.readValue(xml, Holdings.class);
+  }
+
   @Override
   public boolean equals(Object o) {
     if (this == o) return true;
     if (o == null || getClass() != o.getClass()) return false;
     Holdings holdings1 = (Holdings) o;
-    return Objects.equals(holdings, holdings1.holdings) &&
+
+    return holdings.equals(holdings1.holdings) &&
       Objects.equals(instanceId, holdings1.instanceId);
   }
 
