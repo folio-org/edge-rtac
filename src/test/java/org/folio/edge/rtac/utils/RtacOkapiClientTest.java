@@ -87,6 +87,9 @@ public class RtacOkapiClientTest {
         } catch (IOException e) {
           context.fail(e);
         }
+      }).exceptionally(t->{
+        context.fail(t);
+        return null;
       });
     });
   }

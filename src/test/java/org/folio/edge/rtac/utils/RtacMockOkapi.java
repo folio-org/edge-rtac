@@ -40,7 +40,6 @@ public class RtacMockOkapi extends MockOkapi {
   public void modRtacHandler(RoutingContext ctx) {
     final var payload = ctx.getBody().toJsonObject();
     final var instanceIds = payload.getJsonArray("instanceIds");
-    String titleId = ctx.request().getParam("titleid");
     String token = ctx.request().getHeader(X_OKAPI_TOKEN);
 
     if (token == null || !token.equals(MOCK_TOKEN)) {

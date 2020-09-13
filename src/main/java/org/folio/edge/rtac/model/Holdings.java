@@ -27,9 +27,6 @@ public final class Holdings {
   @JacksonXmlElementWrapper(useWrapping = false)
   private List<Holding> holdings = new ArrayList<>();
 
-  public Holdings() {
-  }
-
   public void setInstanceId(String instanceId) {
     this.instanceId = instanceId;
   }
