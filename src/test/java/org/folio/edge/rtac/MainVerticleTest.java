@@ -17,6 +17,7 @@ import static org.mockito.Mockito.verify;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.UUID;
 
 import org.apache.http.HttpHeaders;
 import org.apache.log4j.Logger;
@@ -186,6 +187,34 @@ public class MainVerticleTest {
     var expected = new Holdings();
     final var xml = resp.body().asString();
     var actual = Holdings.fromXml(xml);
+    assertEquals(expected, actual);
+  }
+
+  @Test
+  public void testRtacBatching(TestContext context) throws Exception {
+    logger.info("=== Test rtac batching ===");
+
+    final var titleId2 = UUID.randomUUID().toString();
+    final var queryString = String.format("/rtac?apikey=%s&mms_id=%s,%s",
+      apiKey, titleId, titleId2);
+
+    final var h1 = RtacMockOkapi.getHoldings(titleId);
+    final var h2 = RtacMockOkapi.getHoldings(titleId2);
+
+    var expected = new Instances();
+    expected.setHoldings(List.of(h1, h2));
+
+    final Response resp = RestAssured
+      .get(queryString)
+      .then()
+      .contentType(APPLICATION_XML)
+      .statusCode(200)
+      .header(HttpHeaders.CONTENT_TYPE, APPLICATION_XML)
+      .extract()
+      .response();
+
+    final var xml = resp.body().asString();
+    var actual = Instances.fromXml(xml);
     assertEquals(expected, actual);
   }
 
