@@ -28,6 +28,15 @@ public final class Instances {
     return holdings;
   }
 
+  @JsonProperty("errors")
+  @JacksonXmlProperty(localName = "error")
+  @JacksonXmlElementWrapper(localName = "errors")
+  private List<Error> errors = null;
+
+  public void setErrors(List<Error> errors) {
+    this.errors = errors;
+  }
+
   @JsonProperty("holdings")
   public void setHoldings(List<Holdings> holdings) {
     this.holdings = holdings;
@@ -54,12 +63,13 @@ public final class Instances {
     if (this == o) return true;
     if (o == null || getClass() != o.getClass()) return false;
     Instances instances = (Instances) o;
-    return Objects.equals(holdings, instances.holdings);
+    return Objects.equals(holdings, instances.holdings) &&
+      Objects.equals(errors, instances.errors);
   }
 
   @Override
   public int hashCode() {
-    return Objects.hash(holdings);
+    return Objects.hash(holdings, errors);
   }
 }
 

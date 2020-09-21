@@ -12,6 +12,14 @@
       "description": "Aggregated item and holding fields",
       "type": "object",
       "$ref": "oaipmhinstance.json"
+    },
+    "errors": {
+      "description": "Errors",
+      "type": "array",
+      "items": {
+        "$ref": "../raml-util/schemas/error.schema"
+      },
+      "minimum": 0
     }
   },
   "required": [
