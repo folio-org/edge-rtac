@@ -122,6 +122,19 @@ public class InstancesTest {
   }
 
   @Test
+  public void testInstancesWithErrorsEquals(){
+    final var i1 = new Instances();
+    final var error1 = new Error();
+    error1.setCode("404");
+    i1.setErrors(List.of(error1));
+    final var i2 = new Instances();
+    final var error2 = new Error();
+    error2.setCode("500");
+    i2.setErrors(List.of(error2));
+    assertNotEquals(i1,i2);
+  }
+
+  @Test
   public void testInstancesHashCode(){
     final var i2 = new Instances();
     assertNotEquals(instances.hashCode(), i2.hashCode());

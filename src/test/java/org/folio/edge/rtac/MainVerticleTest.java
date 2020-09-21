@@ -23,6 +23,7 @@ import org.apache.http.HttpHeaders;
 import org.apache.log4j.Logger;
 import org.folio.edge.core.utils.ApiKeyUtils;
 import org.folio.edge.core.utils.test.TestUtils;
+import org.folio.edge.rtac.model.Error;
 import org.folio.edge.rtac.model.Holdings;
 import org.folio.edge.rtac.model.Instances;
 import org.folio.edge.rtac.utils.RtacMockOkapi;
@@ -50,7 +51,7 @@ public class MainVerticleTest {
   private static final String badApiKey = apiKey + "0000";
   private static final String unknownTenantApiKey = ApiKeyUtils.generateApiKey(10, "bogus", "diku");;
 
-  private static final long requestTimeoutMs = 3000L;
+  private static final long requestTimeoutMs = 93000L;
 
   private static Vertx vertx;
   private static RtacMockOkapi mockOkapi;
@@ -220,6 +221,35 @@ public class MainVerticleTest {
   }
 
   @Test
+  public void testNotFoundErrors(TestContext context) throws Exception {
+
+    final var queryString = String.format("/rtac?apikey=%s&mms_id=%s,%s",
+      apiKey, titleId, RtacMockOkapi.titleId_Error);
+
+    final var h1 = RtacMockOkapi.getHoldings(titleId);
+
+    var expected = new Instances();
+    final var error = new Error().withCode("404")
+      .withMessage("Instance 69640328-788e-43fc-9c3c-af39e243f3b8 can not be retrieved");
+    expected.setErrors(List.of(error));
+    expected.setHoldings(List.of(h1));
+
+    final Response resp = RestAssured
+      .get(queryString)
+      .then()
+      .contentType(APPLICATION_XML)
+      .statusCode(200)
+      .header(HttpHeaders.CONTENT_TYPE, APPLICATION_XML)
+      .extract()
+      .response();
+
+    final var xml = resp.body().asString();
+    var actual = Instances.fromXml(xml);
+    assertEquals(expected, actual);
+  }
+
+
+  @Test
   public void testRtacNoApiKey(TestContext context) throws Exception {
     logger.info("=== Test request with no apiKey ===");
 
@@ -336,7 +366,7 @@ public class MainVerticleTest {
 
   @Test
   @SneakyThrows
-  public void testJsonDeserializationException(){
+  public void testResponseShouldBeEmptyWith200StatusWhenRtacResponseIsInvalid(){
     final Response resp = RestAssured
       .get(String.format("/prod/rtac/folioRTAC?mms_id=%s&apikey=%s", RtacMockOkapi.titleId_InvalidResponse, apiKey))
       .then()

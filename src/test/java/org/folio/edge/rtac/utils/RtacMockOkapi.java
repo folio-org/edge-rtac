@@ -9,6 +9,7 @@ import java.util.List;
 
 import org.apache.log4j.Logger;
 import org.folio.edge.core.utils.test.MockOkapi;
+import org.folio.edge.rtac.model.Error;
 import org.folio.edge.rtac.model.Holding;
 import org.folio.edge.rtac.model.Holdings;
 import org.folio.edge.rtac.model.Instances;
@@ -24,6 +25,7 @@ public class RtacMockOkapi extends MockOkapi {
   private static final Logger logger = Logger.getLogger(RtacMockOkapi.class);
 
   public static final String titleId_notFound = "0c8e8ac5-6bcc-461e-a8d3-4b55a96addc9";
+  public static final String titleId_Error = "69640328-788e-43fc-9c3c-af39e243f3b8";
   public static final String titleId_InvalidResponse = "0c8e8ac5-6bcc-461e-a8d3-4b55a96add10";
 
   public RtacMockOkapi(int port, List<String> knownTenants) {
@@ -50,16 +52,25 @@ public class RtacMockOkapi extends MockOkapi {
         .end("Access requires permission: rtac.holdings.item.get");
     } else {
       var holdings = new ArrayList<Holdings>();
+      var errors = new ArrayList<Error>();
       for (Object instanceId : instanceIds) {
         if (instanceId.equals(titleId_notFound)) {
           continue;
         }
-        final var h = getHoldings(instanceId.toString());
-        holdings.add(h);
+        if (instanceId.equals(titleId_Error)) {
+          errors.add(new Error().withCode("404")
+            .withMessage(String.format("Instance %s can not be retrieved", instanceId)));
+        } else{
+          final var h = getHoldings(instanceId.toString());
+          holdings.add(h);
+        }
       }
 
       var instances = new Instances();
       instances.setHoldings(holdings);
+      if (!errors.isEmpty()) {
+        instances.setErrors(errors);
+      }
 
       if (instanceIds.size() == 1){
         if (instanceIds.getString(0).equals(titleId_notFound)){
