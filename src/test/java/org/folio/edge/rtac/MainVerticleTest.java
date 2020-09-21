@@ -51,7 +51,7 @@ public class MainVerticleTest {
   private static final String badApiKey = apiKey + "0000";
   private static final String unknownTenantApiKey = ApiKeyUtils.generateApiKey(10, "bogus", "diku");;
 
-  private static final long requestTimeoutMs = 93000L;
+  private static final long requestTimeoutMs = 3000L;
 
   private static Vertx vertx;
   private static RtacMockOkapi mockOkapi;
