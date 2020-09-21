@@ -49,7 +49,7 @@ public class MainVerticleTest {
   private static final String titleId = "0c8e8ac5-6bcc-461e-a8d3-4b55a96addc8";
   private static final String apiKey = ApiKeyUtils.generateApiKey(10, "diku", "diku");
   private static final String badApiKey = apiKey + "0000";
-  private static final String unknownTenantApiKey = ApiKeyUtils.generateApiKey(10, "bogus", "diku");;
+  private static final String unknownTenantApiKey = ApiKeyUtils.generateApiKey(10, "bogus", "diku");
 
   private static final long requestTimeoutMs = 3000L;
 
@@ -366,7 +366,7 @@ public class MainVerticleTest {
 
   @Test
   @SneakyThrows
-  public void testResponseShouldBeEmptyWith200StatusWhenRtacResponseIsInvalid(){
+  public void testResponseShouldBeEmptyWith200StatusWhenRtacResponseIsInvalid() {
     final Response resp = RestAssured
       .get(String.format("/prod/rtac/folioRTAC?mms_id=%s&apikey=%s", RtacMockOkapi.titleId_InvalidResponse, apiKey))
       .then()
