@@ -5,6 +5,7 @@
     <xs:complexType>
       <xs:sequence>
         <xs:element ref="holdings"/>
+        <xs:element ref="errors" minOccurs="0"/>
       </xs:sequence>
     </xs:complexType>
   </xs:element>
@@ -25,7 +26,7 @@
         <xs:element name="callNumber" type="xs:string"/>
         <xs:element name="location" type="xs:string"/>
         <xs:element name="status" type="xs:string"/>
-        <xs:element name="dueDate" type="xs:string"/>
+        <xs:element name="dueDate" type="xs:string" minOccurs="0"/>
         <xs:element name="tempLocation" type="xs:string" minOccurs="0"/>
         <xs:element name="volume" type="xs:string" minOccurs="0"/>
         <xs:element name="temporaryLoanType" type="xs:string" minOccurs="0"/>
@@ -34,4 +35,18 @@
     </xs:complexType>
   </xs:element>
 
+  <xs:element name="errors">
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element name="error" maxOccurs="unbounded" minOccurs="0">
+          <xs:complexType>
+            <xs:sequence>
+              <xs:element type="xs:string" name="message"/>
+              <xs:element type="xs:short" name="code"/>
+            </xs:sequence>
+          </xs:complexType>
+        </xs:element>
+      </xs:sequence>
+    </xs:complexType>
+  </xs:element>
 </xs:schema>

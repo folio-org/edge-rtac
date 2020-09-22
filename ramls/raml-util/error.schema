@@ -14,14 +14,6 @@
     "code": {
       "type": "string",
       "description": "Error message code"
-    },
-    "parameters": {
-      "type": "object",
-      "description": "Error message parameters",
-      "$ref": "parameters.schema"
     }
-  },
-  "required": [
-    "message"
-  ]
+  }
 }
