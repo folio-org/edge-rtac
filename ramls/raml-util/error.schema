@@ -7,10 +7,6 @@
       "type": "string",
       "description": "Error message text"
     },
-    "type": {
-      "type": "string",
-      "description": "Error message type"
-    },
     "code": {
       "type": "string",
       "description": "Error message code"
