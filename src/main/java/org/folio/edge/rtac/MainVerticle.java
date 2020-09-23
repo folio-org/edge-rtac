@@ -30,8 +30,11 @@ public class MainVerticle extends EdgeVerticle {
     router.route().handler(BodyHandler.create());
     router.route(HttpMethod.GET, "/admin/health").handler(this::handleHealthCheck);
 
-
+    //Deprecated API
     router.route(HttpMethod.GET, "/prod/rtac/folioRTAC")
+      .handler(ctx -> rtacHandler.handle(ctx, false));
+
+    router.route(HttpMethod.GET, "/rtac/:instanceId")
       .handler(ctx -> rtacHandler.handle(ctx, false));
 
     router.route(HttpMethod.GET, "/rtac")

@@ -5,6 +5,7 @@ import static org.folio.edge.core.Constants.APPLICATION_XML;
 
 import java.io.IOException;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -19,6 +20,8 @@ import org.folio.edge.rtac.model.Instances;
 import org.folio.edge.rtac.utils.RtacOkapiClient;
 import org.folio.edge.rtac.utils.RtacOkapiClientFactory;
 
+import com.amazonaws.util.CollectionUtils;
+import com.amazonaws.util.StringUtils;
 import com.fasterxml.jackson.core.JsonProcessingException;
 
 import io.vertx.core.http.HttpHeaders;
@@ -31,8 +34,9 @@ public class RtacHandler extends Handler {
   private static final String FALLBACK_EMPTY_RESPONSE = Mappers.XML_PROLOG + "\n<holdings/>";
 
   private static final String PARAM_FULL_PERIODICALS = "fullPeriodicals";
-
-  public static final String PARAM_TITLE_ID = "mms_id";
+  private static final String PARAM_TITLE_ID = "mms_id";
+  private static final String PARAM_INSTANCE_ID = "instanceId";
+  private static final String PARAM_INSTANCE_IDS = "instanceIds";
 
   public RtacHandler(SecureStore secureStore, RtacOkapiClientFactory ocf) {
     super(secureStore, ocf);
@@ -40,19 +44,22 @@ public class RtacHandler extends Handler {
 
   protected void handle(RoutingContext ctx, boolean isBatch) {
     super.handleCommon(ctx,
-      new String[]{PARAM_TITLE_ID},
-      new String[]{PARAM_FULL_PERIODICALS},
+      new String[]{},
+      new String[]{PARAM_TITLE_ID, PARAM_INSTANCE_ID, PARAM_INSTANCE_IDS, PARAM_FULL_PERIODICALS },
       (client, params) -> {
+
         RtacOkapiClient rtacClient = new RtacOkapiClient(client);
         String instanceIds;
         try {
-          Map<String, Object> rtacParams = new HashMap<>();
 
-          List<String> ids = Arrays.stream(params.get(PARAM_TITLE_ID)
-            .split(",")).filter(Objects::nonNull)
-            .map(String::trim).collect(toList());
+          List<String> ids = getListOfIds(isBatch, params);
+          if (CollectionUtils.isNullOrEmpty(ids)) {
+            badRequest(ctx, "Invalid instance id" + params.toString());
+            return;
+          }
 
-          rtacParams.put("instanceIds", ids);
+          var rtacParams = new HashMap<>();
+          rtacParams.put(PARAM_INSTANCE_IDS, ids);
           rtacParams.put(PARAM_FULL_PERIODICALS, Boolean.valueOf(params.get(PARAM_FULL_PERIODICALS)));
           instanceIds = Mappers.jsonMapper.writeValueAsString(rtacParams);
         } catch (JsonProcessingException e) {
@@ -89,6 +96,26 @@ public class RtacHandler extends Handler {
       });
   }
 
+  private List<String> getListOfIds(boolean isBatch, Map<String, String> params) {
+    List<String> ids;
+    try {
+      if (isBatch) {
+        ids = Arrays.stream(params.get(PARAM_INSTANCE_IDS)
+          .split(",")).filter(Objects::nonNull)
+          .map(String::trim).collect(toList());
+      } else {
+        var id = params.get(PARAM_TITLE_ID);
+        if (StringUtils.isNullOrEmpty(id)) {
+          id = params.get(PARAM_INSTANCE_ID);
+        }
+        ids = List.of(id);
+      }
+    } catch (Exception e) {
+      ids = Collections.emptyList();
+    }
+    return ids;
+  }
+
   private void returnEmptyResponse(RoutingContext ctx) {
     // NOTE: We always return a 200 even if holdings is empty here
     // because that's what the API we're trying to mimic does...
@@ -108,16 +135,19 @@ public class RtacHandler extends Handler {
 
   @Override
   protected void invalidApiKey(RoutingContext ctx, String msg) {
+    logger.error(msg);
     returnEmptyResponse(ctx);
   }
 
   @Override
   protected void accessDenied(RoutingContext ctx, String body) {
+    logger.error(body);
     returnEmptyResponse(ctx);
   }
 
   @Override
   protected void badRequest(RoutingContext ctx, String body) {
+    logger.error(body);
     returnEmptyResponse(ctx);
   }
 }

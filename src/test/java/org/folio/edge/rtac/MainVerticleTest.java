@@ -197,7 +197,7 @@ public class MainVerticleTest {
     logger.info("=== Test rtac batching ===");
 
     final var titleId2 = UUID.randomUUID().toString();
-    final var queryString = String.format("/rtac?apikey=%s&mms_id=%s,%s",
+    final var queryString = String.format("/rtac?apikey=%s&instanceIds=%s,%s",
       apiKey, titleId, titleId2);
 
     final var h1 = RtacMockOkapi.getHoldings(titleId);
@@ -223,7 +223,7 @@ public class MainVerticleTest {
   @Test
   public void testNotFoundErrors(TestContext context) throws Exception {
 
-    final var queryString = String.format("/rtac?apikey=%s&mms_id=%s,%s",
+    final var queryString = String.format("/rtac?apikey=%s&instanceIds=%s,%s",
       apiKey, titleId, RtacMockOkapi.titleId_Error);
 
     final var h1 = RtacMockOkapi.getHoldings(titleId);
