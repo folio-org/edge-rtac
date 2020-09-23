@@ -1,7 +1,7 @@
 #%RAML 1.0
 title: Edge API - Real Time Availability Check
 baseUri: https://github.com/folio-org/edge-rtac
-version: v1
+version: v2
 
 documentation:
   - title: Edge API - Real Time Availability Check
@@ -10,21 +10,20 @@ documentation:
 schemas:
   holdings: !include holdings.xsd
   batchHoldings: !include batch-holdings.xsd
-  errors: !include raml-util/schemas/error.schema
 
 /rtac:
-  displayName: RTAC
+  displayName: RTAC Batching
   get:
     description: Batch RTAC for the specified ids
     responses:
       200:
         description: "Success"
         body:
-          application/xml:
+          application/json:
             type: batchHoldings
     queryParameters:
-      mms_id:
-        description: "List of the UUIDs of FOLIO instances"
+      instanceIds:
+        description: "List of Folio instance identifiers"
         type: string
         pattern: "^([0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[1-5][0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}[, ]*)+$"
       fullPeriodicals:
@@ -33,10 +32,29 @@ schemas:
       apikey:
         description: "API Key"
         type: string
-/prod/rtac/folioRTAC:
+
+/rtac/{instanceId}:
   displayName: RTAC
   get:
     description: RTAC for the specified holding id
+    responses:
+      200:
+        description: "Success"
+        body:
+          application/xml:
+            type: holdings
+    queryParameters:
+      fullPeriodicals:
+        description: "Flag for including items data"
+        type: boolean
+      apikey:
+        description: "API Key"
+        type: string
+
+/prod/rtac/folioRTAC:
+  displayName: RTAC
+  get:
+    description: <Deprecated> RTAC for the specified holding id
     responses:
       200:
         description: "Success"
@@ -51,6 +69,7 @@ schemas:
       apikey:
         description: "API Key"
         type: string
+
 /admin/health:
   displayName: Health Check
   get:
