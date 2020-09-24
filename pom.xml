@@ -243,11 +243,20 @@
                   </manifestEntries>
                 </transformer>
                 <transformer implementation="org.apache.maven.plugins.shade.resource.IncludeResourceTransformer">
-                  <file>log4j2.properties</file>
+                  <file>log4j2.xml</file>
                 </transformer>
               </transformers>
               <artifactSet />
               <outputFile>${project.build.directory}/${project.artifactId}-fat.jar</outputFile>
+            <filters>
+              <filter>
+                <artifact>*:*</artifact>
+                <excludes>
+                  <exclude>**/Log4j2Plugins.dat</exclude>
+                  <exclude>**/log4j.properties</exclude>
+                </excludes>
+              </filter>
+            </filters>
             </configuration>
           </execution>
         </executions>
