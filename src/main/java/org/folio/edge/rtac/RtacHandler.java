@@ -11,6 +11,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 
+import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
 import org.folio.edge.core.Handler;
 import org.folio.edge.core.security.SecureStore;
@@ -29,7 +30,7 @@ import io.vertx.ext.web.RoutingContext;
 
 public class RtacHandler extends Handler {
 
-  private static final Logger logger = Logger.getLogger(RtacHandler.class);
+  private static final Logger logger = LogManager.getLogger(RtacHandler.class);
 
   private static final String FALLBACK_EMPTY_RESPONSE = Mappers.XML_PROLOG + "\n<holdings/>";
 

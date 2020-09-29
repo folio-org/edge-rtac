@@ -46,6 +46,14 @@
         <type>pom</type>
         <scope>import</scope>
       </dependency>
+      <!-- Log4j implementation of Log4j2 -->
+      <dependency>
+        <groupId>org.apache.logging.log4j</groupId>
+        <artifactId>log4j-bom</artifactId>
+        <version>${log4j2.version}</version>
+        <type>pom</type>
+        <scope>import</scope>
+      </dependency>
     </dependencies>
   </dependencyManagement>
 
@@ -111,36 +119,14 @@
       <version>3.1.0</version>
     </dependency>
 
-    <!-- logging see http://www.slf4j.org/legacy.html -->
-    <!-- we use SLF4J for our logging interface -->
-    <dependency>
-      <groupId>org.slf4j</groupId>
-      <artifactId>slf4j-api</artifactId>
-      <version>${slf4j.version}</version>
-    </dependency>
-    <!-- we use log4j as our logging implementation -->
-    <!--
-      The Log4j 2 SLF4J Binding allows applications coded to the SLF4J API to use Log4j 2 as the implementation.
-
-      Due to a break in compatibility in the SLF4J binding, as of release 2.11.1 two SLF4J to Log4j Adapters are provided.
-
-      log4j-slf4j-impl should be used with SLF4J 1.7.x releases or older.
-      log4j-slf4j18-impl should be used with SLF4J 1.8.x releases or newer.
-      Applications that take advantage of the Java Module System should use SLF4J 1.8.x and log4j-slf4j18-impl.
-
-      The Log4j 2 SLF4J Binding has a dependency on the Log4j 2 API as well as the SLF4J API
-    -->
     <dependency>
       <groupId>org.apache.logging.log4j</groupId>
-      <artifactId>log4j-slf4j-impl</artifactId>
-      <version>${log4j2.version}</version>
+      <artifactId>log4j-api</artifactId>
     </dependency>
-    <!-- Log4j implementation of Log4j2 -->
     <dependency>
       <groupId>org.apache.logging.log4j</groupId>
-      <artifactId>log4j-bom</artifactId>
-      <version>${log4j2.version}</version>
-      <type>pom</type>
+      <artifactId>log4j-core</artifactId>
+      <scope>runtime</scope>
     </dependency>
 
     <!-- include slf4j bridges to proxy all logging from library deps to
@@ -240,6 +226,7 @@
                   <manifestEntries>
                     <Main-Class>io.vertx.core.Launcher</Main-Class>
                     <Main-Verticle>${exec.mainClass}</Main-Verticle>
+                    <Multi-Release>true</Multi-Release>
                   </manifestEntries>
                 </transformer>
                 <transformer implementation="org.apache.maven.plugins.shade.resource.IncludeResourceTransformer">
@@ -253,6 +240,7 @@
                 <artifact>*:*</artifact>
                 <excludes>
                   <exclude>**/Log4j2Plugins.dat</exclude>
+                  <exclude>**/log4j2.properties</exclude>
                   <exclude>**/log4j.properties</exclude>
                 </excludes>
               </filter>
