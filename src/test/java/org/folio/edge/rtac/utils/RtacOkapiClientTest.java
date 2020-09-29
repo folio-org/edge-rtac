@@ -16,12 +16,10 @@ import java.util.Objects;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.TimeoutException;
 
-import javax.management.InstanceAlreadyExistsException;
-
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.folio.edge.core.utils.Mappers;
 import org.folio.edge.core.utils.test.TestUtils;
-import org.folio.edge.rtac.model.Holdings;
 import org.folio.edge.rtac.model.Instances;
 import org.junit.After;
 import org.junit.Before;
@@ -38,7 +36,7 @@ import lombok.SneakyThrows;
 @RunWith(VertxUnitRunner.class)
 public class RtacOkapiClientTest {
 
-  private static final Logger logger = Logger.getLogger(RtacOkapiClientTest.class);
+  private static final Logger logger = LogManager.getLogger(RtacOkapiClientTest.class);
 
   private final String titleId = "0c8e8ac5-6bcc-461e-a8d3-4b55a96addc8";
   private static final String tenant = "diku";

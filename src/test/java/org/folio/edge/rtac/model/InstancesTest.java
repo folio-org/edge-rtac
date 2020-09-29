@@ -16,14 +16,15 @@ import javax.xml.validation.Schema;
 import javax.xml.validation.SchemaFactory;
 import javax.xml.validation.Validator;
 
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.junit.Before;
 import org.junit.Test;
 import org.xml.sax.SAXException;
 
 public class InstancesTest {
 
-  private static final Logger logger = Logger.getLogger(InstancesTest.class);
+  private static final Logger logger = LogManager.getLogger(InstancesTest.class);
 
   private static final String holdingsXSD = "ramls/batch-holdings.xsd";
   private Validator validator;
