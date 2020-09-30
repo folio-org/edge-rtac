@@ -72,7 +72,7 @@ public class RtacHandler extends Handler {
         rtacClient.rtac(instanceIds, ctx.request().headers())
           .thenAcceptAsync(body -> {
             try {
-//              logger.info("BODY FROM RTAC: {}", body);
+              logger.debug("rtac response: {}", body);
               String xml;
               final var instances = Instances.fromJson(body);
               if (isBatch) {
@@ -81,13 +81,13 @@ public class RtacHandler extends Handler {
                 var holdings = instances.getHoldings().isEmpty() ? new Holdings() : instances.getHoldings().get(0);
                 xml = holdings.toXml();
               }
-              logger.info("Converted Response: \n" + xml);
+              logger.info("Converted Response: \n {}", xml);
               ctx.response()
                 .setStatusCode(200)
                 .putHeader(HttpHeaders.CONTENT_TYPE, APPLICATION_XML)
                 .end(xml);
             } catch (IOException e) {
-              logger.error("Exception translating JSON -> XML: " + e.getMessage(), e);
+              logger.error("Exception translating JSON -> XML: {}", e.getMessage(), e);
               returnEmptyResponse(ctx);
             }
           })

@@ -54,7 +54,7 @@ public class RtacOkapiClient extends OkapiClient {
           }
         }),
         t -> {
-          logger.error("Exception: " + t.getMessage());
+          logger.error("Exception when calling mod-rtac: {}", t.getMessage());
           future.completeExceptionally(t);
         });
     return future;
