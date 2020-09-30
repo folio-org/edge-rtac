@@ -20,7 +20,8 @@ import java.util.List;
 import java.util.UUID;
 
 import org.apache.http.HttpHeaders;
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.folio.edge.core.utils.ApiKeyUtils;
 import org.folio.edge.core.utils.test.TestUtils;
 import org.folio.edge.rtac.model.Error;
@@ -44,7 +45,7 @@ import lombok.SneakyThrows;
 @RunWith(VertxUnitRunner.class)
 public class MainVerticleTest {
 
-  private static final Logger logger = Logger.getLogger(MainVerticleTest.class);
+  private static final Logger logger = LogManager.getLogger(MainVerticleTest.class);
 
   private static final String titleId = "0c8e8ac5-6bcc-461e-a8d3-4b55a96addc8";
   private static final String apiKey = ApiKeyUtils.generateApiKey(10, "diku", "diku");

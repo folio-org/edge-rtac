@@ -121,6 +121,11 @@
 
     <dependency>
       <groupId>org.apache.logging.log4j</groupId>
+      <artifactId>log4j-slf4j-impl</artifactId>
+      <scope>runtime</scope>
+    </dependency>
+    <dependency>
+      <groupId>org.apache.logging.log4j</groupId>
       <artifactId>log4j-api</artifactId>
     </dependency>
     <dependency>
@@ -128,12 +133,9 @@
       <artifactId>log4j-core</artifactId>
       <scope>runtime</scope>
     </dependency>
-
-    <!-- include slf4j bridges to proxy all logging from library deps to
-      our logging impl -->
     <dependency>
       <groupId>org.slf4j</groupId>
-      <artifactId>jcl-over-slf4j</artifactId>
+      <artifactId>slf4j-api</artifactId>
       <version>${slf4j.version}</version>
     </dependency>
 
@@ -200,7 +202,7 @@
           <systemPropertyVariables>
             <vertx.logger-delegate-factory-class-name>io.vertx.core.logging.Log4j2LogDelegateFactory</vertx.logger-delegate-factory-class-name>
           </systemPropertyVariables>
-          <!-- TODO: update to version 3.0.0 and remove useSystemClassLoader
+           <!-- TODO: update to version 3.0.0 and remove useSystemClassLoader
                https://issues.folio.org/browse/FOLIO-1609
                https://issues.apache.org/jira/browse/SUREFIRE-1588
           -->
