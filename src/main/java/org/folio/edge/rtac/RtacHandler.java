@@ -44,6 +44,8 @@ public class RtacHandler extends Handler {
   }
 
   protected void handle(RoutingContext ctx, boolean isBatch) {
+    final var request = ctx.request();
+    logger.info("Request: {} \n params: {}", request.uri(), request.params() );
     super.handleCommon(ctx,
       new String[]{},
       new String[]{PARAM_TITLE_ID, PARAM_INSTANCE_ID, PARAM_INSTANCE_IDS, PARAM_FULL_PERIODICALS },
@@ -51,9 +53,7 @@ public class RtacHandler extends Handler {
 
         RtacOkapiClient rtacClient = new RtacOkapiClient(client);
         String instanceIds;
-        final var request = ctx.request();
         try {
-          logger.info("Request: {} \n params: {}", request.uri(), params );
           List<String> ids = getListOfIds(isBatch, params);
           if (CollectionUtils.isNullOrEmpty(ids)) {
             badRequest(ctx, "Invalid instance id" + params.toString());
