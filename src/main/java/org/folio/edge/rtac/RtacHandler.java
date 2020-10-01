@@ -12,7 +12,6 @@ import java.util.Map;
 import java.util.Objects;
 
 import org.apache.logging.log4j.LogManager;
-
 import org.apache.logging.log4j.Logger;
 import org.folio.edge.core.Handler;
 import org.folio.edge.core.security.SecureStore;
@@ -52,8 +51,9 @@ public class RtacHandler extends Handler {
 
         RtacOkapiClient rtacClient = new RtacOkapiClient(client);
         String instanceIds;
+        final var request = ctx.request();
         try {
-
+          logger.info("Request: {} \n params: {}", request.uri(), params );
           List<String> ids = getListOfIds(isBatch, params);
           if (CollectionUtils.isNullOrEmpty(ids)) {
             badRequest(ctx, "Invalid instance id" + params.toString());
@@ -69,7 +69,7 @@ public class RtacHandler extends Handler {
           returnEmptyResponse(ctx);
           return;
         }
-        rtacClient.rtac(instanceIds, ctx.request().headers())
+        rtacClient.rtac(instanceIds, request.headers())
           .thenAcceptAsync(body -> {
             try {
               logger.info("rtac response: {}", body);
