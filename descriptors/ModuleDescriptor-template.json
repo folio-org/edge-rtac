@@ -4,8 +4,8 @@
   "provides": [],
   "requires": [
     {
-      "id": "rtac",
-      "version": "2.0"
+      "id": "rtac-batch",
+      "version": "1.0"
     },
     {
       "id": "login",

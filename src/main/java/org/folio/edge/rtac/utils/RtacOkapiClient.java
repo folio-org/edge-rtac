@@ -13,7 +13,7 @@ import me.escoffier.vertx.completablefuture.VertxCompletableFuture;
 public class RtacOkapiClient extends OkapiClient {
 
   private static final Logger logger = LogManager.getLogger(RtacOkapiClient.class);
-  private static final String RTAC_API_URI = "/rtac/batch";
+  private static final String RTAC_API_URI = "/rtac-batch";
 
   public RtacOkapiClient(OkapiClient client) {
     super(client);

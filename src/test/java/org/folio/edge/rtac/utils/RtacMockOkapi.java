@@ -32,7 +32,7 @@ public class RtacMockOkapi extends MockOkapi {
   @Override
   public Router defineRoutes() {
     Router router = super.defineRoutes();
-    router.route(HttpMethod.POST, "/rtac/batch").handler(this::modRtacHandler);
+    router.route(HttpMethod.POST, "/rtac-batch").handler(this::modRtacHandler);
     return router;
   }
 
