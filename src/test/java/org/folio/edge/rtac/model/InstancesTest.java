@@ -1,11 +1,13 @@
 package org.folio.edge.rtac.model;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotEquals;
 import static org.junit.Assert.fail;
 
 import java.io.File;
 import java.io.IOException;
 import java.io.StringReader;
+import java.util.List;
 
 import javax.xml.XMLConstants;
 import javax.xml.transform.Source;
@@ -14,22 +16,21 @@ import javax.xml.validation.Schema;
 import javax.xml.validation.SchemaFactory;
 import javax.xml.validation.Validator;
 
-import org.apache.log4j.Logger;
-import org.folio.edge.rtac.model.Holdings.Holding;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.junit.Before;
 import org.junit.Test;
 import org.xml.sax.SAXException;
 
-import nl.jqno.equalsverifier.EqualsVerifier;
+public class InstancesTest {
 
-public class HoldingsTest {
+  private static final Logger logger = LogManager.getLogger(InstancesTest.class);
 
-  private static final Logger logger = Logger.getLogger(HoldingsTest.class);
-
-  private static final String holdingsXSD = "ramls/holdings.xsd";
+  private static final String holdingsXSD = "ramls/batch-holdings.xsd";
   private Validator validator;
 
-  private Holdings holdings;
+  private Instances instances;
+  private final String INSTANCE_ID = "INSTANCE_ID";
 
   @Before
   public void setUp() throws Exception {
@@ -50,9 +51,12 @@ public class HoldingsTest {
       .dueDate("2018-04-23 12:00:00")
       .build();
 
-    holdings = new Holdings();
-    holdings.holdingRecords.add(h1);
-    holdings.holdingRecords.add(h2);
+    instances = new Instances();
+
+    final var holdings = new Holdings();
+    holdings.setInstanceId(INSTANCE_ID);
+    holdings.setHoldings(List.of(h1, h2));
+    instances.setHoldings(List.of(holdings));
 
     SchemaFactory schemaFactory = SchemaFactory
       .newInstance(XMLConstants.W3C_XML_SCHEMA_NS_URI);
@@ -62,23 +66,17 @@ public class HoldingsTest {
   }
 
   @Test
-  public void testEqualsContract() {
-    EqualsVerifier.forClass(Holding.class).verify();
-    EqualsVerifier.forClass(Holdings.class).verify();
-  }
-
-  @Test
   public void testToFromJson() throws IOException {
-    String json = holdings.toJson();
+    String json = instances.toJson();
     logger.info("JSON: " + json);
 
-    Holdings fromJson = Holdings.fromJson(json);
-    assertEquals(holdings, fromJson);
+    var fromJson = Instances.fromJson(json);
+    assertEquals(instances, fromJson);
   }
 
   @Test
   public void testToFromXml() throws IOException {
-    String xml = holdings.toXml();
+    String xml = instances.toXml();
     logger.info("XML: " + xml);
 
     Source source = new StreamSource(new StringReader(xml));
@@ -88,22 +86,22 @@ public class HoldingsTest {
       fail("XML validation failed: " + e.getMessage());
     }
 
-    Holdings fromXml = Holdings.fromXml(xml);
-    assertEquals(holdings, fromXml);
+    var fromXml = Instances.fromXml(xml);
+    assertEquals(instances, fromXml);
   }
 
   @Test
   public void testJsonToXml() throws IOException {
-    String json = holdings.toJson();
-    Holdings fromJson = Holdings.fromJson(json);
+    String json = instances.toJson();
+    var fromJson = Instances.fromJson(json);
     String xml = fromJson.toXml();
-    Holdings fromXml = Holdings.fromXml(xml);
+    var fromXml = Instances.fromXml(xml);
 
     logger.info(json);
     logger.info(xml);
 
-    assertEquals(holdings, fromJson);
-    assertEquals(holdings, fromXml);
+    assertEquals(instances, fromJson);
+    assertEquals(instances, fromXml);
   }
 
   @Test
@@ -117,5 +115,45 @@ public class HoldingsTest {
     } catch (SAXException e) {
       fail("XML validation failed: " + e.getMessage());
     }
+  }
+
+  @Test
+  public void testInstancesEquals(){
+    assertNotEquals(instances, new Object());
+  }
+
+  @Test
+  public void testInstancesWithErrorsEquals(){
+    final var i1 = new Instances();
+    final var error1 = new Error();
+    error1.setCode("404");
+    i1.setErrors(List.of(error1));
+    final var i2 = new Instances();
+    final var error2 = new Error();
+    error2.setCode("500");
+    i2.setErrors(List.of(error2));
+    assertNotEquals(i1,i2);
+  }
+
+  @Test
+  public void testInstancesHashCode(){
+    final var i2 = new Instances();
+    assertNotEquals(instances.hashCode(), i2.hashCode());
+  }
+
+  @Test
+  public void testHoldingsEquals(){
+    final var h1 = new Holdings();
+    h1.setInstanceId("test");
+    assertNotEquals(instances.getHoldings().get(0), h1);
+  }
+
+  @Test
+  public void testHoldingEquals(){
+    var h1 = Holding.builder().build();
+    var h2 = Holding.builder().build();
+    assertEquals(h1, h2);
+    h2 = Holding.builder().id("test").build();
+    assertNotEquals(h1, h2);
   }
 }

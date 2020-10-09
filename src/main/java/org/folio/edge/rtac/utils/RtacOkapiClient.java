@@ -2,7 +2,8 @@ package org.folio.edge.rtac.utils;
 
 import java.util.concurrent.CompletableFuture;
 
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.folio.edge.core.utils.OkapiClient;
 
 import io.vertx.core.MultiMap;
@@ -11,7 +12,8 @@ import me.escoffier.vertx.completablefuture.VertxCompletableFuture;
 
 public class RtacOkapiClient extends OkapiClient {
 
-  private static final Logger logger = Logger.getLogger(RtacOkapiClient.class);
+  private static final Logger logger = LogManager.getLogger(RtacOkapiClient.class);
+  private static final String RTAC_API_URI = "/rtac-batch";
 
   public RtacOkapiClient(OkapiClient client) {
     super(client);
@@ -25,12 +27,13 @@ public class RtacOkapiClient extends OkapiClient {
     return rtac(titleId, null);
   }
 
-  public CompletableFuture<String> rtac(String titleId, MultiMap headers) {
+  public CompletableFuture<String> rtac(String requestBody, MultiMap headers) {
     VertxCompletableFuture<String> future = new VertxCompletableFuture<>(vertx);
 
-    get(
-        okapiURL + "/rtac/" + titleId,
+    post(
+        okapiURL + RTAC_API_URI,
         tenant,
+        requestBody,
         combineHeadersWithDefaults(headers),
         response -> response.bodyHandler(body -> {
           int statusCode = response.statusCode();
@@ -51,7 +54,7 @@ public class RtacOkapiClient extends OkapiClient {
           }
         }),
         t -> {
-          logger.error("Exception: " + t.getMessage());
+          logger.error("Exception when calling mod-rtac: {}", t.getMessage());
           future.completeExceptionally(t);
         });
     return future;

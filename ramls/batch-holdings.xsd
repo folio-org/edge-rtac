@@ -1,0 +1,52 @@
+<?xml version="1.0"?>
+<xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema">
+
+  <xs:element name="instances">
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element ref="holdings"/>
+        <xs:element ref="errors" minOccurs="0"/>
+      </xs:sequence>
+    </xs:complexType>
+  </xs:element>
+
+  <xs:element name="holdings">
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element name="instanceId" minOccurs="0" type="xs:string"/>
+        <xs:element ref="holding" maxOccurs="unbounded" minOccurs="0"/>
+      </xs:sequence>
+    </xs:complexType>
+  </xs:element>
+
+  <xs:element name="holding">
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element name="id" type="xs:string" minOccurs="1"/>
+        <xs:element name="callNumber" type="xs:string"/>
+        <xs:element name="location" type="xs:string"/>
+        <xs:element name="status" type="xs:string"/>
+        <xs:element name="dueDate" type="xs:string" minOccurs="0"/>
+        <xs:element name="tempLocation" type="xs:string" minOccurs="0"/>
+        <xs:element name="volume" type="xs:string" minOccurs="0"/>
+        <xs:element name="temporaryLoanType" type="xs:string" minOccurs="0"/>
+        <xs:element name="permanentLoanType" type="xs:string" minOccurs="0"/>
+      </xs:sequence>
+    </xs:complexType>
+  </xs:element>
+
+  <xs:element name="errors">
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element name="error" maxOccurs="unbounded" minOccurs="0">
+          <xs:complexType>
+            <xs:sequence>
+              <xs:element type="xs:string" name="message"/>
+              <xs:element type="xs:short" name="code"/>
+            </xs:sequence>
+          </xs:complexType>
+        </xs:element>
+      </xs:sequence>
+    </xs:complexType>
+  </xs:element>
+</xs:schema>

@@ -4,6 +4,7 @@
 <xs:element name="holdings">
   <xs:complexType>
     <xs:sequence>
+      <xs:element name="instanceId" minOccurs="0" type="xs:string"/>
       <xs:element ref="holding" maxOccurs="unbounded" minOccurs="0"/>
     </xs:sequence>
   </xs:complexType>
