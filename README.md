@@ -26,8 +26,12 @@ Institutional users should be granted the following permission in order to use t
 
 ## Configuration
 
-See [edge-common](https://github.com/folio-org/edge-common) for a description of how configuration works.
-
+* See [edge-common](https://github.com/folio-org/edge-common) for a description of how configuration works.
+* See [FOLIO-2835](https://issues.folio.org/browse/FOLIO-2835): Following the 2.1.0 release, the nginx proxy for edge modules in the environments needs to be able to route to two different paths on the edge-rtac module:
+```
+/prod/rtac/folioRTAC
+/rtac
+```
 ## Additional information
 
 ### Issue tracker
