@@ -1,3 +1,11 @@
+## 2.1.0 2020-10-14
+
+Full [Changelog](https://github.com/folio-org/edge-rtac/compare/v2.0.2...v2.1.0)
+
+ * [EDGRERTAC-26](https://issues.folio.org/browse/EDGRTAC-26): Fix security vulnerability reported in log4j 1.2
+ * [EDGRERTAC-29](https://issues.folio.org/browse/EDGRTAC-29): REST batching support
+ * [EDGRERTAC-30](https://issues.folio.org/browse/EDGRTAC-30): Update to java 11
+ 
 ## 2.0.2 2020-06-11
 
 Full [Changelog](https://github.com/folio-org/edge-rtac/compare/v2.0.1...v2.0.2)
