@@ -1,3 +1,9 @@
+## 2.1.1 2020-11-02
+
+Full [Changelog](https://github.com/folio-org/edge-rtac/compare/v2.1.0...v2.1.1)
+
+ * [EDGRTAC-33](https://issues.folio.org/browse/EDGRTAC-33): Memory leak of ~200mb for /rtac?instanceIds=id1,id2,idn API
+
 ## 2.1.0 2020-10-14
 
 Full [Changelog](https://github.com/folio-org/edge-rtac/compare/v2.0.2...v2.1.0)
