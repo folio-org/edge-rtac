@@ -1,5 +1,6 @@
 package org.folio.edge.rtac;
 
+import static io.vertx.core.http.HttpHeaders.ACCEPT;
 import static java.util.stream.Collectors.toList;
 import static org.folio.edge.core.Constants.APPLICATION_XML;
 
@@ -10,6 +11,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
+import java.util.regex.Pattern;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -26,6 +28,7 @@ import com.amazonaws.util.StringUtils;
 import com.fasterxml.jackson.core.JsonProcessingException;
 
 import io.vertx.core.http.HttpHeaders;
+import io.vertx.core.http.HttpServerRequest;
 import io.vertx.ext.web.RoutingContext;
 
 public class RtacHandler extends Handler {
@@ -46,6 +49,12 @@ public class RtacHandler extends Handler {
   protected void handle(RoutingContext ctx, boolean isBatch) {
     final var request = ctx.request();
     logger.info("Request: {} \n params: {}", request.uri(), request.params() );
+
+    if (!supportedAcceptHeaders(request)) {
+      notAcceptable(ctx, "Unsupported media type" + request.headers());
+      return;
+    }
+
     super.handleCommon(ctx,
       new String[]{},
       new String[]{PARAM_TITLE_ID, PARAM_INSTANCE_ID, PARAM_INSTANCE_IDS, PARAM_FULL_PERIODICALS },
@@ -97,6 +106,30 @@ public class RtacHandler extends Handler {
             return null;
           });
       });
+  }
+
+  /**
+   * EDGE-RTAC supports application/xml or application/json  and all its derivatives in Accept header.
+   * Empty Accept header implies any MIME type is accepted, same as Accept: *//*
+   *
+   * Valid examples: text/xml, text/*, *//*, *\xml, application/json, application/*, *//*, *\json
+   * NOT Valid examples: application/xml, application/*, test/json
+   *
+   * @param request - http request to the module
+   * @return - true if accept headers are supported
+   */
+  private boolean supportedAcceptHeaders(HttpServerRequest request) {
+    if (request.headers()
+      .contains(ACCEPT)) {
+      final String supportedHeadersRegexp = "(text|\\*)\\s*/\\s*(xml|\\*)|(application|\\*)\\s*/\\s*(json|\\*)";
+      final Pattern pattern = Pattern.compile(supportedHeadersRegexp);
+      return request.headers()
+        .getAll(ACCEPT)
+        .stream()
+        .anyMatch(h -> pattern.matcher(h)
+          .find());
+    }
+    return true;
   }
 
   private List<String> getListOfIds(boolean isBatch, Map<String, String> params) {
