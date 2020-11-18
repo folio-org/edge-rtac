@@ -90,7 +90,7 @@ public class RtacHandler extends Handler {
 
         if (!isAcceptHeaderExists) {
           // Provide "json" accept header for further request to RTAC system
-          updateAcceptHeadersWith(request, JSON_MIME_TYPE);
+          updateAcceptHeadersWith(request, Arrays.asList(JSON_MIME_TYPE));
           acceptHeadersUpdateFlag = true;
         } else {
           // Replace xml-related accept header by JSON ones, to make a call to RTAC (it supports JSON by default)
@@ -163,27 +163,25 @@ public class RtacHandler extends Handler {
 
   private void updateAcceptHeadersByPattern(HttpServerRequest request, String findMimeTypePattern,
       String replaceWithMimeType) {
-    String updatedHeaders = request.headers().getAll(ACCEPT).stream()
+    List<String> updatedHeaders = request.headers().getAll(ACCEPT).stream()
         .map(header -> header.split(","))
         .flatMap(array -> Arrays.stream(array))
         .map(entry -> entry.trim().matches(findMimeTypePattern) ? replaceWithMimeType : entry)
         .distinct()
-        .collect(Collectors.joining(", "));
+        .collect(toList());
 
     updateAcceptHeadersWith(request, updatedHeaders);
   }
 
   private void updateAcceptHeadersWith(HttpServerRequest request, List<String> acceptHeaders) {
-    updateAcceptHeadersWith(request, acceptHeaders.stream().toArray(String[]::new));
-  }
+    if (CollectionUtils.isNotEmpty(acceptHeaders)) {
+      request.headers().remove(ACCEPT);
+      String updatedHeaders = acceptHeaders.stream().map(String::trim).distinct()
+          .collect(Collectors.joining(", "));
 
-  private void updateAcceptHeadersWith(HttpServerRequest request, String... acceptHeaders) {
-    if (acceptHeaders == null) {
-      return;
+      logger.info("Accept headers will be updated to the value: " + updatedHeaders);
+      request.headers().add(ACCEPT, updatedHeaders);
     }
-    List<String> headerList = Arrays.asList(acceptHeaders);
-    request.headers().remove(ACCEPT);
-    headerList.forEach(c -> request.headers().add(ACCEPT, c));
   }
 
   private boolean ifAnyStringMatch(List<String> checkedList, String matchPattern) {
