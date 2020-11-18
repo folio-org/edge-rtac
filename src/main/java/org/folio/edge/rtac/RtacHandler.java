@@ -54,7 +54,7 @@ public class RtacHandler extends Handler {
     logger.info("Request: {} \n params: {}", request.uri(), request.params() );
 
     // Check if there were supported "Accept" headers passed
-    if (!hasSupportedAcceptHeaders(request)) {
+    if (!checkSupportedAcceptHeaders(request)) {
       notAcceptable(ctx, "Unsupported media type" + request.headers());
       return;
     }
@@ -83,20 +83,23 @@ public class RtacHandler extends Handler {
           return;
         }
 
-        final boolean hasAcceptHeader = hasNonEmptyAcceptHeader(request);
+        final boolean isAcceptHeaderExists = checkAcceptHeadersExists(request);
         // Remember original Accept headers
         final List<String> originAcceptHeaders = request.headers().getAll(ACCEPT);
-        final boolean isAcceptHeadersUpdated;
+        final boolean acceptHeadersUpdateFlag;
 
-        // Replace xml-related accept header by JSON ones, to make a call to RTAC (it supports JSON by default)
-        if (hasRelatedAcceptHeaders(request, XML_RELATED_MIME_TYPE_PATTERN, false)) {
-          updateAcceptHeadersWith(request, XML_RELATED_MIME_TYPE_PATTERN, JSON_MIME_TYPE);
-          isAcceptHeadersUpdated = true;
-        } else if (!hasAcceptHeader) {
+        if (!isAcceptHeaderExists) {
+          // Provide "json" accept header for further request to RTAC system
           updateAcceptHeadersWith(request, JSON_MIME_TYPE);
-          isAcceptHeadersUpdated = true;
+          acceptHeadersUpdateFlag = true;
         } else {
-          isAcceptHeadersUpdated = false;
+          // Replace xml-related accept header by JSON ones, to make a call to RTAC (it supports JSON by default)
+          if (checkAcceptHeadersByPattern(request, XML_RELATED_MIME_TYPE_PATTERN, false)) {
+            updateAcceptHeadersByPattern(request, XML_RELATED_MIME_TYPE_PATTERN, JSON_MIME_TYPE);
+            acceptHeadersUpdateFlag = true;
+          } else {
+              acceptHeadersUpdateFlag = false;
+            }
         }
 
         rtacClient.rtac(instanceIds, request.headers())
@@ -105,12 +108,12 @@ public class RtacHandler extends Handler {
               logger.debug("rtac response: {}", body);
 
               // Return back origin Accept headers if any
-              if (isAcceptHeadersUpdated) {
+              if (acceptHeadersUpdateFlag) {
                 updateAcceptHeadersWith(request, originAcceptHeaders);
               }
 
-              String returningContent;
-              if (hasXmlRelatedAcceptHeaders(request)) {
+              String returningContent = body;
+              if (checkAcceptHeadersXmlType(request)) {
                 final var instances = Instances.fromJson(body);
                 if (isBatch) {
                   returningContent = instances.toXml();
@@ -119,14 +122,6 @@ public class RtacHandler extends Handler {
                       : instances.getHoldings().get(0);
                   returningContent = holdings.toXml();
                 }
-              } else if (hasJsonRelatedAcceptHeaders(request)) {
-                // RTAC module returns content in JSON format,
-                // so it will be used for case when there is no need to return in XML
-                returningContent = body;
-              } else {
-                returningContent = StringUtils.EMPTY;
-                logger.error("Returning content was not determined correctly, please check conditions.");
-                returnEmptyResponse(ctx);
               }
 
               logger.info("Converted Response: \n {}", returningContent);
@@ -158,15 +153,15 @@ public class RtacHandler extends Handler {
    * @param request - http request to the module
    * @return - true if accept headers are supported
    */
-  private boolean hasSupportedAcceptHeaders(HttpServerRequest request) {
-    if (hasNonEmptyAcceptHeader(request)) {
+  private boolean checkSupportedAcceptHeaders(HttpServerRequest request) {
+    if (checkAcceptHeadersExists(request)) {
       return ifAnyStringMatch(request.headers().getAll(ACCEPT), SUPPORTED_MIME_TYPE_PATTERN);
     } else {
       return true;
     }
   }
 
-  private void updateAcceptHeadersWith(HttpServerRequest request, String findMimeTypePattern,
+  private void updateAcceptHeadersByPattern(HttpServerRequest request, String findMimeTypePattern,
       String replaceWithMimeType) {
     String updatedHeaders = request.headers().getAll(ACCEPT).stream()
         .map(header -> header.split(","))
@@ -198,7 +193,7 @@ public class RtacHandler extends Handler {
         .anyMatch(h -> pattern.matcher(h).find());
   }
 
-  private boolean hasNonEmptyAcceptHeader(HttpServerRequest request) {
+  private boolean checkAcceptHeadersExists(HttpServerRequest request) {
     return (request.headers().contains(ACCEPT) && StringUtils.isNotBlank(
         request.headers().getAll(ACCEPT).stream().map(String::trim).collect(Collectors.joining())));
   }
@@ -208,8 +203,8 @@ public class RtacHandler extends Handler {
    * @param request
    * @return
    */
-  private boolean hasRelatedAcceptHeaders(HttpServerRequest request, String headersPattern, boolean allowEmptyAccept) {
-    if (hasNonEmptyAcceptHeader(request)) {
+  private boolean checkAcceptHeadersByPattern(HttpServerRequest request, String headersPattern, boolean allowEmptyAccept) {
+    if (checkAcceptHeadersExists(request)) {
       return ifAnyStringMatch(request.headers().getAll(ACCEPT), headersPattern);
     } else {
       // For XML related accept headers there is allowed empty/no Accept header at all.
@@ -225,24 +220,24 @@ public class RtacHandler extends Handler {
    * @param request
    * @return
    */
-  private boolean hasXmlRelatedAcceptHeaders(HttpServerRequest request) {
-    if (hasNonEmptyAcceptHeader(request)) {
-      return hasRelatedAcceptHeaders(request, XML_RELATED_MIME_TYPE_PATTERN, true);
+  private boolean checkAcceptHeadersXmlType(HttpServerRequest request) {
+    if (checkAcceptHeadersExists(request)) {
+      return checkAcceptHeadersByPattern(request, XML_RELATED_MIME_TYPE_PATTERN, true);
     } else {
       return true;
     }
   }
 
-  /**
-   * Check if there is accept header which lead to returning JSON content
-   * (by business cases described in the: https://issues.folio.org/browse/EDGRTAC-16)
-   *
-   * @param request
-   * @return
-   */
-  private boolean hasJsonRelatedAcceptHeaders(HttpServerRequest request) {
-    return hasRelatedAcceptHeaders(request, JSON_RELATED_MIME_TYPE_PATTERN, false);
-  }
+//  /**
+//   * Check if there is accept header which lead to returning JSON content
+//   * (by business cases described in the: https://issues.folio.org/browse/EDGRTAC-16)
+//   *
+//   * @param request
+//   * @return
+//   */
+//  private boolean hasJsonRelatedAcceptHeaders(HttpServerRequest request) {
+//    return hasRelatedAcceptHeaders(request, JSON_RELATED_MIME_TYPE_PATTERN, false);
+//  }
 
   private List<String> getListOfIds(boolean isBatch, Map<String, String> params) {
     List<String> ids;
