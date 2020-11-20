@@ -2,6 +2,7 @@ package org.folio.edge.rtac;
 
 import static io.vertx.core.http.HttpHeaders.ACCEPT;
 import static java.util.stream.Collectors.toList;
+import static org.folio.edge.core.Constants.APPLICATION_JSON;
 import static org.folio.edge.core.Constants.APPLICATION_XML;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
@@ -51,7 +52,7 @@ public class RtacHandler extends Handler {
 
   protected void handle(RoutingContext ctx, boolean isBatch) {
     final var request = ctx.request();
-    logger.info("Request: {} \n params: {}", request.uri(), request.params() );
+    logger.info("Request: {} \n params: {}", request.uri(), request.params());
 
     // Check if there were supported "Accept" headers passed
     if (!checkSupportedAcceptHeaders(request)) {
@@ -60,87 +61,90 @@ public class RtacHandler extends Handler {
     }
 
     super.handleCommon(ctx,
-      new String[] {},
-      new String[] { PARAM_TITLE_ID, PARAM_INSTANCE_ID, PARAM_INSTANCE_IDS, PARAM_FULL_PERIODICALS },
-      (client, params) -> {
+        new String[]{},
+        new String[]{PARAM_TITLE_ID, PARAM_INSTANCE_ID, PARAM_INSTANCE_IDS, PARAM_FULL_PERIODICALS},
+        (client, params) -> {
 
-        RtacOkapiClient rtacClient = new RtacOkapiClient(client);
-        String instanceIds;
-        try {
-          List<String> ids = getListOfIds(isBatch, params);
-          if (CollectionUtils.isEmpty(ids)) {
-            badRequest(ctx, "Invalid instance id" + params.toString());
+          RtacOkapiClient rtacClient = new RtacOkapiClient(client);
+          String instanceIds;
+          try {
+            List<String> ids = getListOfIds(isBatch, params);
+            if (CollectionUtils.isEmpty(ids)) {
+              badRequest(ctx, "Invalid instance id" + params.toString());
+              return;
+            }
+
+            var rtacParams = new HashMap<>();
+            rtacParams.put(PARAM_INSTANCE_IDS, ids);
+            rtacParams
+                .put(PARAM_FULL_PERIODICALS, Boolean.valueOf(params.get(PARAM_FULL_PERIODICALS)));
+            instanceIds = Mappers.jsonMapper.writeValueAsString(rtacParams);
+          } catch (JsonProcessingException e) {
+            logger.error("Exception during serialization in mod-rtac", e);
+            returnEmptyResponse(ctx);
             return;
           }
 
-          var rtacParams = new HashMap<>();
-          rtacParams.put(PARAM_INSTANCE_IDS, ids);
-          rtacParams.put(PARAM_FULL_PERIODICALS, Boolean.valueOf(params.get(PARAM_FULL_PERIODICALS)));
-          instanceIds = Mappers.jsonMapper.writeValueAsString(rtacParams);
-        } catch (JsonProcessingException e) {
-          logger.error("Exception during serialization in mod-rtac", e);
-          returnEmptyResponse(ctx);
-          return;
-        }
+          final boolean isAcceptHeaderExists = checkAcceptHeadersExists(request);
+          // Remember original Accept headers
+          final List<String> originAcceptHeaders = request.headers().getAll(ACCEPT);
+          final boolean acceptHeadersUpdateFlag;
 
-        final boolean isAcceptHeaderExists = checkAcceptHeadersExists(request);
-        // Remember original Accept headers
-        final List<String> originAcceptHeaders = request.headers().getAll(ACCEPT);
-        final boolean acceptHeadersUpdateFlag;
-
-        if (!isAcceptHeaderExists) {
-          // Provide "json" accept header for further request to RTAC system
-          updateAcceptHeadersWith(request, Arrays.asList(JSON_MIME_TYPE));
-          acceptHeadersUpdateFlag = true;
-        } else {
-          // Replace xml-related accept header by JSON ones, to make a call to RTAC (it supports JSON by default)
-          if (checkAcceptHeadersByPattern(request, XML_RELATED_MIME_TYPE_PATTERN, false)) {
-            updateAcceptHeadersByPattern(request, XML_RELATED_MIME_TYPE_PATTERN, JSON_MIME_TYPE);
+          if (!isAcceptHeaderExists) {
+            // Provide "json" accept header for further request to RTAC system
+            updateAcceptHeadersWith(request, Arrays.asList(JSON_MIME_TYPE));
             acceptHeadersUpdateFlag = true;
           } else {
+            // Replace xml-related accept header by JSON ones, to make a call to RTAC (it supports JSON by default)
+            if (checkAcceptHeadersByPattern(request, XML_RELATED_MIME_TYPE_PATTERN, false)) {
+              updateAcceptHeadersByPattern(request, XML_RELATED_MIME_TYPE_PATTERN, JSON_MIME_TYPE);
+              acceptHeadersUpdateFlag = true;
+            } else {
               acceptHeadersUpdateFlag = false;
             }
-        }
+          }
 
-        rtacClient.rtac(instanceIds, request.headers())
-          .thenAcceptAsync(body -> {
-            try {
-              logger.debug("rtac response: {}", body);
+          rtacClient.rtac(instanceIds, request.headers())
+              .thenAcceptAsync(body -> {
+                try {
+                  logger.debug("rtac response: {}", body);
 
-              // Return back origin Accept headers if any
-              if (acceptHeadersUpdateFlag) {
-                updateAcceptHeadersWith(request, originAcceptHeaders);
-              }
+                  // Return back origin Accept headers if any
+                  if (acceptHeadersUpdateFlag) {
+                    updateAcceptHeadersWith(request, originAcceptHeaders);
+                  }
 
-              String returningContent = body;
-              if (checkAcceptHeadersXmlType(request)) {
-                final var instances = Instances.fromJson(body);
-                if (isBatch) {
-                  returningContent = instances.toXml();
-                } else {
-                  var holdings = instances.getHoldings().isEmpty() ? new Holdings()
-                      : instances.getHoldings().get(0);
-                  returningContent = holdings.toXml();
+                  final var isXmlResponse = checkAcceptHeadersXmlType(request);
+                  String returningContent = body;
+                  if (isXmlResponse) {
+                    final var instances = Instances.fromJson(body);
+                    if (isBatch) {
+                      returningContent = instances.toXml();
+                    } else {
+                      var holdings = instances.getHoldings().isEmpty() ? new Holdings()
+                          : instances.getHoldings().get(0);
+                      returningContent = holdings.toXml();
+                    }
+                  }
+
+                  logger.info("Converted Response: \n {}", returningContent);
+                  ctx.response()
+                      .setStatusCode(200)
+                      .putHeader(HttpHeaders.CONTENT_TYPE,
+                          isXmlResponse ? APPLICATION_XML : APPLICATION_JSON)
+                      .end(returningContent);
+
+                } catch (IOException e) {
+                  logger.error("Exception translating JSON -> XML: {}", e.getMessage(), e);
+                  returnEmptyResponse(ctx);
                 }
-              }
-
-              logger.info("Converted Response: \n {}", returningContent);
-              ctx.response()
-                .setStatusCode(200)
-                .putHeader(HttpHeaders.CONTENT_TYPE, APPLICATION_XML)
-                .end(returningContent);
-
-            } catch (IOException e) {
-              logger.error("Exception translating JSON -> XML: {}", e.getMessage(), e);
-              returnEmptyResponse(ctx);
-            }
-          })
-          .exceptionally(t -> {
-            logger.error("Exception calling mod-rtac", t);
-            returnEmptyResponse(ctx);
-            return null;
-          });
-      });
+              })
+              .exceptionally(t -> {
+                logger.error("Exception calling mod-rtac", t);
+                returnEmptyResponse(ctx);
+                return null;
+              });
+        });
   }
 
   /**
@@ -198,10 +202,12 @@ public class RtacHandler extends Handler {
 
   /**
    * Check for particular Accept headers
+   *
    * @param request
    * @return
    */
-  private boolean checkAcceptHeadersByPattern(HttpServerRequest request, String headersPattern, boolean allowEmptyAccept) {
+  private boolean checkAcceptHeadersByPattern(HttpServerRequest request, String headersPattern,
+      boolean allowEmptyAccept) {
     if (checkAcceptHeadersExists(request)) {
       return ifAnyStringMatch(request.headers().getAll(ACCEPT), headersPattern);
     } else {
@@ -226,24 +232,13 @@ public class RtacHandler extends Handler {
     }
   }
 
-//  /**
-//   * Check if there is accept header which lead to returning JSON content
-//   * (by business cases described in the: https://issues.folio.org/browse/EDGRTAC-16)
-//   *
-//   * @param request
-//   * @return
-//   */
-//  private boolean hasJsonRelatedAcceptHeaders(HttpServerRequest request) {
-//    return hasRelatedAcceptHeaders(request, JSON_RELATED_MIME_TYPE_PATTERN, false);
-//  }
-
   private List<String> getListOfIds(boolean isBatch, Map<String, String> params) {
     List<String> ids;
     try {
       if (isBatch) {
         ids = Arrays.stream(params.get(PARAM_INSTANCE_IDS)
-          .split(",")).filter(Objects::nonNull)
-          .map(String::trim).collect(toList());
+            .split(",")).filter(Objects::nonNull)
+            .map(String::trim).collect(toList());
       } else {
         var id = params.get(PARAM_TITLE_ID);
         if (StringUtils.isEmpty(id)) {
@@ -269,9 +264,9 @@ public class RtacHandler extends Handler {
       xml = FALLBACK_EMPTY_RESPONSE;
     }
     ctx.response()
-      .setStatusCode(200)
-      .putHeader(HttpHeaders.CONTENT_TYPE, APPLICATION_XML)
-      .end(xml);
+        .setStatusCode(200)
+        .putHeader(HttpHeaders.CONTENT_TYPE, APPLICATION_XML)
+        .end(xml);
   }
 
   @Override

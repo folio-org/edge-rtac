@@ -47,15 +47,15 @@ public class MainVerticleTest {
 
   private static final Logger logger = LogManager.getLogger(MainVerticleTest.class);
 
-  private static final String titleId = "0c8e8ac5-6bcc-461e-a8d3-4b55a96addc8";
-  private static final String apiKey = ApiKeyUtils.generateApiKey(10, "diku", "diku");
+  protected static final String titleId = "0c8e8ac5-6bcc-461e-a8d3-4b55a96addc8";
+  protected static final String apiKey = ApiKeyUtils.generateApiKey(10, "diku", "diku");
   private static final String badApiKey = apiKey + "0000";
   private static final String unknownTenantApiKey = ApiKeyUtils.generateApiKey(10, "bogus", "diku");
 
   private static final long requestTimeoutMs = 3000L;
 
   private static Vertx vertx;
-  private static RtacMockOkapi mockOkapi;
+  protected static RtacMockOkapi mockOkapi;
 
   @BeforeClass
   public static void setUpOnce(TestContext context) throws Exception {
