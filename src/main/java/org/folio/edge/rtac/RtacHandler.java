@@ -56,7 +56,7 @@ public class RtacHandler extends Handler {
 
     // Check if there were supported "Accept" headers passed
     if (!checkSupportedAcceptHeaders(request)) {
-      notAcceptable(ctx, "Unsupported media type" + request.headers());
+      notAcceptable(ctx, "Unsupported media type" + request.getHeader(ACCEPT));
       return;
     }
 
