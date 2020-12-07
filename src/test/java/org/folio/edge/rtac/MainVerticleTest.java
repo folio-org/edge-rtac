@@ -16,9 +16,12 @@ import static org.mockito.Mockito.spy;
 import static org.mockito.Mockito.verify;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.UUID;
 
+import java.util.stream.Collectors;
+import org.apache.commons.lang3.ArrayUtils;
 import org.apache.http.HttpHeaders;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -100,6 +103,29 @@ public class MainVerticleTest {
       mockOkapi.close(context);
       async.complete();
     });
+  }
+
+  protected String prepareQueryFor(String apiKey, String... instanceIds) {
+    if (ArrayUtils.isEmpty(instanceIds)) {
+      return String.format("/rtac?apikey=%s", apiKey);
+    } else {
+      String instancesAsString = Arrays.asList(instanceIds).stream()
+          .collect(Collectors.joining(","));
+      return String.format("/rtac?apikey=%s&instanceIds=%s", apiKey, instancesAsString);
+    }
+  }
+
+  protected Instances prepareRecordsFor(String... instanceIds) {
+    if (ArrayUtils.isEmpty(instanceIds)) {
+      throw new IllegalArgumentException("No instances specified");
+
+    } else {
+      final var holdings = Arrays.asList(instanceIds).stream().map(RtacMockOkapi::getHoldings)
+          .collect(Collectors.toList());
+      final var instanceHoldingRecords = new Instances();
+      instanceHoldingRecords.setHoldings(holdings);
+      return instanceHoldingRecords;
+    }
   }
 
   @Test
@@ -248,7 +274,6 @@ public class MainVerticleTest {
     var actual = Instances.fromXml(xml);
     assertEquals(expected, actual);
   }
-
 
   @Test
   public void testRtacNoApiKey(TestContext context) throws Exception {
