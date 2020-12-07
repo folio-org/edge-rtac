@@ -18,11 +18,6 @@ import org.junit.Test;
 
 public class RtacHandlerTest extends MainVerticleTest {
 
-  /**
-   * Tests when there is no "Accept" header then response returns in XML by default.
-   *
-   * @throws IOException
-   */
   @Test
   public void shouldRespondWithXMLWhenClientDoesNotStateAPreference() throws IOException {
     final var queryString = prepareQueryFor(apiKey, titleId);
@@ -45,12 +40,6 @@ public class RtacHandlerTest extends MainVerticleTest {
     assertEquals(expectedRecords, xmlResponsePayload);
   }
 
-  /**
-   * Tests when there is "application/xml" "Accept" header specified then response returns in XML.
-   * XML is a default return type.
-   *
-   * @throws IOException
-   */
   @Test
   public void shouldRespondWithXMLWhenClientSpecifiedXMLType() throws IOException {
     final var queryString = prepareQueryFor(apiKey, titleId);
@@ -75,12 +64,6 @@ public class RtacHandlerTest extends MainVerticleTest {
     assertEquals(expectedRecords, xmlResponsePayload);
   }
 
-  /**
-   * Tests when there is "application/json" "Accept" header specified then response returns in JSON.
-   * JSON type uses as default inside of Folio system.
-   *
-   * @throws IOException
-   */
   @Test
   public void shouldRespondWithJSONWhenClientSpecifiedJSONType() throws IOException {
     final var queryString = prepareQueryFor(apiKey, titleId);
@@ -104,11 +87,6 @@ public class RtacHandlerTest extends MainVerticleTest {
     assertEquals(expectedRecordsJson, responsePayload);
   }
 
-  /**
-   * Tests when both types of XML and JSON are specified, XML has higher priority.
-   *
-   * @throws IOException
-   */
   @Test
   public void shouldRespondWithXMLWhenClientSpecifiedBothOfXMLAndJSONTypes() throws IOException {
     final var queryString = prepareQueryFor(apiKey, titleId);
@@ -134,13 +112,8 @@ public class RtacHandlerTest extends MainVerticleTest {
     assertEquals(expectedRecords, xmlResponsePayload);
   }
 
-  /**
-   * Tests when both of wrong and valid "Accept" headers specified response returns in valid type.
-   *
-   * @throws IOException
-   */
   @Test
-  public void checkBothValidAndWrongAcceptHeaderSpecifiedSuccessfulResponse() throws IOException {
+  public void shouldRespondWithSupportedTypeWhenClientSpecifiedBothSupportedAndUnsupportedTypes() throws IOException {
     final var queryString = prepareQueryFor(apiKey, titleId);
     final var expectedRecordsJson = prepareRecordsFor(titleId).toJson();
 
@@ -162,11 +135,6 @@ public class RtacHandlerTest extends MainVerticleTest {
     assertEquals(expectedRecordsJson, responsePayload);
   }
 
-  /**
-   * Tests when wrong "Accept" header specified then "unsupported media type" returns.
-   *
-   * @throws JsonProcessingException
-   */
   @Test
   public void shouldRespondUnsupportedMediaTypeWhenClientStateWrongType()
       throws JsonProcessingException {
