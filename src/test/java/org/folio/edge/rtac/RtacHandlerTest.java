@@ -87,7 +87,7 @@ public class RtacHandlerTest extends MainVerticleTest {
   }
 
   @Test
-  public void shouldRespondWithXMLWhenClientSpecifiedBothOfXMLAndJSONTypes() throws IOException {
+  public void shouldRespondWithXMLWhenClientAcceptsBothXMLAndJSON() throws IOException {
     final var queryString = prepareQueryFor(apiKey, titleId);
     final var expectedRecords = prepareRecordsFor(titleId);
 
@@ -112,7 +112,7 @@ public class RtacHandlerTest extends MainVerticleTest {
   }
 
   @Test
-  public void shouldRespondWithSupportedTypeWhenClientSpecifiedBothSupportedAndUnsupportedTypes() throws IOException {
+  public void shouldRespondWithSupportedTypeWhenClientAcceptsBothSupportedAndUnsupportedTypes() throws IOException {
     final var queryString = prepareQueryFor(apiKey, titleId);
     final var expectedRecordsJson = prepareRecordsFor(titleId).toJson();
 
@@ -135,7 +135,7 @@ public class RtacHandlerTest extends MainVerticleTest {
   }
 
   @Test
-  public void shouldRespondUnsupportedMediaTypeWhenClientStateWrongType()
+  public void shouldRespondWithUnsupportedMediaTypeWhenClientOnlyAcceptsUnsupportedType()
       throws JsonProcessingException {
     final var queryString = prepareQueryFor(apiKey, titleId);
 

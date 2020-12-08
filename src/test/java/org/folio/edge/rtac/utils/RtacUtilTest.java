@@ -29,7 +29,7 @@ public class RtacUtilTest {
   private static List<String> unsupportedAcceptHeaders = Arrays.asList(TEXT_PLAIN);
 
   @BeforeClass
-  public static void beforeClassRtacUtils() {
+  public static void beforeClass() {
     // Creates mock of RTAC request nd headers
     rtacRequest = mock(HttpServerRequest.class);
     rtacHeaders = mock(MultiMap.class);
@@ -42,12 +42,14 @@ public class RtacUtilTest {
   public void shouldSupportedTypePassedWhenClientSpecifiedSupportedType() {
     when(rtacHeaders.contains(ACCEPT)).thenReturn(true);
     when(rtacHeaders.getAll(ACCEPT)).thenReturn(supportedAcceptHeaders);
+
     assertTrue(RtacUtils.checkSupportedAcceptHeaders(rtacRequest));
   }
 
   @Test
   public void shouldCheckingForSupportedTypePassedWhenClientDoesNotStateAPreference() {
     when(rtacHeaders.contains(ACCEPT)).thenReturn(false);
+
     assertTrue(RtacUtils.checkSupportedAcceptHeaders(rtacRequest));
   }
 
@@ -55,12 +57,14 @@ public class RtacUtilTest {
   public void shouldCheckingForSupportedTypeFailedWhenClientSpecifiedUnsupportedType() {
     when(rtacHeaders.contains(ACCEPT)).thenReturn(true);
     when(rtacHeaders.getAll(ACCEPT)).thenReturn(unsupportedAcceptHeaders);
+
     assertFalse(RtacUtils.checkSupportedAcceptHeaders(rtacRequest));
   }
 
   @Test
   public void shouldCheckingForXMLTypePassedWhenClientDoesNotStateAPreference() {
     when(rtacHeaders.contains(ACCEPT)).thenReturn(false);
+
     assertTrue(RtacUtils.isXmlRequest(rtacRequest));
   }
 
@@ -68,6 +72,7 @@ public class RtacUtilTest {
   public void shouldCheckingForXMLTypePassedWhenClientSpecifiedSupportedType() {
     when(rtacHeaders.contains(ACCEPT)).thenReturn(true);
     when(rtacHeaders.getAll(ACCEPT)).thenReturn(supportedAcceptHeaders);
+
     assertTrue(RtacUtils.isXmlRequest(rtacRequest));
   }
 
@@ -75,6 +80,7 @@ public class RtacUtilTest {
   public void shouldCheckingForXMLTypeFailedWhenClientSpecifiedUnsupportedType() {
     when(rtacHeaders.contains(ACCEPT)).thenReturn(true);
     when(rtacHeaders.getAll(ACCEPT)).thenReturn(unsupportedAcceptHeaders);
+
     assertFalse(RtacUtils.isXmlRequest(rtacRequest));
   }
 }
