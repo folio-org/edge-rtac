@@ -44,8 +44,31 @@ public class RtacHandler extends Handler {
   private static final String PARAM_INSTANCE_ID = "instanceId";
   private static final String PARAM_INSTANCE_IDS = "instanceIds";
 
+  private List<String> rtacMimeTypes;
+  private boolean needUpdateRtacMimeType;
+
   public RtacHandler(SecureStore secureStore, RtacOkapiClientFactory ocf) {
     super(secureStore, ocf);
+  }
+
+  private void saveRequestType(HttpServerRequest request) {
+    rtacMimeTypes = getRtacMimeType(request);
+    // Determine if it's  need to mock original Accept header with json-type, which is used internally
+    needUpdateRtacMimeType = hasRequestAnyOfAcceptTypes(request,
+        RtacMimeTypeEnum.APPLICATION_XML, RtacMimeTypeEnum.TEXT_XML, RtacMimeTypeEnum.ALL)
+        || !rtacMimeTypes.stream().findFirst().orElse(StringUtils.EMPTY)
+        .equalsIgnoreCase(APPLICATION_JSON);
+
+    // Update Accept header with internally accepted value
+    if (needUpdateRtacMimeType) {
+      updateRequestWithMimeType(request, APPLICATION_JSON);
+    }
+  }
+
+  private void restoreRequestType(HttpServerRequest request) {
+    if (needUpdateRtacMimeType) {
+      updateRequestWithMimeType(request, rtacMimeTypes.toArray(new String[0]));
+    }
   }
 
   protected void handle(RoutingContext ctx, boolean isBatch) {
@@ -83,29 +106,16 @@ public class RtacHandler extends Handler {
             return;
           }
 
-          // Remember original Accept headers
-          final var rtacAcceptMimeType = getRtacMimeType(request);
-
-          // Determine if it's  need to mock original Accept header with json-type, which is used internally
-          final boolean needUpdateRtacMimeType = hasRequestAnyOfAcceptTypes(request,
-              RtacMimeTypeEnum.APPLICATION_XML, RtacMimeTypeEnum.TEXT_XML, RtacMimeTypeEnum.ALL)
-              || !rtacAcceptMimeType.stream().findFirst().orElse(StringUtils.EMPTY)
-              .equalsIgnoreCase(APPLICATION_JSON);
-
-          // Update Accept header with internally accepted value
-          if (needUpdateRtacMimeType) {
-            updateRequestWithMimeType(request, APPLICATION_JSON);
-          }
+          // Remember original request types
+          saveRequestType(request);
 
           rtacClient.rtac(instanceIds, request.headers())
               .thenAcceptAsync(body -> {
                 try {
                   logger.debug("rtac response: {}", body);
 
-                  // Restore original Accept headers
-                  if (needUpdateRtacMimeType) {
-                    updateRequestWithMimeType(request, rtacAcceptMimeType.toArray(new String[0]));
-                  }
+                  // Restore original request types
+                  restoreRequestType(request);
 
                   String returningContent = body;
                   /// Determine whether the response should be returned in XML format
@@ -121,7 +131,6 @@ public class RtacHandler extends Handler {
                     }
                   }
 
-
                   logger.info("Converted Response: \n {}", returningContent);
                   ctx.response()
                       .setStatusCode(200)
@@ -136,6 +145,10 @@ public class RtacHandler extends Handler {
               })
               .exceptionally(t -> {
                 logger.error("Exception calling mod-rtac", t);
+
+                // Restore original request types
+                restoreRequestType(request);
+
                 returnEmptyResponse(ctx);
                 return null;
               });
