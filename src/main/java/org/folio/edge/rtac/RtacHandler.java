@@ -50,7 +50,7 @@ public class RtacHandler extends Handler {
     super(secureStore, ocf);
   }
 
-  private void saveRequestType(HttpServerRequest request) {
+  private synchronized void saveRequestType(HttpServerRequest request) {
     rtacMimeTypes = getRtacMimeType(request);
     // Determine if it's  need to mock original Accept header with json-type, which is used internally
     needUpdateRtacMimeType = hasRequestAnyOfAcceptTypes(request,
@@ -64,7 +64,7 @@ public class RtacHandler extends Handler {
     }
   }
 
-  private void restoreRequestType(HttpServerRequest request) {
+  private synchronized void restoreRequestType(HttpServerRequest request) {
     if (needUpdateRtacMimeType) {
       updateRequestWithMimeType(request, rtacMimeTypes.toArray(new String[0]));
     }
