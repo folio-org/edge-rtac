@@ -22,15 +22,13 @@ import org.folio.edge.core.utils.Mappers;
 import org.folio.edge.rtac.model.Instances;
 
 public final class RtacUtils {
-
   public static final String FALLBACK_EMPTY_XML_RESPONSE = Mappers.XML_PROLOG + "\n<holdings/>";
   public static final String FALLBACK_EMPTY_JSON_RESPONSE = (new JsonObject()
       .put("holdings", new JsonObject())).toString();
   public static final String SEPARATOR_COMMA = ",";
   private boolean result;
 
-  private RtacUtils() {
-  }
+  private RtacUtils() { }
 
   private static String getPayload(boolean defaultXml) throws JsonProcessingException {
     return (defaultXml) ? new Instances().toXml() : new Instances().toJson();

@@ -19,7 +19,6 @@ import org.mockito.Mock;
 
 @RunWith(VertxUnitRunner.class)
 public class RtacUtilTest {
-
   @Mock
   private static HttpServerRequest rtacRequest;
   @Mock

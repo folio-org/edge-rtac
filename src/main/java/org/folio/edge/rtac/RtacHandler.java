@@ -36,7 +36,6 @@ import org.folio.edge.rtac.utils.RtacOkapiClient;
 import org.folio.edge.rtac.utils.RtacOkapiClientFactory;
 
 public class RtacHandler extends Handler {
-
   private static final Logger logger = LogManager.getLogger(RtacHandler.class);
 
   private static final String PARAM_FULL_PERIODICALS = "fullPeriodicals";

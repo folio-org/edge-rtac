@@ -17,7 +17,6 @@ import org.folio.edge.rtac.utils.RtacMimeTypeEnum;
 import org.junit.Test;
 
 public class RtacHandlerTest extends MainVerticleTest {
-
   @Test
   public void shouldRespondWithXMLWhenClientDoesNotStateAPreference() throws IOException {
     final var queryString = prepareQueryFor(apiKey, titleId);
