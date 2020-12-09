@@ -8,10 +8,12 @@ import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
 import io.vertx.core.MultiMap;
+import io.vertx.core.http.CaseInsensitiveHeaders;
 import io.vertx.core.http.HttpServerRequest;
 import io.vertx.ext.unit.junit.VertxUnitRunner;
 import java.util.Arrays;
 import java.util.List;
+import org.junit.After;
 import org.junit.BeforeClass;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -19,68 +21,81 @@ import org.mockito.Mock;
 
 @RunWith(VertxUnitRunner.class)
 public class RtacUtilTest {
+
   @Mock
   private static HttpServerRequest rtacRequest;
-  @Mock
   private static MultiMap rtacHeaders;
 
   private static List<String> supportedAcceptHeaders = Arrays
       .asList(RtacMimeTypeEnum.getAllTypesAsString());
+
   private static List<String> unsupportedAcceptHeaders = Arrays.asList(TEXT_PLAIN);
+
+  private static List<String> xmlAndJsonAcceptHeaders = Arrays
+      .asList(RtacMimeTypeEnum.APPLICATION_JSON.toString(),
+          RtacMimeTypeEnum.APPLICATION_XML.toString());
+
+  private static List<String> wildcardAllAcceptHeaders = Arrays
+      .asList(RtacMimeTypeEnum.ALL.toString());
 
   @BeforeClass
   public static void beforeClass() {
-    // Creates mock of RTAC request nd headers
+    rtacHeaders = new CaseInsensitiveHeaders();
     rtacRequest = mock(HttpServerRequest.class);
-    rtacHeaders = mock(MultiMap.class);
 
-    // Define mock object's behavior
+    // Define behaviour of mock object
     when(rtacRequest.headers()).thenReturn(rtacHeaders);
   }
 
+  @After
+  public void afterMethod() {
+    rtacHeaders.clear();
+  }
+
   @Test
-  public void shouldSupportedTypePassedWhenClientSpecifiedSupportedType() {
-    when(rtacHeaders.contains(ACCEPT)).thenReturn(true);
-    when(rtacHeaders.getAll(ACCEPT)).thenReturn(supportedAcceptHeaders);
+  public void shouldTreatRequestAsSupportedWhenClientDoesNotStateAPreference() {
+    // No headers, validation of request should pass
+    assertTrue(RtacUtils.checkSupportedAcceptHeaders(rtacRequest));
+  }
+
+  @Test
+  public void shouldTreatRequestAsXMLWhenClientDoesNotStateAPreference() {
+    // No headers, request identified as XML
+    assertTrue(RtacUtils.isXmlRequest(rtacRequest));
+  }
+
+  @Test
+  public void shouldTreatRequestAsSupportedWhenClientSpecifiedWildcardAllType() {
+    rtacHeaders.add(String.valueOf(ACCEPT), wildcardAllAcceptHeaders);
 
     assertTrue(RtacUtils.checkSupportedAcceptHeaders(rtacRequest));
   }
 
   @Test
-  public void shouldCheckingForSupportedTypePassedWhenClientDoesNotStateAPreference() {
-    when(rtacHeaders.contains(ACCEPT)).thenReturn(false);
+  public void shouldTreatRequestAsXMLWhenClientSpecifiedWildcardAllType() {
+    rtacHeaders.add(String.valueOf(ACCEPT), wildcardAllAcceptHeaders);
+
+    assertTrue(RtacUtils.isXmlRequest(rtacRequest));
+  }
+
+  @Test
+  public void shouldTreatRequestAsSupportedWhenClientSpecifiedSupportedType() {
+    rtacHeaders.add(String.valueOf(ACCEPT), supportedAcceptHeaders);
 
     assertTrue(RtacUtils.checkSupportedAcceptHeaders(rtacRequest));
   }
 
   @Test
-  public void shouldCheckingForSupportedTypeFailedWhenClientSpecifiedUnsupportedType() {
-    when(rtacHeaders.contains(ACCEPT)).thenReturn(true);
-    when(rtacHeaders.getAll(ACCEPT)).thenReturn(unsupportedAcceptHeaders);
+  public void shouldTreatRequestAsUnsupportedWhenClientSpecifiedUnsupportedType() {
+    rtacHeaders.add(String.valueOf(ACCEPT), unsupportedAcceptHeaders);
 
     assertFalse(RtacUtils.checkSupportedAcceptHeaders(rtacRequest));
   }
 
   @Test
-  public void shouldCheckingForXMLTypePassedWhenClientDoesNotStateAPreference() {
-    when(rtacHeaders.contains(ACCEPT)).thenReturn(false);
+  public void XmlIsPreferredWhenClientAcceptsBothXmlAndJson() {
+    rtacHeaders.add(String.valueOf(ACCEPT), xmlAndJsonAcceptHeaders);
 
     assertTrue(RtacUtils.isXmlRequest(rtacRequest));
-  }
-
-  @Test
-  public void shouldCheckingForXMLTypePassedWhenClientSpecifiedSupportedType() {
-    when(rtacHeaders.contains(ACCEPT)).thenReturn(true);
-    when(rtacHeaders.getAll(ACCEPT)).thenReturn(supportedAcceptHeaders);
-
-    assertTrue(RtacUtils.isXmlRequest(rtacRequest));
-  }
-
-  @Test
-  public void shouldCheckingForXMLTypeFailedWhenClientSpecifiedUnsupportedType() {
-    when(rtacHeaders.contains(ACCEPT)).thenReturn(true);
-    when(rtacHeaders.getAll(ACCEPT)).thenReturn(unsupportedAcceptHeaders);
-
-    assertFalse(RtacUtils.isXmlRequest(rtacRequest));
   }
 }
