@@ -1,8 +1,6 @@
 package org.folio.edge.rtac.utils;
 
 import static io.vertx.core.http.HttpHeaders.ACCEPT;
-import static org.folio.edge.core.Constants.APPLICATION_JSON;
-import static org.folio.edge.core.Constants.APPLICATION_XML;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import io.vertx.core.http.HttpHeaders;
@@ -12,12 +10,12 @@ import io.vertx.ext.web.RoutingContext;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
-import java.util.Optional;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.ArrayUtils;
 import org.apache.commons.lang3.StringUtils;
+import org.folio.edge.core.Constants;
 import org.folio.edge.core.utils.Mappers;
 import org.folio.edge.rtac.model.Instances;
 
@@ -26,9 +24,23 @@ public final class RtacUtils {
   public static final String FALLBACK_EMPTY_JSON_RESPONSE = (new JsonObject()
       .put("holdings", new JsonObject())).toString();
   public static final String SEPARATOR_COMMA = ",";
-  private boolean result;
 
-  private RtacUtils() { }
+  public static final String APPLICATION_XML = Constants.APPLICATION_XML;
+  public static final String TEXT_XML = Constants.TEXT_XML;
+  public static final String APPLICATION_JSON = Constants.APPLICATION_JSON;
+  public static final String ALL_WILDCARD = "*/*";
+
+  public static final String[] SUPPORTED_TYPES = new String[]{
+      APPLICATION_XML, TEXT_XML,
+      APPLICATION_JSON, ALL_WILDCARD};
+
+  public static final String[] XML_TYPES = new String[]{
+      APPLICATION_XML,
+      TEXT_XML,
+      ALL_WILDCARD};
+
+  private RtacUtils() {
+  }
 
   private static String getPayload(boolean defaultXml) throws JsonProcessingException {
     return (defaultXml) ? new Instances().toXml() : new Instances().toJson();
@@ -48,7 +60,7 @@ public final class RtacUtils {
   }
 
   public static boolean hasRequestAnyOfAcceptTypes(HttpServerRequest request,
-      RtacMimeTypeEnum... types) {
+      String... types) {
     boolean result = false;
 
     if (ArrayUtils.isNotEmpty(types)) {
@@ -56,7 +68,7 @@ public final class RtacUtils {
 
       result = normalizedAcceptHeaders.stream()
           .anyMatch(reqMimeArrayEntry -> Stream.of(types)
-              .anyMatch(mimeType -> mimeType.toString().equalsIgnoreCase(reqMimeArrayEntry)));
+              .anyMatch(mimeType -> mimeType.equalsIgnoreCase(reqMimeArrayEntry)));
     }
     return result;
   }
@@ -70,8 +82,7 @@ public final class RtacUtils {
    */
   public static boolean isXmlRequest(HttpServerRequest request) {
     if (hasAcceptHeader(request)) {
-      return hasRequestAnyOfAcceptTypes(request, RtacMimeTypeEnum.APPLICATION_XML,
-          RtacMimeTypeEnum.TEXT_XML, RtacMimeTypeEnum.ALL);
+      return hasRequestAnyOfAcceptTypes(request, XML_TYPES);
     } else {
       // For XML related accept headers there is allowed empty/no Accept header at all.
       // So we just return passed value if empty/no Accept header allowed, like for XML-related mime-type checking.
@@ -124,22 +135,17 @@ public final class RtacUtils {
     if (!hasAcceptHeader(request)) {
       return true;
     } else {
-      return hasRequestAnyOfAcceptTypes(request, RtacMimeTypeEnum.getAllTypes());
+      return hasRequestAnyOfAcceptTypes(request, SUPPORTED_TYPES);
     }
   }
 
   public static String composeMimeTypes(String... mimeTypes) {
     String result = StringUtils.EMPTY;
     if (ArrayUtils.isNotEmpty(mimeTypes)) {
-      result = Stream.of(mimeTypes).map(String::trim).collect(Collectors.joining(SEPARATOR_COMMA));
+      result = Stream.of(mimeTypes).map(String::trim).filter(StringUtils::isNotBlank)
+          .collect(Collectors.joining(SEPARATOR_COMMA));
     }
     return result;
-  }
-
-  public static String composeMimeTypes(RtacMimeTypeEnum... mimeTypes) {
-    return composeMimeTypes(
-        Arrays.stream(Optional.ofNullable(mimeTypes).orElse(new RtacMimeTypeEnum[0]))
-            .map(RtacMimeTypeEnum::toString).toArray(String[]::new));
   }
 
 }

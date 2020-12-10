@@ -2,6 +2,10 @@ package org.folio.edge.rtac.utils;
 
 import static io.vertx.core.http.HttpHeaders.ACCEPT;
 import static org.folio.edge.core.Constants.TEXT_PLAIN;
+import static org.folio.edge.rtac.utils.RtacUtils.ALL_WILDCARD;
+import static org.folio.edge.rtac.utils.RtacUtils.APPLICATION_JSON;
+import static org.folio.edge.rtac.utils.RtacUtils.APPLICATION_XML;
+import static org.folio.edge.rtac.utils.RtacUtils.SUPPORTED_TYPES;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 import static org.mockito.Mockito.mock;
@@ -27,16 +31,15 @@ public class RtacUtilTest {
   private static MultiMap rtacHeaders;
 
   private static List<String> supportedAcceptHeaders = Arrays
-      .asList(RtacMimeTypeEnum.getAllTypesAsString());
+      .asList(SUPPORTED_TYPES);
 
   private static List<String> unsupportedAcceptHeaders = Arrays.asList(TEXT_PLAIN);
 
   private static List<String> xmlAndJsonAcceptHeaders = Arrays
-      .asList(RtacMimeTypeEnum.APPLICATION_JSON.toString(),
-          RtacMimeTypeEnum.APPLICATION_XML.toString());
+      .asList(APPLICATION_XML, APPLICATION_JSON);
 
   private static List<String> wildcardAllAcceptHeaders = Arrays
-      .asList(RtacMimeTypeEnum.ALL.toString());
+      .asList(ALL_WILDCARD);
 
   @BeforeClass
   public static void beforeClass() {

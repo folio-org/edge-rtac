@@ -2,9 +2,9 @@ package org.folio.edge.rtac;
 
 import static org.apache.http.HttpStatus.SC_NOT_ACCEPTABLE;
 import static org.apache.http.HttpStatus.SC_OK;
-import static org.folio.edge.core.Constants.APPLICATION_JSON;
-import static org.folio.edge.core.Constants.APPLICATION_XML;
 import static org.folio.edge.core.Constants.TEXT_PLAIN;
+import static org.folio.edge.rtac.utils.RtacUtils.APPLICATION_JSON;
+import static org.folio.edge.rtac.utils.RtacUtils.APPLICATION_XML;
 import static org.folio.edge.rtac.utils.RtacUtils.composeMimeTypes;
 import static org.junit.Assert.assertEquals;
 
@@ -13,7 +13,6 @@ import io.restassured.RestAssured;
 import java.io.IOException;
 import org.apache.http.HttpHeaders;
 import org.folio.edge.rtac.model.Instances;
-import org.folio.edge.rtac.utils.RtacMimeTypeEnum;
 import org.junit.Test;
 
 public class RtacHandlerTest extends MainVerticleTest {
@@ -95,7 +94,7 @@ public class RtacHandlerTest extends MainVerticleTest {
     final var resp = RestAssured
         .given()
         .accept(
-            composeMimeTypes(RtacMimeTypeEnum.APPLICATION_XML, RtacMimeTypeEnum.APPLICATION_JSON))
+            composeMimeTypes(APPLICATION_XML, APPLICATION_JSON))
         .get(queryString)
         .then()
         .contentType(APPLICATION_XML)
@@ -112,14 +111,15 @@ public class RtacHandlerTest extends MainVerticleTest {
   }
 
   @Test
-  public void shouldRespondWithSupportedTypeWhenClientAcceptsBothSupportedAndUnsupportedTypes() throws IOException {
+  public void shouldRespondWithSupportedTypeWhenClientAcceptsBothSupportedAndUnsupportedTypes()
+      throws IOException {
     final var queryString = prepareQueryFor(apiKey, titleId);
     final var expectedRecordsJson = prepareRecordsFor(titleId).toJson();
 
     // Make get request with XML type content
     final var resp = RestAssured
         .given()
-        .accept(composeMimeTypes(RtacMimeTypeEnum.APPLICATION_JSON.toString(), TEXT_PLAIN))
+        .accept(composeMimeTypes(APPLICATION_JSON, TEXT_PLAIN))
         .get(queryString)
         .then()
         .contentType(APPLICATION_JSON)
