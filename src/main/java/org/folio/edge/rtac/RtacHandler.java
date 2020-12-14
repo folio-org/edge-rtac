@@ -81,30 +81,29 @@ public class RtacHandler extends Handler {
         }
 
         // Update mime type to JSON to interact inside of Folio system
-//        final var rtacMimeTypes = getRtacMimeType(request);
+        final var rtacMimeTypes = getRtacMimeType(request);
         final var isXmlRequest = isXmlRequest(ctx);
-//        if (isXmlRequest) {
-//          updateRequestWithMimeType(request, APPLICATION_JSON);
-//        }
+        if (isXmlRequest) {
+          updateRequestWithMimeType(request, APPLICATION_JSON);
+        }
 
         rtacClient.rtac(instanceIds, request.headers())
           .thenAcceptAsync(body -> {
             try {
+              // Restore original request types
+              if (isXmlRequest) {
+                updateRequestWithMimeType(request, rtacMimeTypes.toArray(new String[0]));
+              }
+
               logger.debug("rtac response: {}", body);
               String returningContent = body;
 
               final var instances = Instances.fromJson(body);
-
-              if (true /*isXmlRequest*/) {
-                // Restore original request types
-                //updateRequestWithMimeType(request, rtacMimeTypes.toArray(new String[0]));
-
-                if (isBatch) {
-                  returningContent = isXmlRequest ? instances.toXml() : instances.toJson();
-                } else {
-                  var holdings = instances.getHoldings().isEmpty() ? new Holdings() : instances.getHoldings().get(0);
-                  returningContent = isXmlRequest ? holdings.toXml() : holdings.toJson();
-                }
+              if (isBatch) {
+                returningContent = isXmlRequest ? instances.toXml() : instances.toJson();
+              } else {
+                var holdings = instances.getHoldings().isEmpty() ? new Holdings() : instances.getHoldings().get(0);
+                returningContent = isXmlRequest ? holdings.toXml() : holdings.toJson();
               }
 
               logger.info("Converted Response: \n {}", returningContent);
@@ -120,7 +119,7 @@ public class RtacHandler extends Handler {
           .exceptionally(t -> {
             logger.error("Exception calling mod-rtac", t);
             // Restore original request types
-            //updateRequestWithMimeType(request, rtacMimeTypes.toArray(new String[0]));
+            updateRequestWithMimeType(request, rtacMimeTypes.toArray(new String[0]));
             returnEmptyResponse(ctx);
             return null;
           });
