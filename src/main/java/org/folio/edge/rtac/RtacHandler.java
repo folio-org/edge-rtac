@@ -50,8 +50,8 @@ public class RtacHandler extends Handler {
     final var request = ctx.request();
     logger.info("Request: {} \n params: {}", request.uri(), request.params());
 
-    // Check if there were supported "Accept" headers passed
-    if (!checkSupportedAcceptHeaders(request)) {
+    // When acceptable type passed but didn't recognized by server - checks for supported types.
+    if (!checkSupportedAcceptHeaders(ctx)) {
       notAcceptable(ctx, "Unsupported media type: " + request.getHeader(ACCEPT));
       return;
     }
@@ -81,9 +81,12 @@ public class RtacHandler extends Handler {
             return;
           }
 
-          // Remember original request types and update to JSON type for internal purposes only
+          // Update mime type to JSON to interact inside of Folio system
           final var rtacMimeTypes = getRtacMimeType(request);
-          updateRequestWithMimeType(request, APPLICATION_JSON);
+          final var isXmlRequest = isXmlRequest(ctx);
+          if (isXmlRequest) {
+            updateRequestWithMimeType(request, APPLICATION_JSON);
+          }
 
           rtacClient.rtac(instanceIds, request.headers())
               .thenAcceptAsync(body -> {
@@ -91,12 +94,13 @@ public class RtacHandler extends Handler {
                   logger.debug("rtac response: {}", body);
 
                   // Restore original request types
-                  updateRequestWithMimeType(request, rtacMimeTypes.toArray(new String[0]));
+                  if (isXmlRequest) {
+                    updateRequestWithMimeType(request, rtacMimeTypes.toArray(new String[0]));
+                  }
 
                   String returningContent = body;
                   /// Determine whether the response should be returned in XML format
-                  final var isXmlResponse = isXmlRequest(request);
-                  if (isXmlResponse) {
+                  if (isXmlRequest) {
                     final var instances = Instances.fromJson(body);
                     if (isBatch) {
                       returningContent = instances.toXml();
@@ -111,7 +115,7 @@ public class RtacHandler extends Handler {
                   ctx.response()
                       .setStatusCode(200)
                       .putHeader(HttpHeaders.CONTENT_TYPE,
-                          isXmlResponse ? APPLICATION_XML : APPLICATION_JSON)
+                          isXmlRequest ? APPLICATION_XML : APPLICATION_JSON)
                       .end(returningContent);
 
                 } catch (IOException e) {

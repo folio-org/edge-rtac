@@ -2,9 +2,9 @@ package org.folio.edge.rtac;
 
 import static org.apache.http.HttpStatus.SC_NOT_ACCEPTABLE;
 import static org.apache.http.HttpStatus.SC_OK;
+import static org.folio.edge.core.Constants.APPLICATION_JSON;
+import static org.folio.edge.core.Constants.APPLICATION_XML;
 import static org.folio.edge.core.Constants.TEXT_PLAIN;
-import static org.folio.edge.rtac.utils.RtacUtils.APPLICATION_JSON;
-import static org.folio.edge.rtac.utils.RtacUtils.APPLICATION_XML;
 import static org.folio.edge.rtac.utils.RtacUtils.composeMimeTypes;
 import static org.junit.Assert.assertEquals;
 
@@ -12,6 +12,7 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import io.restassured.RestAssured;
 import java.io.IOException;
 import org.apache.http.HttpHeaders;
+import org.folio.edge.core.Constants;
 import org.folio.edge.rtac.model.Instances;
 import org.junit.Test;
 
@@ -39,14 +40,14 @@ public class RtacHandlerTest extends MainVerticleTest {
   }
 
   @Test
-  public void shouldRespondWithXMLWhenClientSpecifiedXMLType() throws IOException {
+  public void shouldRespondWithXMLWhenClientAcceptsOnlyXML() throws IOException {
     final var queryString = prepareQueryFor(apiKey, titleId);
     final var expectedRecords = prepareRecordsFor(titleId);
 
     // Make get request with XML type content
     final var resp = RestAssured
         .given()
-        .accept(APPLICATION_XML)
+        .accept(Constants.APPLICATION_XML)
         .get(queryString)
         .then()
         .contentType(APPLICATION_XML)
@@ -63,7 +64,7 @@ public class RtacHandlerTest extends MainVerticleTest {
   }
 
   @Test
-  public void shouldRespondWithJSONWhenClientSpecifiedJSONType() throws IOException {
+  public void shouldRespondWithJSONWhenClientAcceptsOnlyJSON() throws IOException {
     final var queryString = prepareQueryFor(apiKey, titleId);
     final var expectedRecordsJson = prepareRecordsFor(titleId).toJson();
 

@@ -1,14 +1,12 @@
 package org.folio.edge.rtac;
 
-import org.folio.edge.core.EdgeVerticle;
-import org.folio.edge.core.utils.Mappers;
-import org.folio.edge.rtac.utils.RtacOkapiClientFactory;
-
 import com.fasterxml.jackson.annotation.JsonInclude;
-
 import io.vertx.core.http.HttpMethod;
 import io.vertx.ext.web.Router;
 import io.vertx.ext.web.handler.BodyHandler;
+import org.folio.edge.core.EdgeVerticle;
+import org.folio.edge.core.utils.Mappers;
+import org.folio.edge.rtac.utils.RtacOkapiClientFactory;
 
 public class MainVerticle extends EdgeVerticle {
 
@@ -32,13 +30,20 @@ public class MainVerticle extends EdgeVerticle {
 
     //Deprecated API
     router.route(HttpMethod.GET, "/prod/rtac/folioRTAC")
-      .handler(ctx -> rtacHandler.handle(ctx, false));
+        .produces("application/xml").produces("text/xml").produces("application/json")
+        .handler(ctx -> rtacHandler.handle(ctx, false));
 
     router.route(HttpMethod.GET, "/rtac/:instanceId")
-      .handler(ctx -> rtacHandler.handle(ctx, false));
+        .produces("application/xml").produces("text/xml").produces("application/json")
+        .handler(ctx -> rtacHandler.handle(ctx, false));
 
     router.route(HttpMethod.GET, "/rtac")
-      .handler(ctx -> rtacHandler.handle(ctx, true));
+        .produces("application/xml").produces("text/xml").produces("application/json")
+        .handler(ctx -> rtacHandler.handle(ctx, true));
+
+    // Default router for any other mime types, mainly to allow processing of the "Unsupported media type"
+    router.route().handler(ctx -> rtacHandler.handle(ctx, true));
+
     return router;
   }
 }

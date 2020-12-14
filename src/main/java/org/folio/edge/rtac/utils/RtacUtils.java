@@ -1,6 +1,11 @@
+
+
 package org.folio.edge.rtac.utils;
 
 import static io.vertx.core.http.HttpHeaders.ACCEPT;
+import static org.folio.edge.core.Constants.APPLICATION_JSON;
+import static org.folio.edge.core.Constants.APPLICATION_XML;
+import static org.folio.edge.core.Constants.TEXT_XML;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import io.vertx.core.http.HttpHeaders;
@@ -8,14 +13,12 @@ import io.vertx.core.http.HttpServerRequest;
 import io.vertx.core.json.JsonObject;
 import io.vertx.ext.web.RoutingContext;
 import java.util.Arrays;
-import java.util.Collections;
-import java.util.List;
+import java.util.Optional;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.ArrayUtils;
 import org.apache.commons.lang3.StringUtils;
-import org.folio.edge.core.Constants;
 import org.folio.edge.core.utils.Mappers;
 import org.folio.edge.rtac.model.Instances;
 
@@ -24,23 +27,9 @@ public final class RtacUtils {
   public static final String FALLBACK_EMPTY_JSON_RESPONSE = (new JsonObject()
       .put("holdings", new JsonObject())).toString();
   public static final String SEPARATOR_COMMA = ",";
-
-  public static final String APPLICATION_XML = Constants.APPLICATION_XML;
-  public static final String TEXT_XML = Constants.TEXT_XML;
-  public static final String APPLICATION_JSON = Constants.APPLICATION_JSON;
   public static final String ALL_WILDCARD = "*/*";
 
-  public static final String[] SUPPORTED_TYPES = new String[]{
-      APPLICATION_XML, TEXT_XML,
-      APPLICATION_JSON, ALL_WILDCARD};
-
-  public static final String[] XML_TYPES = new String[]{
-      APPLICATION_XML,
-      TEXT_XML,
-      ALL_WILDCARD};
-
-  private RtacUtils() {
-  }
+  private RtacUtils() { }
 
   private static String getPayload(boolean defaultXml) throws JsonProcessingException {
     return (defaultXml) ? new Instances().toXml() : new Instances().toJson();
@@ -55,58 +44,48 @@ public final class RtacUtils {
   }
 
   public static boolean hasAcceptHeader(HttpServerRequest request) {
-    return (request.headers().contains(ACCEPT) && StringUtils.isNotBlank(
-        getAcceptHeaderList(request).stream().collect(Collectors.joining())));
+    return StringUtils.isNotBlank(
+        request.headers().getAll(ACCEPT)
+            .stream().map(requestType -> requestType.split(SEPARATOR_COMMA))
+            .flatMap(requestTypeSplitted -> Arrays.stream(requestTypeSplitted)).map(String::trim)
+            .collect(Collectors.joining()));
   }
 
-  public static boolean hasRequestAnyOfAcceptTypes(HttpServerRequest request,
-      String... types) {
-    boolean result = false;
+  public static String getAcceptableContentType(RoutingContext ctx) {
+    final var acceptableContentType = Optional.ofNullable(ctx.getAcceptableContentType())
+        .orElse(StringUtils.EMPTY);
 
-    if (ArrayUtils.isNotEmpty(types)) {
-      var normalizedAcceptHeaders = getAcceptHeaderList(request);
-
-      result = normalizedAcceptHeaders.stream()
-          .anyMatch(reqMimeArrayEntry -> Stream.of(types)
-              .anyMatch(mimeType -> mimeType.equalsIgnoreCase(reqMimeArrayEntry)));
+    if (StringUtils.isNotBlank(acceptableContentType)) {
+      final var normalizedAcceptableContentType =
+          acceptableContentType.equalsIgnoreCase(TEXT_XML) ? APPLICATION_XML
+              : acceptableContentType;
+      return normalizedAcceptableContentType;
     }
-    return result;
+
+    return acceptableContentType;
   }
 
   /**
    * Check if there is accept header which lead to returning XML content (by business cases
    * described in the: https://issues.folio.org/browse/EDGRTAC-16)
    *
-   * @param request
+   * @param ctx
    * @return
    */
-  public static boolean isXmlRequest(HttpServerRequest request) {
-    if (hasAcceptHeader(request)) {
-      return hasRequestAnyOfAcceptTypes(request, XML_TYPES);
-    } else {
-      // For XML related accept headers there is allowed empty/no Accept header at all.
-      // So we just return passed value if empty/no Accept header allowed, like for XML-related mime-type checking.
-      return true;
-    }
+  public static boolean isXmlRequest(RoutingContext ctx) {
+    return !hasAcceptHeader(ctx.request())
+        || getAcceptableContentType(ctx).equalsIgnoreCase(APPLICATION_XML);
   }
 
-  public static List<String> getAcceptHeaderList(HttpServerRequest request) {
-    List<String> mimeTypes = request.headers().getAll(ACCEPT);
-    if (CollectionUtils.isEmpty(mimeTypes)) {
-      return Collections.emptyList();
-    }
-
-    return mimeTypes.stream()
-        .map(reqMime -> reqMime.split(SEPARATOR_COMMA))
-        .flatMap(reqMimeArray -> Arrays.stream(reqMimeArray))
-        .map(String::trim).collect(Collectors.toList());
+  public static boolean isJsonRequest(RoutingContext ctx) {
+    return getAcceptableContentType(ctx).equalsIgnoreCase(APPLICATION_JSON);
   }
 
   public static void returnEmptyResponse(RoutingContext ctx) {
     // NOTE: We always return a 200 even if holdings is empty here
     // because that's what the API we're trying to mimic does...
     // Yes, even if the response from mod-rtac is non-200!
-    final var isXmlResponse = isXmlRequest(ctx.request());
+    final var isXmlResponse = isXmlRequest(ctx);
     String responsePayload = null;
     try {
       responsePayload = getPayload(isXmlResponse);
@@ -131,12 +110,10 @@ public final class RtacUtils {
    * @param request - http request to the module
    * @return - true if accept headers are supported
    */
-  public static boolean checkSupportedAcceptHeaders(HttpServerRequest request) {
-    if (!hasAcceptHeader(request)) {
-      return true;
-    } else {
-      return hasRequestAnyOfAcceptTypes(request, SUPPORTED_TYPES);
-    }
+  public static boolean checkSupportedAcceptHeaders(RoutingContext ctx) {
+    return StringUtils.isBlank(getAcceptableContentType(ctx))
+        && CollectionUtils.isEmpty(ctx.request().headers().getAll(ACCEPT))
+        || isXmlRequest(ctx) || isJsonRequest(ctx);
   }
 
   public static String composeMimeTypes(String... mimeTypes) {
@@ -147,5 +124,6 @@ public final class RtacUtils {
     }
     return result;
   }
+
 
 }
