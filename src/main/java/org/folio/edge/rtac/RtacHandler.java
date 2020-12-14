@@ -56,83 +56,75 @@ public class RtacHandler extends Handler {
       return;
     }
 
-    super.handleCommon(ctx,
-        new String[]{},
-        new String[]{PARAM_TITLE_ID, PARAM_INSTANCE_ID, PARAM_INSTANCE_IDS, PARAM_FULL_PERIODICALS},
-        (client, params) -> {
+  super.handleCommon(ctx,
+      new String[]{},
+      new String[]{PARAM_TITLE_ID, PARAM_INSTANCE_ID, PARAM_INSTANCE_IDS, PARAM_FULL_PERIODICALS },
+      (client, params) -> {
 
-          RtacOkapiClient rtacClient = new RtacOkapiClient(client);
-          String instanceIds;
-          try {
-            List<String> ids = getListOfIds(isBatch, params);
-            if (CollectionUtils.isEmpty(ids)) {
-              badRequest(ctx, "Invalid instance id" + params.toString());
-              return;
-            }
-
-            var rtacParams = new HashMap<>();
-            rtacParams.put(PARAM_INSTANCE_IDS, ids);
-            rtacParams
-                .put(PARAM_FULL_PERIODICALS, Boolean.valueOf(params.get(PARAM_FULL_PERIODICALS)));
-            instanceIds = Mappers.jsonMapper.writeValueAsString(rtacParams);
-          } catch (JsonProcessingException e) {
-            logger.error("Exception during serialization in mod-rtac", e);
-            returnEmptyResponse(ctx);
+        RtacOkapiClient rtacClient = new RtacOkapiClient(client);
+        String instanceIds;
+        try {
+          List<String> ids = getListOfIds(isBatch, params);
+          if (CollectionUtils.isEmpty(ids)) {
+            badRequest(ctx, "Invalid instance id" + params.toString());
             return;
           }
 
-          // Update mime type to JSON to interact inside of Folio system
-          final var rtacMimeTypes = getRtacMimeType(request);
-          final var isXmlRequest = isXmlRequest(ctx);
-          if (isXmlRequest) {
-            updateRequestWithMimeType(request, APPLICATION_JSON);
-          }
+          var rtacParams = new HashMap<>();
+          rtacParams.put(PARAM_INSTANCE_IDS, ids);
+          rtacParams.put(PARAM_FULL_PERIODICALS, Boolean.valueOf(params.get(PARAM_FULL_PERIODICALS)));
+          instanceIds = Mappers.jsonMapper.writeValueAsString(rtacParams);
+        } catch (JsonProcessingException e) {
+          logger.error("Exception during serialization in mod-rtac", e);
+          returnEmptyResponse(ctx);
+          return;
+        }
 
-          rtacClient.rtac(instanceIds, request.headers())
-              .thenAcceptAsync(body -> {
-                try {
-                  logger.debug("rtac response: {}", body);
+        // Update mime type to JSON to interact inside of Folio system
+//        final var rtacMimeTypes = getRtacMimeType(request);
+        final var isXmlRequest = isXmlRequest(ctx);
+//        if (isXmlRequest) {
+//          updateRequestWithMimeType(request, APPLICATION_JSON);
+//        }
 
-                  // Restore original request types
-                  if (isXmlRequest) {
-                    updateRequestWithMimeType(request, rtacMimeTypes.toArray(new String[0]));
-                  }
+        rtacClient.rtac(instanceIds, request.headers())
+          .thenAcceptAsync(body -> {
+            try {
+              logger.debug("rtac response: {}", body);
+              String returningContent = body;
 
-                  String returningContent = body;
-                  /// Determine whether the response should be returned in XML format
-                  if (isXmlRequest) {
-                    final var instances = Instances.fromJson(body);
-                    if (isBatch) {
-                      returningContent = instances.toXml();
-                    } else {
-                      var holdings = instances.getHoldings().isEmpty() ? new Holdings()
-                          : instances.getHoldings().get(0);
-                      returningContent = holdings.toXml();
-                    }
-                  }
+              final var instances = Instances.fromJson(body);
 
-                  logger.info("Converted Response: \n {}", returningContent);
-                  ctx.response()
-                      .setStatusCode(200)
-                      .putHeader(HttpHeaders.CONTENT_TYPE,
-                          isXmlRequest ? APPLICATION_XML : APPLICATION_JSON)
-                      .end(returningContent);
-
-                } catch (IOException e) {
-                  logger.error("Exception translating JSON -> XML: {}", e.getMessage(), e);
-                  returnEmptyResponse(ctx);
-                }
-              })
-              .exceptionally(t -> {
-                logger.error("Exception calling mod-rtac", t);
-
+              if (true /*isXmlRequest*/) {
                 // Restore original request types
-                updateRequestWithMimeType(request, rtacMimeTypes.toArray(new String[0]));
+                //updateRequestWithMimeType(request, rtacMimeTypes.toArray(new String[0]));
 
-                returnEmptyResponse(ctx);
-                return null;
-              });
-        });
+                if (isBatch) {
+                  returningContent = isXmlRequest ? instances.toXml() : instances.toJson();
+                } else {
+                  var holdings = instances.getHoldings().isEmpty() ? new Holdings() : instances.getHoldings().get(0);
+                  returningContent = isXmlRequest ? holdings.toXml() : holdings.toJson();
+                }
+              }
+
+              logger.info("Converted Response: \n {}", returningContent);
+              ctx.response()
+                .setStatusCode(200)
+                .putHeader(HttpHeaders.CONTENT_TYPE, isXmlRequest ? APPLICATION_XML : APPLICATION_JSON)
+                .end(returningContent);
+            } catch (IOException e) {
+              logger.error("Exception translating of server response into {} format: {}", e.getMessage(), isXmlRequest ? "XML" : "JSON",e);
+              returnEmptyResponse(ctx);
+            }
+          })
+          .exceptionally(t -> {
+            logger.error("Exception calling mod-rtac", t);
+            // Restore original request types
+            //updateRequestWithMimeType(request, rtacMimeTypes.toArray(new String[0]));
+            returnEmptyResponse(ctx);
+            return null;
+          });
+      });
   }
 
   /**
@@ -183,19 +175,19 @@ public class RtacHandler extends Handler {
 
   @Override
   protected void invalidApiKey(RoutingContext ctx, String msg) {
-    logger.error("Invalid API key: " + msg);
+    logger.error(msg);
     returnEmptyResponse(ctx);
   }
 
   @Override
   protected void accessDenied(RoutingContext ctx, String body) {
-    logger.error("Access denied: " + body);
+    logger.error(body);
     returnEmptyResponse(ctx);
   }
 
   @Override
   protected void badRequest(RoutingContext ctx, String body) {
-    logger.error("Bad request: " + body);
+    logger.error(body);
     returnEmptyResponse(ctx);
   }
 }

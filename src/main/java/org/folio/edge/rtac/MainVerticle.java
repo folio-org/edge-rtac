@@ -1,12 +1,14 @@
 package org.folio.edge.rtac;
 
-import com.fasterxml.jackson.annotation.JsonInclude;
-import io.vertx.core.http.HttpMethod;
-import io.vertx.ext.web.Router;
-import io.vertx.ext.web.handler.BodyHandler;
 import org.folio.edge.core.EdgeVerticle;
 import org.folio.edge.core.utils.Mappers;
 import org.folio.edge.rtac.utils.RtacOkapiClientFactory;
+
+import com.fasterxml.jackson.annotation.JsonInclude;
+
+import io.vertx.core.http.HttpMethod;
+import io.vertx.ext.web.Router;
+import io.vertx.ext.web.handler.BodyHandler;
 
 public class MainVerticle extends EdgeVerticle {
 
