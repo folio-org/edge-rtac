@@ -39,6 +39,10 @@ public final class Holdings {
     return Mappers.XML_PROLOG + Mappers.xmlMapper.writeValueAsString(this);
   }
 
+  public String toJson() throws JsonProcessingException {
+    return Mappers.jsonMapper.writeValueAsString(this);
+  }
+
   public static Holdings fromXml(String xml) throws IOException {
     return Mappers.xmlMapper.readValue(xml, Holdings.class);
   }

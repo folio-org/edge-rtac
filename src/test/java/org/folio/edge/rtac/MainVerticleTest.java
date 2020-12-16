@@ -16,9 +16,12 @@ import static org.mockito.Mockito.spy;
 import static org.mockito.Mockito.verify;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.UUID;
 
+import java.util.stream.Collectors;
+import org.apache.commons.lang3.ArrayUtils;
 import org.apache.http.HttpHeaders;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -47,15 +50,15 @@ public class MainVerticleTest {
 
   private static final Logger logger = LogManager.getLogger(MainVerticleTest.class);
 
-  private static final String titleId = "0c8e8ac5-6bcc-461e-a8d3-4b55a96addc8";
-  private static final String apiKey = ApiKeyUtils.generateApiKey(10, "diku", "diku");
+  protected static final String titleId = "0c8e8ac5-6bcc-461e-a8d3-4b55a96addc8";
+  protected static final String apiKey = ApiKeyUtils.generateApiKey(10, "diku", "diku");
   private static final String badApiKey = apiKey + "0000";
   private static final String unknownTenantApiKey = ApiKeyUtils.generateApiKey(10, "bogus", "diku");
 
   private static final long requestTimeoutMs = 3000L;
 
   private static Vertx vertx;
-  private static RtacMockOkapi mockOkapi;
+  protected static RtacMockOkapi mockOkapi;
 
   @BeforeClass
   public static void setUpOnce(TestContext context) throws Exception {
@@ -100,6 +103,29 @@ public class MainVerticleTest {
       mockOkapi.close(context);
       async.complete();
     });
+  }
+
+  protected String prepareQueryFor(String apiKey, String... instanceIds) {
+    if (ArrayUtils.isEmpty(instanceIds)) {
+      return String.format("/rtac?apikey=%s", apiKey);
+    } else {
+      String instancesAsString = Arrays.asList(instanceIds).stream()
+          .collect(Collectors.joining(","));
+      return String.format("/rtac?apikey=%s&instanceIds=%s", apiKey, instancesAsString);
+    }
+  }
+
+  protected Instances prepareRecordsFor(String... instanceIds) {
+    if (ArrayUtils.isEmpty(instanceIds)) {
+      throw new IllegalArgumentException("No instances specified");
+
+    } else {
+      final var holdings = Arrays.asList(instanceIds).stream().map(RtacMockOkapi::getHoldings)
+          .collect(Collectors.toList());
+      final var instanceHoldingRecords = new Instances();
+      instanceHoldingRecords.setHoldings(holdings);
+      return instanceHoldingRecords;
+    }
   }
 
   @Test
@@ -248,7 +274,6 @@ public class MainVerticleTest {
     var actual = Instances.fromXml(xml);
     assertEquals(expected, actual);
   }
-
 
   @Test
   public void testRtacNoApiKey(TestContext context) throws Exception {
