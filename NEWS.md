@@ -1,3 +1,7 @@
+# 2.2.0 2021-03-16
+
+* Respects the `accept` header provided by the client ([EDGRTAC-16](https://issues.folio.org/browse/EDGRTAC-16))
+
 ## 2.1.1 2020-11-02
 
 Full [Changelog](https://github.com/folio-org/edge-rtac/compare/v2.1.0...v2.1.1)
