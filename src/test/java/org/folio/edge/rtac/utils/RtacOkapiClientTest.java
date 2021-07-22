@@ -4,6 +4,7 @@ import static java.util.stream.Collectors.toList;
 import static org.folio.edge.core.utils.test.MockOkapi.MOCK_TOKEN;
 import static org.folio.edge.core.utils.test.MockOkapi.X_DURATION;
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
 
 import java.io.IOException;
@@ -40,7 +41,7 @@ public class RtacOkapiClientTest {
 
   private final String titleId = "0c8e8ac5-6bcc-461e-a8d3-4b55a96addc8";
   private static final String tenant = "diku";
-  private static final long reqTimeout = 3000L;
+  private static final int reqTimeout = 3000;
 
   private RtacOkapiClient client;
   private RtacMockOkapi mockOkapi;
@@ -117,7 +118,7 @@ public class RtacOkapiClientTest {
       future.get();
       fail("Expected a TimeoutException to be thrown");
     } catch (Exception e) {
-      assertEquals(TimeoutException.class, e.getCause().getClass());
+      assertTrue(e.getMessage().contains("TimeoutException"));
     }
   }
 }

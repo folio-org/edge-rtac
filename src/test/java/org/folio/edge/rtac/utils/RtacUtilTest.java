@@ -10,7 +10,6 @@ import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
 import io.vertx.core.MultiMap;
-import io.vertx.core.http.CaseInsensitiveHeaders;
 import io.vertx.core.http.HttpServerRequest;
 import io.vertx.ext.unit.junit.VertxUnitRunner;
 import io.vertx.ext.web.RoutingContext;
@@ -35,7 +34,7 @@ public class RtacUtilTest {
   public static void beforeClass() {
     context = mock(RoutingContext.class);
     rtacRequest = mock(HttpServerRequest.class);
-    rtacHeaders = new CaseInsensitiveHeaders();
+    rtacHeaders = MultiMap.caseInsensitiveMultiMap();
 
     // Define behaviour of mock object
     when(context.request()).thenReturn(rtacRequest);

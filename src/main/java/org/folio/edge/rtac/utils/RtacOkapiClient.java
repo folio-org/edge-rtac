@@ -8,7 +8,9 @@ import org.folio.edge.core.utils.OkapiClient;
 
 import io.vertx.core.MultiMap;
 import io.vertx.core.Vertx;
+import io.vertx.core.buffer.Buffer;
 import me.escoffier.vertx.completablefuture.VertxCompletableFuture;
+import io.vertx.ext.web.client.HttpResponse;
 
 public class RtacOkapiClient extends OkapiClient {
 
@@ -19,7 +21,7 @@ public class RtacOkapiClient extends OkapiClient {
     super(client);
   }
 
-  protected RtacOkapiClient(Vertx vertx, String okapiURL, String tenant, long timeout) {
+  protected RtacOkapiClient(Vertx vertx, String okapiURL, String tenant, int timeout) {
     super(vertx, okapiURL, tenant, timeout);
   }
 
@@ -35,10 +37,10 @@ public class RtacOkapiClient extends OkapiClient {
         tenant,
         requestBody,
         combineHeadersWithDefaults(headers),
-        response -> response.bodyHandler(body -> {
+        response -> {
           int statusCode = response.statusCode();
-          if (statusCode == 200) {
-            String responseBody = body.toString();
+          String responseBody = response.body().toString();
+          if (statusCode == 200) {    
             logger.info(String.format(
                 "Successfully retrieved title info from mod-rtac: (%s) %s",
                 statusCode,
@@ -48,11 +50,11 @@ public class RtacOkapiClient extends OkapiClient {
             String err = String.format(
                 "Failed to get title info from mod-rtac: (%s) %s",
                 response.statusCode(),
-                body.toString());
+                responseBody);
             logger.error(err);
             future.complete("{}");
           }
-        }),
+        },
         t -> {
           logger.error("Exception when calling mod-rtac: {}", t.getMessage());
           future.completeExceptionally(t);

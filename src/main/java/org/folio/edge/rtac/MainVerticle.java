@@ -1,21 +1,23 @@
 package org.folio.edge.rtac;
 
-import org.folio.edge.core.EdgeVerticle;
+import org.folio.edge.core.EdgeVerticleHttp;
 import org.folio.edge.core.utils.Mappers;
 import org.folio.edge.rtac.utils.RtacOkapiClientFactory;
-
+import static org.folio.edge.core.Constants.SYS_OKAPI_URL;
+import static org.folio.edge.core.Constants.SYS_REQUEST_TIMEOUT_MS;
 import com.fasterxml.jackson.annotation.JsonInclude;
 
 import io.vertx.core.http.HttpMethod;
 import io.vertx.ext.web.Router;
 import io.vertx.ext.web.handler.BodyHandler;
 
-public class MainVerticle extends EdgeVerticle {
+public class MainVerticle extends EdgeVerticleHttp {
+  final String okapiUrl = System.getProperty(SYS_OKAPI_URL);
+  final int reqTimeoutMs = Integer.parseInt(System.getProperty(SYS_REQUEST_TIMEOUT_MS));
 
   public MainVerticle() {
     super();
   }
-
 
   static {
     Mappers.xmlMapper.setSerializationInclusion(JsonInclude.Include.NON_NULL);
@@ -23,7 +25,7 @@ public class MainVerticle extends EdgeVerticle {
 
   @Override
   public Router defineRoutes() {
-    RtacOkapiClientFactory ocf = new RtacOkapiClientFactory(vertx, okapiURL, reqTimeoutMs);
+    RtacOkapiClientFactory ocf = new RtacOkapiClientFactory(vertx, okapiUrl, reqTimeoutMs);
     RtacHandler rtacHandler = new RtacHandler(secureStore, ocf);
 
     Router router = Router.router(vertx);
