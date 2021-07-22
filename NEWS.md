@@ -1,3 +1,7 @@
+# 2.3.0 IN-PROGRESS
+
+* Upgrade to vert.x 4.x (EDGRTAC-37)
+
 # 2.2.0 2021-03-16
 
 * Respects the `accept` header provided by the client ([EDGRTAC-16](https://issues.folio.org/browse/EDGRTAC-16))
