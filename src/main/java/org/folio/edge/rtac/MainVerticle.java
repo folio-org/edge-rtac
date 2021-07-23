@@ -12,11 +12,17 @@ import io.vertx.ext.web.Router;
 import io.vertx.ext.web.handler.BodyHandler;
 
 public class MainVerticle extends EdgeVerticleHttp {
-  final String okapiUrl = System.getProperty(SYS_OKAPI_URL);
-  final int reqTimeoutMs = Integer.parseInt(System.getProperty(SYS_REQUEST_TIMEOUT_MS));
+  
+  final private String okapiUrl = System.getProperty(SYS_OKAPI_URL);
+  private int reqTimeoutMs;
 
   public MainVerticle() {
     super();
+    if (System.getProperty(SYS_REQUEST_TIMEOUT_MS) != null) {
+      reqTimeoutMs = Integer.parseInt(System.getProperty(SYS_REQUEST_TIMEOUT_MS));
+    } else {
+      reqTimeoutMs = 3000;
+    }
   }
 
   static {
