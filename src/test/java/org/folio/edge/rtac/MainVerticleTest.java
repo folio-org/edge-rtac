@@ -8,6 +8,11 @@ import static org.folio.edge.core.Constants.SYS_REQUEST_TIMEOUT_MS;
 import static org.folio.edge.core.Constants.SYS_SECURE_STORE_PROP_FILE;
 import static org.folio.edge.core.Constants.TEXT_PLAIN;
 import static org.folio.edge.core.utils.test.MockOkapi.X_DURATION;
+import static org.folio.edge.core.Constants.APPLICATION_JSON;
+
+import static org.apache.http.HttpStatus.SC_NOT_ACCEPTABLE;
+import static org.apache.http.HttpStatus.SC_OK;
+import static org.folio.edge.rtac.utils.RtacUtils.composeMimeTypes;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.fail;
 import static org.mockito.Matchers.any;
@@ -15,12 +20,16 @@ import static org.mockito.Mockito.atLeast;
 import static org.mockito.Mockito.spy;
 import static org.mockito.Mockito.verify;
 
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.UUID;
 
 import java.util.stream.Collectors;
+
+import com.fasterxml.jackson.core.JsonProcessingException;
+
 import org.apache.commons.lang3.ArrayUtils;
 import org.apache.http.HttpHeaders;
 import org.apache.logging.log4j.LogManager;
@@ -55,7 +64,7 @@ public class MainVerticleTest {
   private static final String badApiKey = apiKey + "0000";
   private static final String unknownTenantApiKey = ApiKeyUtils.generateApiKey(10, "bogus", "diku");
 
-  private static final long requestTimeoutMs = 3000L;
+  private static final int requestTimeoutMs = 3000;
 
   private static Vertx vertx;
   protected static RtacMockOkapi mockOkapi;
@@ -405,4 +414,142 @@ public class MainVerticleTest {
     var actual = Holdings.fromXml(xml);
     assertEquals(new Holdings(), actual);
   }
+
+  @Test
+  public void shouldRespondWithXMLWhenClientDoesNotStateAPreference() throws IOException {
+    final var queryString = prepareQueryFor(apiKey, titleId);
+    final var expectedRecords = prepareRecordsFor(titleId);
+
+    // Make get request with XML type content
+    final var resp = RestAssured
+        .get(queryString)
+        .then()
+        .contentType(APPLICATION_XML)
+        .statusCode(SC_OK)
+        .header(HttpHeaders.CONTENT_TYPE, APPLICATION_XML)
+        .extract()
+        .response();
+
+    final var responsePayload = resp.body().asString();
+    final var xmlResponsePayload = Instances.fromXml(responsePayload);
+
+    // Check valid Xml payload returned
+    assertEquals(expectedRecords, xmlResponsePayload);
+  }
+
+  @Test
+  public void shouldRespondWithXMLWhenClientAcceptsOnlyXML() throws IOException {
+    final var queryString = prepareQueryFor(apiKey, titleId);
+    final var expectedRecords = prepareRecordsFor(titleId);
+
+    // Make get request with XML type content
+    final var resp = RestAssured
+        .given()
+        .accept(APPLICATION_XML)
+        .get(queryString)
+        .then()
+        .contentType(APPLICATION_XML)
+        .statusCode(SC_OK)
+        .header(HttpHeaders.CONTENT_TYPE, APPLICATION_XML)
+        .extract()
+        .response();
+
+    final var responsePayload = resp.body().asString();
+    final var xmlResponsePayload = Instances.fromXml(responsePayload);
+
+    // Check valid Xml payload returned
+    assertEquals(expectedRecords, xmlResponsePayload);
+  }
+
+  @Test
+  public void shouldRespondWithJSONWhenClientAcceptsOnlyJSON() throws IOException {
+    final var queryString = prepareQueryFor(apiKey, titleId);
+    final var expectedRecordsJson = prepareRecordsFor(titleId).toJson();
+
+    // Make get request with JSON type content
+    final var resp = RestAssured
+        .given()
+        .accept(APPLICATION_JSON)
+        .get(queryString)
+        .then()
+        .contentType(APPLICATION_JSON)
+        .statusCode(SC_OK)
+        .header(HttpHeaders.CONTENT_TYPE, APPLICATION_JSON)
+        .extract()
+        .response();
+
+    final var responsePayload = resp.body().asString();
+
+    // Check valid Json payload returned
+    assertEquals(expectedRecordsJson, responsePayload);
+  }
+
+  @Test
+  public void shouldRespondWithXMLWhenClientAcceptsBothXMLAndJSON() throws IOException {
+    final var queryString = prepareQueryFor(apiKey, titleId);
+    final var expectedRecords = prepareRecordsFor(titleId);
+
+    // Make get request with XML type content
+    final var resp = RestAssured
+        .given()
+        .accept(
+            composeMimeTypes(APPLICATION_XML, APPLICATION_JSON))
+        .get(queryString)
+        .then()
+        .contentType(APPLICATION_XML)
+        .statusCode(SC_OK)
+        .header(HttpHeaders.CONTENT_TYPE, APPLICATION_XML)
+        .extract()
+        .response();
+
+    final var responsePayload = resp.body().asString();
+    final var xmlResponsePayload = Instances.fromXml(responsePayload);
+
+    // Check valid Xml payload returned
+    assertEquals(expectedRecords, xmlResponsePayload);
+  }
+
+  @Test
+  public void shouldRespondWithSupportedTypeWhenClientAcceptsBothSupportedAndUnsupportedTypes()
+      throws IOException {
+    final var queryString = prepareQueryFor(apiKey, titleId);
+    final var expectedRecordsJson = prepareRecordsFor(titleId).toJson();
+
+    // Make get request with XML type content
+    final var resp = RestAssured
+        .given()
+        .accept(composeMimeTypes(APPLICATION_JSON, TEXT_PLAIN))
+        .get(queryString)
+        .then()
+        .contentType(APPLICATION_JSON)
+        .statusCode(SC_OK)
+        .header(HttpHeaders.CONTENT_TYPE, APPLICATION_JSON)
+        .extract()
+        .response();
+
+    final var responsePayload = resp.body().asString();
+
+    // Check valid Json payload returned
+    assertEquals(expectedRecordsJson, responsePayload);
+  }
+
+  @Test
+  public void shouldRespondWithUnsupportedMediaTypeWhenClientOnlyAcceptsUnsupportedType()
+      throws JsonProcessingException {
+    final var queryString = prepareQueryFor(apiKey, titleId);
+
+    // Make get request with XML type content
+    final var resp = RestAssured
+        .given()
+        .accept(TEXT_PLAIN)
+        .get(queryString)
+        .then()
+        .statusCode(SC_NOT_ACCEPTABLE)
+        .extract()
+        .response();
+
+    // Check not supported content 406 status code returned
+    assertEquals(SC_NOT_ACCEPTABLE, resp.getStatusCode());
+  }
+
 }

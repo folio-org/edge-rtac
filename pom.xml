@@ -33,7 +33,6 @@
 
     <!-- the main class -->
     <exec.mainClass>org.folio.edge.rtac.MainVerticle</exec.mainClass>
-    <slf4j.version>1.7.30</slf4j.version>
     <log4j2.version>2.13.3</log4j2.version>
     <apache.common.lang.ver>3.11</apache.common.lang.ver>
     <apache.common.collections.ver>4.4</apache.common.collections.ver>
@@ -44,7 +43,7 @@
       <dependency>
         <groupId>io.vertx</groupId>
         <artifactId>vertx-stack-depchain</artifactId>
-        <version>3.4.0</version>
+        <version>4.1.1</version>
         <type>pom</type>
         <scope>import</scope>
       </dependency>
@@ -86,7 +85,7 @@
     <dependency>
       <groupId>org.folio</groupId>
       <artifactId>edge-common</artifactId>
-      <version>3.0.0</version>
+      <version>4.2.0</version>
     </dependency>
 
     <dependency>
@@ -120,12 +119,6 @@
       <artifactId>vault-java-driver</artifactId>
       <version>3.1.0</version>
     </dependency>
-
-    <dependency>
-      <groupId>org.apache.logging.log4j</groupId>
-      <artifactId>log4j-slf4j-impl</artifactId>
-      <scope>runtime</scope>
-    </dependency>
     <dependency>
       <groupId>org.apache.logging.log4j</groupId>
       <artifactId>log4j-api</artifactId>
@@ -134,11 +127,6 @@
       <groupId>org.apache.logging.log4j</groupId>
       <artifactId>log4j-core</artifactId>
       <scope>runtime</scope>
-    </dependency>
-    <dependency>
-      <groupId>org.slf4j</groupId>
-      <artifactId>slf4j-api</artifactId>
-      <version>${slf4j.version}</version>
     </dependency>
 
     <!-- Test dependencies -->
@@ -177,12 +165,6 @@
       <artifactId>rest-assured</artifactId>
       <version>4.3.0</version>
       <scope>test</scope>
-      <exclusions>
-        <exclusion>
-          <groupId>commons-logging</groupId>
-          <artifactId>commons-logging</artifactId>
-        </exclusion>
-      </exclusions>
     </dependency>
     <dependency>
       <groupId>org.apache.commons</groupId>

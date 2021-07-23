@@ -6,7 +6,7 @@ import io.vertx.core.Vertx;
 
 public class RtacOkapiClientFactory extends OkapiClientFactory {
 
-  public RtacOkapiClientFactory(Vertx vertx, String okapiURL, long reqTimeoutMs) {
+  public RtacOkapiClientFactory(Vertx vertx, String okapiURL, int reqTimeoutMs) {
     super(vertx, okapiURL, reqTimeoutMs);
   }
 

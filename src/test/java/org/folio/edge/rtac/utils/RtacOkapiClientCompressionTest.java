@@ -26,7 +26,7 @@ public class RtacOkapiClientCompressionTest {
 
   private final String titleId = UUID.randomUUID().toString();
   private static final String tenant = "diku";
-  private static final long reqTimeout = 3000L;
+  private static final int reqTimeout = 3000;
 
   private RtacOkapiClient client;
 
