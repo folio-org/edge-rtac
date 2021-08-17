@@ -416,6 +416,28 @@ public class MainVerticleTest {
   }
 
   @Test
+  @SneakyThrows
+  public void testResponseShouldIncludeInstanceIdWhenTitleNotFoundAndReturnsJson() {
+    Holdings exp = new Holdings();
+    exp.setInstanceId(RtacMockOkapi.titleId_notFound);
+    String expected = exp.toJson().toString();
+    
+    final Response resp = RestAssured
+      .given()
+      .accept(APPLICATION_JSON)
+      .get(String.format("/rtac/%s?apikey=%s", RtacMockOkapi.titleId_notFound, apiKey))
+      .then()
+      .contentType(APPLICATION_JSON)
+      .statusCode(SC_OK)
+      .header(HttpHeaders.CONTENT_TYPE, APPLICATION_JSON)
+      .extract()
+      .response();
+    
+    final String actual = resp.body().asString();
+    assertEquals(expected, actual);
+  }
+
+  @Test
   public void shouldRespondWithXMLWhenClientDoesNotStateAPreference() throws IOException {
     final var queryString = prepareQueryFor(apiKey, titleId);
     final var expectedRecords = prepareRecordsFor(titleId);
