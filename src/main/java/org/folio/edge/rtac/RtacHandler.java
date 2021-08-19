@@ -106,7 +106,7 @@ public class RtacHandler extends Handler {
                 if (instances.getHoldings().isEmpty()) {
                   holdings.setInstanceId(request.params().get("instanceId"));
                 }
-                if (!instances.getHoldings().isEmpty()) {
+                else {
                   holdings = instances.getHoldings().get(0);
                 } 
                 returningContent = isXmlRequest ? holdings.toXml() : holdings.toJson();
