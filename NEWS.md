@@ -1,7 +1,7 @@
 # 2.3.0 IN-PROGRESS
 
 * Upgrade to vert.x 4.x (EDGRTAC-37)
-* Instance ID number is now included in Json responses in which holdings data could not be found or reported (EDGRTAC-43)
+* Instance ID number is now included in responses in which holdings data could not be found or reported (EDGRTAC-43)
 
 # 2.2.0 2021-03-16
 
