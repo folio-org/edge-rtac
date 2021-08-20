@@ -418,10 +418,6 @@ public class MainVerticleTest {
   @Test
   @SneakyThrows
   public void testResponseShouldIncludeInstanceIdWhenTitleNotFoundAndReturnsJson() {
-    Holdings exp = new Holdings();
-    exp.setInstanceId(RtacMockOkapi.titleId_notFound);
-    String expected = exp.toJson().toString();
-    
     final Response resp = RestAssured
       .given()
       .accept(APPLICATION_JSON)
@@ -434,6 +430,11 @@ public class MainVerticleTest {
       .response();
     
     final String actual = resp.body().asString();
+
+    Holdings exp = new Holdings();
+    exp.setInstanceId(RtacMockOkapi.titleId_notFound);
+    String expected = exp.toJson().toString();
+
     assertEquals(expected, actual);
   }
 
