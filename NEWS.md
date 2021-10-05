@@ -1,4 +1,4 @@
-# 2.3.0 IN-PROGRESS
+# 2.3.0 2021-10-05
 
 * Upgrade to vert.x 4.x (EDGRTAC-37)
 * Instance ID number is now included in responses in which holdings data could not be found or reported (EDGRTAC-43)
