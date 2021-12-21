@@ -1,6 +1,6 @@
 # 2.4.0 IN-PROGRESS
 
-* Upgrade to Log4J 2.16.0. (CVE-2021-44228) (EDGRTAC-50)
+* Upgrade to Log4J 2.17.0. (CVE-2021-44228, CVE-2021-45105) ([EDGRTAC-50](https://issues.folio.org/browse/EDGRTAC-50), [EDGRTAC-55](https://issues.folio.org/browse/EDGRTAC-55))
 
 # 2.3.0 2021-10-05
 
