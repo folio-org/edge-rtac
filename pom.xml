@@ -33,7 +33,7 @@
 
     <!-- the main class -->
     <exec.mainClass>org.folio.edge.rtac.MainVerticle</exec.mainClass>
-    <log4j2.version>2.16.0</log4j2.version>
+    <log4j2.version>2.17.0</log4j2.version>
     <apache.common.lang.ver>3.11</apache.common.lang.ver>
     <apache.common.collections.ver>4.4</apache.common.collections.ver>
   </properties>
