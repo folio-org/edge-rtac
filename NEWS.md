@@ -1,4 +1,4 @@
-# 2.2.2 IN-PROGRESS
+# 2.2.2 2021-12-21
 
 * Upgrade to Log4J 2.17.0. (CVE-2021-45105) [EDGRTAC-57](https://issues.folio.org/browse/EDGRTAC-57)
 
