@@ -13,6 +13,7 @@ import io.vertx.core.buffer.Buffer;
 import io.vertx.core.json.JsonObject;
 import io.vertx.ext.web.client.HttpResponse;
 import lombok.AllArgsConstructor;
+import lombok.Getter;
 import lombok.Value;
 
 public class RtacOkapiClient extends OkapiClient {
@@ -47,7 +48,7 @@ public class RtacOkapiClient extends OkapiClient {
     logger.error("Exception when calling mod-rtac: {}", t.getMessage());
   }
 
-  @Value
+  @Getter
   @AllArgsConstructor
   static class Response {
     int statusCode;
