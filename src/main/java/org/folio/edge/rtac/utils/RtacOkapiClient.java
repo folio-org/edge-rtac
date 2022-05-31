@@ -6,7 +6,9 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.folio.edge.core.utils.OkapiClient;
 
+import io.vertx.core.Future;
 import io.vertx.core.MultiMap;
+import io.vertx.core.Promise;
 import io.vertx.core.Vertx;
 import io.vertx.core.buffer.Buffer;
 import me.escoffier.vertx.completablefuture.VertxCompletableFuture;
@@ -30,7 +32,7 @@ public class RtacOkapiClient extends OkapiClient {
   }
 
   public CompletableFuture<String> rtac(String requestBody, MultiMap headers) {
-    VertxCompletableFuture<String> future = new VertxCompletableFuture<>(vertx);
+    final Promise<String> promise = Promise.promise();
 
     post(
         okapiURL + RTAC_API_URI,
@@ -40,25 +42,26 @@ public class RtacOkapiClient extends OkapiClient {
         response -> {
           int statusCode = response.statusCode();
           String responseBody = response.body().toString();
-          if (statusCode == 200) {    
+          if (statusCode == 200) {
             logger.info(String.format(
                 "Successfully retrieved title info from mod-rtac: (%s) %s",
                 statusCode,
                 responseBody));
-            future.complete(responseBody);
+            promise.complete(responseBody);
           } else {
             String err = String.format(
                 "Failed to get title info from mod-rtac: (%s) %s",
                 response.statusCode(),
                 responseBody);
             logger.error(err);
-            future.complete("{}");
+            promise.complete("{}");
           }
         },
         t -> {
           logger.error("Exception when calling mod-rtac: {}", t.getMessage());
-          future.completeExceptionally(t);
+          promise.fail(t);
         });
-    return future;
+
+    return promise.future().toCompletionStage().toCompletableFuture();
   }
 }
