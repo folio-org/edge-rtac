@@ -15,7 +15,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 import java.util.concurrent.CompletableFuture;
-import java.util.concurrent.TimeoutException;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -36,7 +35,6 @@ import lombok.SneakyThrows;
 
 @RunWith(VertxUnitRunner.class)
 public class RtacOkapiClientTest {
-
   private static final Logger logger = LogManager.getLogger(RtacOkapiClientTest.class);
 
   private final String titleId = "0c8e8ac5-6bcc-461e-a8d3-4b55a96addc8";
@@ -47,7 +45,7 @@ public class RtacOkapiClientTest {
   private RtacMockOkapi mockOkapi;
 
   @Before
-  public void setUp(TestContext context) throws Exception {
+  public void setUp(TestContext context) {
     int okapiPort = TestUtils.getPort();
 
     List<String> knownTenants = new ArrayList<>();
@@ -102,13 +100,12 @@ public class RtacOkapiClientTest {
       .map(String::trim).collect(toList());
 
     rtacParams.put("instanceIds", ids);
-    var instanceIds = Mappers.jsonMapper
+    return Mappers.jsonMapper
       .writeValueAsString(rtacParams);
-    return instanceIds;
   }
 
   @Test
-  public void testRtacTimeout(TestContext context) throws Exception {
+  public void testRtacTimeout(TestContext context) {
     logger.info("=== Test RTAC timeout ===");
 
     MultiMap headers = MultiMap.caseInsensitiveMultiMap();
