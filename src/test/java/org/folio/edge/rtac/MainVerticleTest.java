@@ -153,6 +153,9 @@ public class MainVerticleTest {
     assertEquals("\"OK\"", resp.body().asString());
   }
 
+  // unsuccessful login attempts result in a 200 OK status with an empty element 
+  // in the message body
+
   @Test
   public void testRtacUnknownApiKey(TestContext context) throws Exception {
     logger.info("=== Test request with unknown apiKey (tenant) ===");
@@ -207,6 +210,9 @@ public class MainVerticleTest {
     var actual = Holdings.fromXml(xml);
     assertEquals(expected, actual);
   }
+
+  // Unsuccessful searches result in a 200 OK status with an empty element in the 
+  // response body 
 
   @Test
   public void testRtacTitleNotFound(TestContext context) throws Exception {
