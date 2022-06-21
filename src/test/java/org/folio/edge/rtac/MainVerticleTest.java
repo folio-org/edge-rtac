@@ -174,7 +174,6 @@ public class MainVerticleTest {
       .response();
 
     expectEmptyResponseOnFailure(resp);
-
   }
 
   @Test
@@ -217,7 +216,6 @@ public class MainVerticleTest {
     assertEquals("PS3552.E796 D44x 1975", holdingRecord.getString("callNumber"));
     assertEquals("Item in place", holdingRecord.getString("status"));
     assertEquals("v.5:no.2-6", holdingRecord.getString("volume"));
-
   }
 
   // Unsuccessful searches result in a 200 OK status with an empty element in the 
@@ -305,7 +303,6 @@ public class MainVerticleTest {
 
     assertEquals(expectedError, errors.getString("message"));
     assertEquals("404", errors.getString("code"));
-
   }
 
   @Test
@@ -400,7 +397,6 @@ public class MainVerticleTest {
       assertEquals("99712686103569", holdings.getString("id"));
       assertEquals("Item in place", holdings.getString("status"));
       assertEquals("v.5:no.2-6", holdings.getString("volume"));
-
     }
 
     verify(mockOkapi).loginHandler(any());
@@ -482,7 +478,6 @@ public class MainVerticleTest {
     assertEquals("PS3552.E796 D44x 1975", holding.callNumber);
     assertEquals("Item in place", holding.status);
     assertEquals("v.5:no.2-6", holding.volume);
-
   }
 
   @Test
