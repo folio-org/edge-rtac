@@ -1,9 +1,7 @@
 package org.folio.edge.rtac.model;
 
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Objects;
 
 import org.folio.edge.core.utils.Mappers;
 
@@ -49,24 +47,5 @@ public final class Holdings {
 
   public String toJson() throws JsonProcessingException {
     return Mappers.jsonMapper.writeValueAsString(this);
-  }
-
-  public static Holdings fromXml(String xml) throws IOException {
-    return Mappers.xmlMapper.readValue(xml, Holdings.class);
-  }
-
-  @Override
-  public boolean equals(Object o) {
-    if (this == o) return true;
-    if (o == null || getClass() != o.getClass()) return false;
-    Holdings holdings1 = (Holdings) o;
-
-    return holdings.equals(holdings1.holdings) &&
-      Objects.equals(instanceId, holdings1.instanceId);
-  }
-
-  @Override
-  public int hashCode() {
-    return Objects.hash(holdings, instanceId);
   }
 }

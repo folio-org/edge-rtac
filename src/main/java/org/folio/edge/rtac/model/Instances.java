@@ -3,7 +3,6 @@ package org.folio.edge.rtac.model;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Objects;
 
 import org.folio.edge.core.utils.Mappers;
 
@@ -56,20 +55,6 @@ public final class Instances {
 
   public static Instances fromXml(String xml) throws IOException {
     return Mappers.xmlMapper.readValue(xml, Instances.class);
-  }
-
-  @Override
-  public boolean equals(Object o) {
-    if (this == o) return true;
-    if (o == null || getClass() != o.getClass()) return false;
-    Instances instances = (Instances) o;
-    return Objects.equals(holdings, instances.holdings) &&
-      Objects.equals(errors, instances.errors);
-  }
-
-  @Override
-  public int hashCode() {
-    return Objects.hash(holdings, errors);
   }
 }
 
