@@ -14,7 +14,6 @@ import static org.apache.http.HttpStatus.SC_NOT_ACCEPTABLE;
 import static org.apache.http.HttpStatus.SC_OK;
 import static org.folio.edge.rtac.utils.RtacUtils.composeMimeTypes;
 import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
 import static org.mockito.Matchers.any;
@@ -39,6 +38,7 @@ import org.apache.logging.log4j.Logger;
 import org.folio.edge.core.utils.ApiKeyUtils;
 import org.folio.edge.core.utils.test.TestUtils;
 import org.folio.edge.rtac.model.Error;
+import org.folio.edge.rtac.model.Holding;
 import org.folio.edge.rtac.model.Holdings;
 import org.folio.edge.rtac.model.Instances;
 import org.folio.edge.rtac.utils.RtacMockOkapi;
@@ -141,17 +141,8 @@ public class MainVerticleTest {
     }
   }
 
-  private boolean isValidJson(String json) {
-    try {
-      new JsonObject(json);
-    } catch (Exception e) {
-      return false;
-    }
-    return true;
-  }
-
   @Test
-  public void testAdminHealth(TestContext context) {
+  public void testAdminHealthShouldSucceed(TestContext context) {
     logger.info("=== Test the health check endpoint ===");
 
     final Response resp = RestAssured
@@ -170,46 +161,36 @@ public class MainVerticleTest {
   // in the message body
 
   @Test
-  public void testRtacUnknownApiKey(TestContext context) throws Exception {
+  public void failsWhenUnknownAPIKeyProvided(TestContext context) throws Exception {
     logger.info("=== Test request with unknown apiKey (tenant) ===");
 
     final Response resp = RestAssured
-      .given()
-      .accept(APPLICATION_JSON)
       .get(String.format("/prod/rtac/folioRTAC?mms_id=%s&apikey=%s", titleId, unknownTenantApiKey))
       .then()
-      .contentType(APPLICATION_JSON)
+      .contentType(APPLICATION_XML)
       .statusCode(200)
-      .header(HttpHeaders.CONTENT_TYPE, APPLICATION_JSON)
+      .header(HttpHeaders.CONTENT_TYPE, APPLICATION_XML)
       .extract()
       .response();
 
-    JsonObject result =  new JsonObject(resp.body().asString());
-
-    assertNull(result.getString("instanceId"));
-    assertEquals(0, result.getJsonArray("holdings").size());
+    expectEmptyResponseOnFailure(resp);
 
   }
 
   @Test
-  public void testRtacBadApiKey(TestContext context) throws Exception {
+  public void failsWhenBadApiKeyProvided(TestContext context) throws Exception {
     logger.info("=== Test request with malformed apiKey ===");
 
     final Response resp = RestAssured
-      .given()
-      .accept(APPLICATION_JSON)
       .get(String.format("/prod/rtac/folioRTAC?mms_id=%s&apikey=%s", titleId, badApiKey))
       .then()
-      .contentType(APPLICATION_JSON)
+      .contentType(APPLICATION_XML)
       .statusCode(200)
-      .header(HttpHeaders.CONTENT_TYPE, APPLICATION_JSON)
+      .header(HttpHeaders.CONTENT_TYPE, APPLICATION_XML)
       .extract()
       .response();
 
-    JsonObject result =  new JsonObject(resp.body().asString());
-  
-    assertNull(result.getString("instanceId"));
-    assertEquals(0, result.getJsonArray("holdings").size());
+    expectEmptyResponseOnFailure(resp);
   }
 
   @Test
@@ -243,25 +224,20 @@ public class MainVerticleTest {
   // response body 
 
   @Test
-  public void testRtacTitleNotFound(TestContext context) throws Exception {
+  public void emptyResponseWhenTitleNotFound(TestContext context) throws Exception {
     logger.info("=== Test request where title isn't found ===");
 
     final Response resp = RestAssured
-      .given()
-      .accept(APPLICATION_JSON)
       .get(String.format("/prod/rtac/folioRTAC?mms_id=%s&apikey=%s",
           RtacMockOkapi.titleId_notFound, apiKey))
       .then()
-      .contentType(APPLICATION_JSON)
+      .contentType(APPLICATION_XML)
       .statusCode(200)
-      .header(HttpHeaders.CONTENT_TYPE, APPLICATION_JSON)
+      .header(HttpHeaders.CONTENT_TYPE, APPLICATION_XML)
       .extract()
       .response();
-
-    JsonObject result =  new JsonObject(resp.body().asString());
-  
-    assertNull(result.getString("instanceId"));
-    assertEquals(0, result.getJsonArray("holdings").size());
+    
+    expectEmptyResponseOnFailure(resp);
   }
 
   @Test
@@ -306,7 +282,7 @@ public class MainVerticleTest {
   }
 
   @Test
-  public void testNotFoundErrors(TestContext context) throws Exception {
+  public void shouldProvideNotFoundErrorsWhenTitleNotFound(TestContext context) throws Exception {
 
     final var queryString = String.format("/rtac?apikey=%s&instanceIds=%s,%s",
       apiKey, titleId, RtacMockOkapi.titleId_Error);
@@ -333,91 +309,71 @@ public class MainVerticleTest {
   }
 
   @Test
-  public void testRtacNoApiKey(TestContext context) throws Exception {
+  public void emptyResponseWhenNoRtacApiKeyProvided(TestContext context) throws Exception {
     logger.info("=== Test request with no apiKey ===");
 
     final Response resp = RestAssured
-      .given()
-      .accept(APPLICATION_JSON)
       .get(String.format("/prod/rtac/folioRTAC?mms_id=%s", RtacMockOkapi.titleId_notFound))
       .then()
-      .contentType(APPLICATION_JSON)
+      .contentType(APPLICATION_XML)
       .statusCode(200)
-      .header(HttpHeaders.CONTENT_TYPE, APPLICATION_JSON)
+      .header(HttpHeaders.CONTENT_TYPE, APPLICATION_XML)
       .extract()
       .response();
 
-    JsonObject result =  new JsonObject(resp.body().asString());
-  
-    assertNull(result.getString("instanceId"));
-    assertEquals(0, result.getJsonArray("holdings").size());
+    expectEmptyResponseOnFailure(resp);
   }
 
   @Test
-  public void testRtacNoId(TestContext context) throws Exception {
+  public void emptyResponseWhenNoIdProvided(TestContext context) throws Exception {
     logger.info("=== Test request with no mms_id ===");
 
     final Response resp = RestAssured
-      .given()
-      .accept(APPLICATION_JSON)
       .get(String.format("/prod/rtac/folioRTAC?apikey=%s", apiKey))
       .then()
-      .contentType(APPLICATION_JSON)
+      .contentType(APPLICATION_XML)
       .statusCode(200)
-      .header(HttpHeaders.CONTENT_TYPE, APPLICATION_JSON)
+      .header(HttpHeaders.CONTENT_TYPE, APPLICATION_XML)
       .extract()
       .response();
 
-    JsonObject result =  new JsonObject(resp.body().asString());
-  
-    assertNull(result.getString("instanceId"));
-    assertEquals(0, result.getJsonArray("holdings").size());
+    expectEmptyResponseOnFailure(resp);
   }
 
   @Test
-  public void testRtacNoQueryArgs(TestContext context) throws Exception {
+  public void emptyResponseWhenNoQueryArgsProvided(TestContext context) throws Exception {
     logger.info("=== Test request with no query args ===");
 
     final Response resp = RestAssured
-      .given()
-      .accept(APPLICATION_JSON)
       .get("/prod/rtac/folioRTAC")
       .then()
-      .contentType(APPLICATION_JSON)
+      .contentType(APPLICATION_XML)
       .statusCode(200)
-      .header(HttpHeaders.CONTENT_TYPE, APPLICATION_JSON)
+      .header(HttpHeaders.CONTENT_TYPE, APPLICATION_XML)
       .extract()
       .response();
 
-    JsonObject result =  new JsonObject(resp.body().asString());
-  
-    assertNull(result.getString("instanceId"));
-    assertEquals(0, result.getJsonArray("holdings").size());
+    expectEmptyResponseOnFailure(resp);
   }
 
   @Test
-  public void testRtacEmptyQueryArgs(TestContext context) throws Exception {
+  public void emptyResponseWhenEmptyQueryArgsProvided(TestContext context) throws Exception {
     logger.info("=== Test request with empty query args ===");
 
     final Response resp = RestAssured
-      .given()
-      .accept(APPLICATION_JSON)
       .get("/prod/rtac/folioRTAC?mms_id=&apikey=")
       .then()
-      .contentType(APPLICATION_JSON)
+      .contentType(APPLICATION_XML)
       .statusCode(200)
-      .header(HttpHeaders.CONTENT_TYPE, APPLICATION_JSON)
+      .header(HttpHeaders.CONTENT_TYPE, APPLICATION_XML)
       .extract()
       .response();
 
-    JsonObject result =  new JsonObject(resp.body().asString());
-  
-    assertNull(result.getString("instanceId"));
-    assertEquals(0, result.getJsonArray("holdings").size());
+    expectEmptyResponseOnFailure(resp);
   }
 
   @Test
-  public void testCachedToken(TestContext context) throws Exception {
+  public void cachedTokensShouldBeReused(TestContext context) throws Exception {
     logger.info("=== Test the tokens are cached and reused ===");
 
     int iters = 5;
@@ -452,49 +408,39 @@ public class MainVerticleTest {
   }
 
   @Test
-  public void testRequestTimeout(TestContext context) throws Exception {
+  public void emptyResponseWhenRequestTimeout(TestContext context) throws Exception {
     logger.info("=== Test request timeout ===");
 
     final Response resp = RestAssured
-      .given()
-      .accept(APPLICATION_JSON)
       .with()
       .header(X_DURATION, requestTimeoutMs * 2)
       .get(String.format("/prod/rtac/folioRTAC?mms_id=%s&apikey=%s", titleId, apiKey))
       .then()
-      .contentType(APPLICATION_JSON)
+      .contentType(APPLICATION_XML)
       .statusCode(200)
       .extract()
       .response();
 
-    JsonObject result =  new JsonObject(resp.body().asString());
-  
-    assertNull(result.getString("instanceId"));
-    assertEquals(0, result.getJsonArray("holdings").size());
+    expectEmptyResponseOnFailure(resp);
   }
 
   @Test
   @SneakyThrows
-  public void testResponseShouldBeEmptyWith200StatusWhenRtacResponseIsInvalid() {
+  public void emptyResponseWhenRtacResponseIsInvalid() {
     final Response resp = RestAssured
-      .given()
-      .accept(APPLICATION_JSON)
       .get(String.format("/prod/rtac/folioRTAC?mms_id=%s&apikey=%s", RtacMockOkapi.titleId_InvalidResponse, apiKey))
       .then()
-      .contentType(APPLICATION_JSON)
+      .contentType(APPLICATION_XML)
       .statusCode(200)
       .extract()
       .response();
 
-    JsonObject result =  new JsonObject(resp.body().asString());
-  
-    assertNull(result.getString("instanceId"));
-    assertEquals(0, result.getJsonArray("holdings").size());
+    expectEmptyResponseOnFailure(resp);
   }
 
   @Test
   @SneakyThrows
-  public void testResponseShouldIncludeInstanceIdWhenTitleNotFoundAndReturnsJson() {
+  public void responseShouldIncludeInstanceIdWhenTitleNotFoundAndReturnsJson() {
     final Response resp = RestAssured
       .given()
       .accept(APPLICATION_JSON)
@@ -514,9 +460,6 @@ public class MainVerticleTest {
   @Test
   public void shouldRespondWithXMLWhenClientDoesNotStateAPreference() throws IOException {
     final var queryString = prepareQueryFor(apiKey, titleId);
-    final var expectedRecords = prepareRecordsFor(titleId);
-
-    logger.info("xml:" + expectedRecords.toString());
 
     // Make get request with XML type content
     final var resp = RestAssured
@@ -529,16 +472,22 @@ public class MainVerticleTest {
         .response();
 
     final var responsePayload = resp.body().asString();
-    final var xmlResponsePayload = Instances.fromXml(responsePayload);
+    Holdings holdings = Instances.fromXml(responsePayload).getHoldings().get(0);
 
-    // Check valid Xml payload returned
-    assertEquals(expectedRecords, xmlResponsePayload);
+    assertEquals("0c8e8ac5-6bcc-461e-a8d3-4b55a96addc8", holdings.getInstanceId());
+    
+    Holding holding = holdings.getHoldings().get(0);
+
+    assertEquals("99712686103569", holding.id);
+    assertEquals("PS3552.E796 D44x 1975", holding.callNumber);
+    assertEquals("Item in place", holding.status);
+    assertEquals("v.5:no.2-6", holding.volume);
+
   }
 
   @Test
   public void shouldRespondWithXMLWhenClientAcceptsOnlyXML() throws IOException {
     final var queryString = prepareQueryFor(apiKey, titleId);
-    final var expectedRecords = prepareRecordsFor(titleId);
 
     // Make get request with XML type content
     final var resp = RestAssured
@@ -552,17 +501,15 @@ public class MainVerticleTest {
         .extract()
         .response();
 
-    final var responsePayload = resp.body().asString();
-    final var xmlResponsePayload = Instances.fromXml(responsePayload);
+    final String responsePayload = resp.body().asString();
 
     // Check valid Xml payload returned
-    assertEquals(expectedRecords, xmlResponsePayload);
+    assertTrue(isValidXml(responsePayload));
   }
 
   @Test
   public void shouldRespondWithXMLWhenClientAcceptsBothXMLAndJSON() throws IOException {
     final var queryString = prepareQueryFor(apiKey, titleId);
-    final var expectedRecords = prepareRecordsFor(titleId);
 
     // Make get request with XML type content
     final var resp = RestAssured
@@ -578,17 +525,15 @@ public class MainVerticleTest {
         .response();
 
     final var responsePayload = resp.body().asString();
-    final var xmlResponsePayload = Instances.fromXml(responsePayload);
 
     // Check valid Xml payload returned
-    assertEquals(expectedRecords, xmlResponsePayload);
+    assertTrue(isValidXml(responsePayload));
   }
 
   @Test
   public void shouldRespondWithSupportedTypeWhenClientAcceptsBothSupportedAndUnsupportedTypes()
       throws IOException {
     final var queryString = prepareQueryFor(apiKey, titleId);
-    final var expectedRecordsJson = prepareRecordsFor(titleId).toJson();
 
     // Make get request with XML type content
     final var resp = RestAssured
@@ -625,6 +570,32 @@ public class MainVerticleTest {
 
     // Check not supported content 406 status code returned
     assertEquals(SC_NOT_ACCEPTABLE, resp.getStatusCode());
+  }
+
+  private boolean isValidJson(String json) {
+    try {
+      new JsonObject(json);
+    } catch (Exception e) {
+      return false;
+    }
+    return true;
+  }
+
+  private boolean isValidXml(String xml) {
+    try {
+      Instances.fromXml(xml);
+    } catch (Exception e) {
+      return false;
+    }
+    return true;
+  }
+
+  @SneakyThrows
+  private void expectEmptyResponseOnFailure(Response response) {
+    // Failures are mapped to empty successful responses due to compatibility with legacy systems
+    final var instances = Instances.fromXml(response.body().asString());
+
+    assertEquals(0, instances.getHoldings().size());
   }
 
 }

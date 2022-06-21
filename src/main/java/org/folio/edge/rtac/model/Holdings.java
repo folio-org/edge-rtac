@@ -31,8 +31,16 @@ public final class Holdings {
     this.instanceId = instanceId;
   }
 
+  public String getInstanceId() {
+    return this.instanceId;
+  }
+
   public void setHoldings(List<Holding> holdings) {
     this.holdings = holdings;
+  }
+
+  public List<Holding> getHoldings() {
+    return this.holdings;
   }
 
   public String toXml() throws JsonProcessingException {
