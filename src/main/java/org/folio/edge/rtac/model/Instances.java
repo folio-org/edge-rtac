@@ -33,11 +33,6 @@ public final class Instances {
   @JacksonXmlElementWrapper(localName = "errors")
   private List<Error> errors = null;
 
-  @JsonProperty("InstanceId")
-  @JacksonXmlProperty(localName = "instanceId")
-  @JacksonXmlElementWrapper(localName = "instanceId")
-  private String instanceId = null;
-
   public void setErrors(List<Error> errors) {
     this.errors = errors;
   }
