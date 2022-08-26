@@ -15,7 +15,6 @@ import static org.apache.http.HttpStatus.SC_OK;
 import static org.folio.edge.rtac.utils.RtacUtils.composeMimeTypes;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
-import static org.junit.Assert.fail;
 import static org.mockito.Matchers.any;
 import static org.mockito.Mockito.atLeast;
 import static org.mockito.Mockito.spy;
@@ -37,7 +36,6 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.folio.edge.core.utils.ApiKeyUtils;
 import org.folio.edge.core.utils.test.TestUtils;
-import org.folio.edge.rtac.model.Error;
 import org.folio.edge.rtac.model.Holding;
 import org.folio.edge.rtac.model.Holdings;
 import org.folio.edge.rtac.model.Instances;
@@ -53,7 +51,6 @@ import io.vertx.core.DeploymentOptions;
 import io.vertx.core.json.JsonArray;
 import io.vertx.core.json.JsonObject;
 import io.vertx.core.Vertx;
-import io.vertx.ext.unit.Async;
 import io.vertx.ext.unit.TestContext;
 import io.vertx.ext.unit.junit.VertxUnitRunner;
 import lombok.SneakyThrows;
@@ -82,7 +79,7 @@ public class MainVerticleTest {
     knownTenants.add(ApiKeyUtils.parseApiKey(apiKey).tenantId);
 
     mockOkapi = spy(new RtacMockOkapi(okapiPort, knownTenants));
-    mockOkapi.start(context);
+    mockOkapi.start().onComplete(context.asyncAssertSuccess());
 
     vertx = Vertx.vertx();
 
@@ -103,19 +100,7 @@ public class MainVerticleTest {
   @AfterClass
   public static void tearDownOnce(TestContext context) {
     logger.info("Shutting down server");
-    final Async async = context.async();
-    vertx.close(res -> {
-      if (res.failed()) {
-        logger.error("Failed to shut down edge-rtac server", res.cause());
-        fail(res.cause().getMessage());
-      } else {
-        logger.info("Successfully shut down edge-rtac server");
-      }
-
-      logger.info("Shutting down mock Okapi");
-      mockOkapi.close(context);
-      async.complete();
-    });
+    mockOkapi.close().onComplete(context.asyncAssertSuccess());
   }
 
   protected String prepareQueryFor(String apiKey, String... instanceIds) {
@@ -157,7 +142,7 @@ public class MainVerticleTest {
     assertEquals("\"OK\"", resp.body().asString());
   }
 
-  // unsuccessful login attempts result in a 200 OK status with empty elements 
+  // unsuccessful login attempts result in a 200 OK status with empty elements
   // in the message body
 
   @Test
@@ -218,8 +203,8 @@ public class MainVerticleTest {
     assertEquals("v.5:no.2-6", holdingRecord.getString("volume"));
   }
 
-  // Unsuccessful searches result in a 200 OK status with an empty element in the 
-  // response body 
+  // Unsuccessful searches result in a 200 OK status with an empty element in the
+  // response body
 
   @Test
   public void emptyResponseWhenTitleNotFound(TestContext context) throws Exception {
@@ -234,7 +219,7 @@ public class MainVerticleTest {
       .header(HttpHeaders.CONTENT_TYPE, APPLICATION_XML)
       .extract()
       .response();
-    
+
     expectEmptyResponseOnFailure(resp);
   }
 
@@ -386,9 +371,9 @@ public class MainVerticleTest {
         .header(HttpHeaders.CONTENT_TYPE, APPLICATION_JSON)
         .extract()
         .response();
-      
+
       JsonObject result = new JsonObject(resp.body().asString());
-      
+
       assertEquals(titleId, result.getString("instanceId"));
 
       JsonObject holdings = result.getJsonArray("holdings").getJsonObject(0);
@@ -447,7 +432,7 @@ public class MainVerticleTest {
       .header(HttpHeaders.CONTENT_TYPE, APPLICATION_JSON)
       .extract()
       .response();
-    
+
     final JsonObject actual = new JsonObject(resp.body().asString());
 
     assertEquals("0c8e8ac5-6bcc-461e-a8d3-4b55a96addc9", actual.getString("instanceId"));
@@ -471,7 +456,7 @@ public class MainVerticleTest {
     Holdings holdings = Instances.fromXml(responsePayload).getHoldings().get(0);
 
     assertEquals("0c8e8ac5-6bcc-461e-a8d3-4b55a96addc8", holdings.getInstanceId());
-    
+
     Holding holding = holdings.getHoldings().get(0);
 
     assertEquals("99712686103569", holding.id);
