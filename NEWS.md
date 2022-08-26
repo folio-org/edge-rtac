@@ -1,3 +1,7 @@
+# 2.5.1 2022-08-26
+
+* edge-common 4.4.1 fixing disabled SSL in Vert.x WebClient ([EDGRTAC-68](https://issues.folio.org/browse/EDGRTAC-68))
+
 # 2.5.0 2022-06-15
 
 * Remove no longer supported vert.x completable future dependency. ([EDGRTAC-60](https://issues.folio.org/browse/EDGRTAC-60)
