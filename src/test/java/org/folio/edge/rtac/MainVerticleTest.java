@@ -14,6 +14,7 @@ import static org.apache.http.HttpStatus.SC_NOT_ACCEPTABLE;
 import static org.apache.http.HttpStatus.SC_OK;
 import static org.folio.edge.rtac.utils.RtacUtils.composeMimeTypes;
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
 import static org.mockito.Matchers.any;
 import static org.mockito.Mockito.atLeast;
@@ -37,6 +38,7 @@ import org.apache.logging.log4j.Logger;
 import org.folio.edge.core.utils.ApiKeyUtils;
 import org.folio.edge.core.utils.test.TestUtils;
 import org.folio.edge.rtac.model.Error;
+import org.folio.edge.rtac.model.Holding;
 import org.folio.edge.rtac.model.Holdings;
 import org.folio.edge.rtac.model.Instances;
 import org.folio.edge.rtac.utils.RtacMockOkapi;
@@ -49,7 +51,6 @@ import io.restassured.RestAssured;
 import io.restassured.response.Response;
 import io.vertx.core.DeploymentOptions;
 import io.vertx.core.Vertx;
-import io.vertx.ext.unit.Async;
 import io.vertx.ext.unit.TestContext;
 import io.vertx.ext.unit.junit.VertxUnitRunner;
 import lombok.SneakyThrows;
@@ -78,7 +79,7 @@ public class MainVerticleTest {
     knownTenants.add(ApiKeyUtils.parseApiKey(apiKey).tenantId);
 
     mockOkapi = spy(new RtacMockOkapi(okapiPort, knownTenants));
-    mockOkapi.start(context);
+    mockOkapi.start().onComplete(context.asyncAssertSuccess());
 
     vertx = Vertx.vertx();
 
@@ -99,19 +100,7 @@ public class MainVerticleTest {
   @AfterClass
   public static void tearDownOnce(TestContext context) {
     logger.info("Shutting down server");
-    final Async async = context.async();
-    vertx.close(res -> {
-      if (res.failed()) {
-        logger.error("Failed to shut down edge-rtac server", res.cause());
-        fail(res.cause().getMessage());
-      } else {
-        logger.info("Successfully shut down edge-rtac server");
-      }
-
-      logger.info("Shutting down mock Okapi");
-      mockOkapi.close(context);
-      async.complete();
-    });
+    mockOkapi.close().onComplete(context.asyncAssertSuccess());
   }
 
   protected String prepareQueryFor(String apiKey, String... instanceIds) {
@@ -152,6 +141,9 @@ public class MainVerticleTest {
 
     assertEquals("\"OK\"", resp.body().asString());
   }
+
+  // unsuccessful login attempts result in a 200 OK status with empty elements
+  // in the message body
 
   @Test
   public void testRtacUnknownApiKey(TestContext context) throws Exception {
@@ -207,6 +199,9 @@ public class MainVerticleTest {
     var actual = Holdings.fromXml(xml);
     assertEquals(expected, actual);
   }
+
+  // Unsuccessful searches result in a 200 OK status with an empty element in the
+  // response body
 
   @Test
   public void testRtacTitleNotFound(TestContext context) throws Exception {

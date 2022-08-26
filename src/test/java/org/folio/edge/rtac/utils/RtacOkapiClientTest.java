@@ -52,7 +52,7 @@ public class RtacOkapiClientTest {
     knownTenants.add(tenant);
 
     mockOkapi = new RtacMockOkapi(okapiPort, knownTenants);
-    mockOkapi.start(context);
+    mockOkapi.start().onComplete(context.asyncAssertSuccess());
 
     client = new RtacOkapiClientFactory(Vertx.vertx(), "http://localhost:" + okapiPort, reqTimeout)
       .getRtacOkapiClient(tenant);
@@ -60,7 +60,7 @@ public class RtacOkapiClientTest {
 
   @After
   public void tearDown(TestContext context) {
-    mockOkapi.close(context);
+    mockOkapi.close().onComplete(context.asyncAssertSuccess());
   }
 
   @Test
