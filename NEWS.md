@@ -1,4 +1,10 @@
+# 2.5.2 2022-08-30
+
+Same as 2.5.1 but with succeeding unit tests.
+
 # 2.5.1 2022-08-30
+
+Release 2.5.1 doesn't exist because the build fails due to a test failure caused by test order.
 
 * edge-common 4.4.1 fixing disabled SSL in Vert.x WebClient ([EDGRTAC-68](https://issues.folio.org/browse/EDGRTAC-68))
 
