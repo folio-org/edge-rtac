@@ -1,4 +1,4 @@
-# 2.5.1 2022-08-26
+# 2.5.1 2022-08-30
 
 * edge-common 4.4.1 fixing disabled SSL in Vert.x WebClient ([EDGRTAC-68](https://issues.folio.org/browse/EDGRTAC-68))
 
