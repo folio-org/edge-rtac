@@ -1,3 +1,9 @@
+# 2.6.0 2022-10-19
+
+* Upgrade to Log4J 2.18.0 (CVE-2021-44832) ([EDGRTAC-68](https://issues.folio.org/browse/EDGRTAC-68))
+* Upgrade to edge-common 4.4.1 ([EDGRTAC-68](https://issues.folio.org/browse/EDGRTAC-68))
+* Upgrade to vertx 4.3.3 ([EDGRTAC-68](https://issues.folio.org/browse/EDGRTAC-68))
+
 # 2.5.0 2022-06-15
 
 * Remove no longer supported vert.x completable future dependency. ([EDGRTAC-60](https://issues.folio.org/browse/EDGRTAC-60)
@@ -8,8 +14,8 @@
 
 # 2.3.0 2021-10-05
 
-* Upgrade to vert.x 4.x (EDGRTAC-37)
-* Instance ID number is now included in responses in which holdings data could not be found or reported (EDGRTAC-43)
+* Upgrade to vert.x 4.x ([EDGRTAC-37](https://issues.folio.org/browse/EDGRTAC-37))
+* Instance ID number is now included in responses in which holdings data could not be found or reported ([EDGRTAC-43](https://issues.folio.org/browse/EDGRTAC-43))
 
 # 2.2.0 2021-03-16
 
