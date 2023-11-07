@@ -1,3 +1,7 @@
+# 2.6.1 2023-11-02
+
+* Upgrade to Vert.x 4.4.6, Netty 4.1.100.Final (CVE-2023-44487) ([EDGRTAC-79](https://issues.folio.org/browse/EDGRTAC-79))
+
 # 2.6.0 2022-10-19
 
 * Upgrade to Log4J 2.18.0 (CVE-2021-44832) ([EDGRTAC-68](https://issues.folio.org/browse/EDGRTAC-68))
