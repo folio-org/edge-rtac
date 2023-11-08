@@ -36,19 +36,31 @@ public class InstancesTest {
   public void setUp() throws Exception {
     Holding h1 = Holding.builder()
       .id("99712686103569")
+      .barcode("310212300520681")
       .callNumber("PS3552.E796 D44x 1975")
       .location("LC General Collection Millersville University Library")
+      .locationCode("AFRST")
+      .locationId("05470e40-00ad-4bc7-b78c-87d8a0c8f361")
       .status("Item in place")
       .dueDate("")
+      .suppressFromDiscovery(false)
       .volume("v.10:no.2")
+      .materialType(new MaterialType().withId("85eba648-c605-4e00-88cf-a51afb309e49").withName("Book"))
+      .library(new Library().withCode("AC").withName("AC Frost Library"))
       .build();
 
     Holding h2 = Holding.builder()
       .id("99712686103569")
+      .barcode("312066001456178")
       .callNumber("PS3552.E796 D44x 1975")
       .location("LC General Collection Millersville University Library")
+      .locationCode("UMGEN")
+      .locationId("dd2b2007-a07f-4c83-b642-088389555669")
+      .suppressFromDiscovery(false)
       .status("Item in place")
       .dueDate("2018-04-23 12:00:00")
+      .materialType(new MaterialType().withId("bca717b7-25df-4d53-a9f3-19941945a592").withName("E-Book"))
+      .library(new Library().withCode("MH").withName("MH Main Library"))
       .build();
 
     instances = new Instances();
