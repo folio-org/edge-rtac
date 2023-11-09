@@ -34,6 +34,10 @@
     <!-- the main class -->
     <exec.mainClass>org.folio.edge.rtac.MainVerticle</exec.mainClass>
     <log4j2.version>2.20.0</log4j2.version>
+
+    <sonar.exclusions>
+      src/main/java/org/folio/edge/rtac/model/**
+    </sonar.exclusions>
   </properties>
 
   <dependencyManagement>
