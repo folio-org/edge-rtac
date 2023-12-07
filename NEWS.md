@@ -1,3 +1,7 @@
+# 2.6.2 2023-12-07
+
+* EDGRTAC-82: Upgrade edge-common to get RTR ([EDGRTAC-82](https://issues.folio.org/browse/EDGRTAC-82))
+
 # 2.6.1 2023-11-02
 
 * Upgrade to Vert.x 4.4.6, Netty 4.1.100.Final (CVE-2023-44487) ([EDGRTAC-79](https://issues.folio.org/browse/EDGRTAC-79))
