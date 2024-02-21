@@ -34,6 +34,10 @@ public final class Holding {
   private final String temporaryLoanType;
   @JsonProperty("permanentLoanType")
   private final String permanentLoanType;
+  @JsonProperty("holdingsCopyNumber")
+  private final String holdingsCopyNumber;
+  @JsonProperty("itemCopyNumber")
+  private final String itemCopyNumber;
 
   @Override
   public boolean equals(Object o) {
@@ -48,11 +52,14 @@ public final class Holding {
       Objects.equals(tempLocation, holding.tempLocation) &&
       Objects.equals(volume, holding.volume) &&
       Objects.equals(temporaryLoanType, holding.temporaryLoanType) &&
-      Objects.equals(permanentLoanType, holding.permanentLoanType);
+      Objects.equals(permanentLoanType, holding.permanentLoanType) &&
+      Objects.equals(holdingsCopyNumber, holding.holdingsCopyNumber) &&
+      Objects.equals(itemCopyNumber, holding.itemCopyNumber);
   }
 
   @Override
   public int hashCode() {
-    return Objects.hash(id, callNumber, location, status, dueDate, tempLocation, volume, temporaryLoanType, permanentLoanType);
+    return Objects.hash(id, callNumber, location, status, dueDate, tempLocation, volume, temporaryLoanType, permanentLoanType,
+        holdingsCopyNumber, itemCopyNumber);
   }
 }
