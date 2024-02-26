@@ -52,14 +52,11 @@ public final class Holding {
       Objects.equals(tempLocation, holding.tempLocation) &&
       Objects.equals(volume, holding.volume) &&
       Objects.equals(temporaryLoanType, holding.temporaryLoanType) &&
-      Objects.equals(permanentLoanType, holding.permanentLoanType) &&
-      Objects.equals(holdingsCopyNumber, holding.holdingsCopyNumber) &&
-      Objects.equals(itemCopyNumber, holding.itemCopyNumber);
+      Objects.equals(permanentLoanType, holding.permanentLoanType);
   }
 
   @Override
   public int hashCode() {
-    return Objects.hash(id, callNumber, location, status, dueDate, tempLocation, volume, temporaryLoanType, permanentLoanType,
-        holdingsCopyNumber, itemCopyNumber);
+    return Objects.hash(id, callNumber, location, status, dueDate, tempLocation, volume, temporaryLoanType, permanentLoanType);
   }
 }
