@@ -201,6 +201,8 @@ public class MainVerticleTest {
     assertEquals("PS3552.E796 D44x 1975", holdingRecord.getString("callNumber"));
     assertEquals("Item in place", holdingRecord.getString("status"));
     assertEquals("v.5:no.2-6", holdingRecord.getString("volume"));
+    assertEquals("101", holdingRecord.getString("holdingsCopyNumber"));
+    assertEquals("201", holdingRecord.getString("itemCopyNumber"));
   }
 
   // Unsuccessful searches result in a 200 OK status with an empty element in the
@@ -262,6 +264,10 @@ public class MainVerticleTest {
     assertEquals("Item in place", secondHoldings.getString("status"));
     assertEquals("v.5:no.2-6", firstHoldings.getString("volume"));
     assertEquals("v.5:no.2-6", secondHoldings.getString("volume"));
+    assertEquals("101", firstHoldings.getString("holdingsCopyNumber"));
+    assertEquals("101", secondHoldings.getString("holdingsCopyNumber"));
+    assertEquals("201", firstHoldings.getString("itemCopyNumber"));
+    assertEquals("201", secondHoldings.getString("itemCopyNumber"));
   }
 
   @Test
@@ -463,6 +469,8 @@ public class MainVerticleTest {
     assertEquals("PS3552.E796 D44x 1975", holding.callNumber);
     assertEquals("Item in place", holding.status);
     assertEquals("v.5:no.2-6", holding.volume);
+    assertEquals("101", holding.holdingsCopyNumber);
+    assertEquals("201", holding.itemCopyNumber);
   }
 
   @Test

@@ -35,9 +35,9 @@ public final class Holding {
   @JsonProperty("permanentLoanType")
   private final String permanentLoanType;
   @JsonProperty("holdingsCopyNumber")
-  private final String holdingsCopyNumber;
+  public final String holdingsCopyNumber;
   @JsonProperty("itemCopyNumber")
-  private final String itemCopyNumber;
+  public final String itemCopyNumber;
 
   @Override
   public boolean equals(Object o) {
