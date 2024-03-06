@@ -41,6 +41,7 @@ public class InstancesTest {
       .status("Item in place")
       .dueDate("")
       .volume("v.10:no.2")
+      .itemCopyNumber("101")
       .build();
 
     Holding h2 = Holding.builder()
@@ -48,14 +49,25 @@ public class InstancesTest {
       .callNumber("PS3552.E796 D44x 1975")
       .location("LC General Collection Millersville University Library")
       .status("Item in place")
+      .holdingsCopyNumber("201")
       .dueDate("2018-04-23 12:00:00")
       .build();
+
+    Holding h3 = Holding.builder()
+        .id("99712686103569")
+        .callNumber("PS3552.E796 D44x 1975")
+        .location("LC General Collection Millersville University Library")
+        .status("Item in place")
+        .itemCopyNumber("102")
+        .holdingsCopyNumber("202")
+        .dueDate("2018-04-23 12:00:00")
+        .build();
 
     instances = new Instances();
 
     final var holdings = new Holdings();
     holdings.setInstanceId(INSTANCE_ID);
-    holdings.setHoldings(List.of(h1, h2));
+    holdings.setHoldings(List.of(h1, h2, h3));
     instances.setHoldings(List.of(holdings));
 
     SchemaFactory schemaFactory = SchemaFactory
