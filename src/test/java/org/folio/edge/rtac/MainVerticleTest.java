@@ -107,8 +107,7 @@ public class MainVerticleTest {
     if (ArrayUtils.isEmpty(instanceIds)) {
       return String.format("/rtac?apikey=%s", apiKey);
     } else {
-      String instancesAsString = Arrays.asList(instanceIds).stream()
-          .collect(Collectors.joining(","));
+      String instancesAsString = String.join(",", Arrays.asList(instanceIds));
       return String.format("/rtac?apikey=%s&instanceIds=%s", apiKey, instancesAsString);
     }
   }
@@ -118,7 +117,7 @@ public class MainVerticleTest {
       throw new IllegalArgumentException("No instances specified");
 
     } else {
-      final var holdings = Arrays.asList(instanceIds).stream().map(RtacMockOkapi::getHoldings)
+      final var holdings = Arrays.stream(instanceIds).map(RtacMockOkapi::getHoldings)
           .collect(Collectors.toList());
       final var instanceHoldingRecords = new Instances();
       instanceHoldingRecords.setHoldings(holdings);

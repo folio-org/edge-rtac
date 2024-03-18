@@ -10,20 +10,60 @@
   </xs:complexType>
 </xs:element>
 
-<xs:element name="holding">
-  <xs:complexType>
+  <xs:element name="holding">
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element name="id" type="xs:string" minOccurs="1"/>
+        <xs:element name="callNumber" type="xs:string"/>
+        <xs:element name="barcode" type="xs:string"/>
+        <xs:element name="location" type="xs:string"/>
+        <xs:element name="locationCode" type="xs:string"/>
+        <xs:element name="locationId" type="xs:string"/>
+        <xs:element name="status" type="xs:string"/>
+        <xs:element name="dueDate" type="xs:string" minOccurs="0"/>
+        <xs:element name="tempLocation" type="xs:string" minOccurs="0"/>
+        <xs:element name="volume" type="xs:string" minOccurs="0"/>
+        <xs:element name="holdingsCopyNumber" type="xs:string" minOccurs="0"/>
+        <xs:element name="itemCopyNumber" type="xs:string" minOccurs="0"/>
+        <xs:element name="suppressFromDiscovery" type="xs:boolean"/>
+        <xs:element name="temporaryLoanType" type="xs:string" minOccurs="0"/>
+        <xs:element name="permanentLoanType" type="xs:string" minOccurs="0"/>
+        <xs:element name="totalHoldRequests" type="xs:integer" minOccurs="0"/>
+        <xs:element ref="materialType"/>
+        <xs:element ref="library"/>
+        <xs:element name="holdingsStatements" type="holdingsStatement" minOccurs="0"
+          maxOccurs="unbounded"/>
+        <xs:element name="holdingsStatementsForIndexes" type="holdingsStatement" minOccurs="0"
+          maxOccurs="unbounded"/>
+        <xs:element name="holdingsStatementsForSupplements" type="holdingsStatement" minOccurs="0"
+          maxOccurs="unbounded"/>
+      </xs:sequence>
+    </xs:complexType>
+  </xs:element>
+
+  <xs:element name="materialType">
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element name="id" type="xs:string"/>
+        <xs:element name="name" type="xs:string"/>
+      </xs:sequence>
+    </xs:complexType>
+  </xs:element>
+
+  <xs:element name="library">
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element name="code" type="xs:string"/>
+        <xs:element name="name" type="xs:string"/>
+      </xs:sequence>
+    </xs:complexType>
+  </xs:element>
+
+  <xs:complexType name="holdingsStatement">
     <xs:sequence>
-      <xs:element name="id" type="xs:string" minOccurs="1"/>
-      <xs:element name="callNumber" type="xs:string"/>
-      <xs:element name="location" type="xs:string"/>
-      <xs:element name="status" type="xs:string"/>
-      <xs:element name="dueDate" type="xs:string"/>
-      <xs:element name="tempLocation" type="xs:string" minOccurs="0"/>
-      <xs:element name="volume" type="xs:string" minOccurs="0"/>
-      <xs:element name="holdingsCopyNumber" type="xs:string" minOccurs="0"/>
-      <xs:element name="itemCopyNumber" type="xs:string" minOccurs="0"/>
+      <xs:element name="statement" type="xs:string"/>
+      <xs:element name="note" type="xs:string"/>
     </xs:sequence>
   </xs:complexType>
-</xs:element>
 
 </xs:schema>
