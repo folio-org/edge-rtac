@@ -23,6 +23,8 @@
         <xs:element name="dueDate" type="xs:string" minOccurs="0"/>
         <xs:element name="tempLocation" type="xs:string" minOccurs="0"/>
         <xs:element name="volume" type="xs:string" minOccurs="0"/>
+        <xs:element name="holdingsCopyNumber" type="xs:string" minOccurs="0"/>
+        <xs:element name="itemCopyNumber" type="xs:string" minOccurs="0"/>
         <xs:element name="suppressFromDiscovery" type="xs:boolean"/>
         <xs:element name="temporaryLoanType" type="xs:string" minOccurs="0"/>
         <xs:element name="permanentLoanType" type="xs:string" minOccurs="0"/>

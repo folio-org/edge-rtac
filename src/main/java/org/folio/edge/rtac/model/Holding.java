@@ -37,6 +37,10 @@ public final class Holding {
   private final String temporaryLoanType;
   @JsonProperty("permanentLoanType")
   private final String permanentLoanType;
+  @JsonProperty("holdingsCopyNumber")
+  public final String holdingsCopyNumber;
+  @JsonProperty("itemCopyNumber")
+  public final String itemCopyNumber;
   @JsonProperty("barcode")
   private final String barcode;
   @JsonProperty("suppressFromDiscovery")

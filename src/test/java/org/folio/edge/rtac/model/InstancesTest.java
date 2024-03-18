@@ -45,6 +45,7 @@ public class InstancesTest {
       .dueDate("")
       .suppressFromDiscovery(false)
       .volume("v.10:no.2")
+      .itemCopyNumber("101")
       .materialType(new MaterialType().withId("85eba648-c605-4e00-88cf-a51afb309e49").withName("Book"))
       .library(new Library().withCode("AC").withName("AC Frost Library"))
       .build();
@@ -58,16 +59,27 @@ public class InstancesTest {
       .locationId("dd2b2007-a07f-4c83-b642-088389555669")
       .suppressFromDiscovery(false)
       .status("Item in place")
+      .holdingsCopyNumber("201")
       .dueDate("2018-04-23 12:00:00")
       .materialType(new MaterialType().withId("bca717b7-25df-4d53-a9f3-19941945a592").withName("E-Book"))
       .library(new Library().withCode("MH").withName("MH Main Library"))
       .build();
 
+    Holding h3 = Holding.builder()
+        .id("99712686103569")
+        .callNumber("PS3552.E796 D44x 1975")
+        .location("LC General Collection Millersville University Library")
+        .status("Item in place")
+        .itemCopyNumber("102")
+        .holdingsCopyNumber("202")
+        .dueDate("2018-04-23 12:00:00")
+        .build();
+
     instances = new Instances();
 
     final var holdings = new Holdings();
     holdings.setInstanceId(INSTANCE_ID);
-    holdings.setHoldings(List.of(h1, h2));
+    holdings.setHoldings(List.of(h1, h2, h3));
     instances.setHoldings(List.of(holdings));
 
     SchemaFactory schemaFactory = SchemaFactory
