@@ -65,21 +65,11 @@ public class InstancesTest {
       .library(new Library().withCode("MH").withName("MH Main Library"))
       .build();
 
-    Holding h3 = Holding.builder()
-        .id("99712686103569")
-        .callNumber("PS3552.E796 D44x 1975")
-        .location("LC General Collection Millersville University Library")
-        .status("Item in place")
-        .itemCopyNumber("102")
-        .holdingsCopyNumber("202")
-        .dueDate("2018-04-23 12:00:00")
-        .build();
-
     instances = new Instances();
 
     final var holdings = new Holdings();
     holdings.setInstanceId(INSTANCE_ID);
-    holdings.setHoldings(List.of(h1, h2, h3));
+    holdings.setHoldings(List.of(h1, h2));
     instances.setHoldings(List.of(holdings));
 
     SchemaFactory schemaFactory = SchemaFactory
