@@ -1,3 +1,8 @@
+# 2.7.0 2024-03-20
+
+* Upgrade edge-rtac Vert.x 4.5.4 ([MODRTAC-109](https://folio-org.atlassian.net/browse/MODRTAC-109))
+* Add holdingsCopyNumber and ItemsCopyNumber to rtac response ([EDGRTAC-81](https://folio-org.atlassian.net/browse/EDGRTAC-81))
+
 # 2.6.2 2023-12-07
 
 * EDGRTAC-82: Upgrade edge-common to get refresh token rotation (RTR) ([EDGRTAC-82](https://issues.folio.org/browse/EDGRTAC-82))
