@@ -1,3 +1,7 @@
+# 2.7.1 2024-03-22
+
+* US1238243: update edge-common version to 4.6.0 ([MODRTAC-109](https://folio-org.atlassian.net/browse/MODRTAC-109))
+
 # 2.7.0 2024-03-20
 
 * Upgrade edge-rtac Vert.x 4.5.4 ([MODRTAC-109](https://folio-org.atlassian.net/browse/MODRTAC-109))
