@@ -1,29 +1,28 @@
 package org.folio.edge.rtac.utils;
 
+import static org.folio.edge.core.Constants.SYS_OKAPI_URL;
+import static org.folio.edge.core.Constants.SYS_REQUEST_TIMEOUT_MS;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 
-import org.junit.Before;
+import io.vertx.core.json.JsonObject;
+import org.folio.edge.core.utils.OkapiClient;
+import org.folio.edge.core.utils.OkapiClientFactory;
 import org.junit.Test;
 
 import io.vertx.core.Vertx;
 
 public class RtacOkapiClientFactoryTest {
 
-  private static final int reqTimeout = 5000;
-
-  private RtacOkapiClientFactory ocf;
-
-  @Before
-  public void setUp() throws Exception {
-
-    Vertx vertx = Vertx.vertx();
-    ocf = new RtacOkapiClientFactory(vertx, "http://mocked.okapi:9130", reqTimeout);
-  }
-
   @Test
   public void testGetOkapiClient() {
-    RtacOkapiClient client = ocf.getRtacOkapiClient("tenant");
+    Vertx vertx = Vertx.vertx();
+    int reqTimeout = 5000;
+    JsonObject config = new JsonObject()
+      .put(SYS_OKAPI_URL, "http://mocked.okapi:9130")
+      .put(SYS_REQUEST_TIMEOUT_MS, reqTimeout);
+    OkapiClientFactory ocf = RtacOkapiClientFactory.createInstance(vertx, config);
+    OkapiClient client = ocf.getOkapiClient("tenant");
     assertNotNull(client);
     assertEquals(reqTimeout, client.reqTimeout);
   }
