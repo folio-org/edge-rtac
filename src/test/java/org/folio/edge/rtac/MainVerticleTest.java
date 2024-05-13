@@ -107,8 +107,7 @@ public class MainVerticleTest {
     if (ArrayUtils.isEmpty(instanceIds)) {
       return String.format("/rtac?apikey=%s", apiKey);
     } else {
-      String instancesAsString = Arrays.asList(instanceIds).stream()
-          .collect(Collectors.joining(","));
+      String instancesAsString = String.join(",", Arrays.asList(instanceIds));
       return String.format("/rtac?apikey=%s&instanceIds=%s", apiKey, instancesAsString);
     }
   }
@@ -118,7 +117,7 @@ public class MainVerticleTest {
       throw new IllegalArgumentException("No instances specified");
 
     } else {
-      final var holdings = Arrays.asList(instanceIds).stream().map(RtacMockOkapi::getHoldings)
+      final var holdings = Arrays.stream(instanceIds).map(RtacMockOkapi::getHoldings)
           .collect(Collectors.toList());
       final var instanceHoldingRecords = new Instances();
       instanceHoldingRecords.setHoldings(holdings);
@@ -201,6 +200,8 @@ public class MainVerticleTest {
     assertEquals("PS3552.E796 D44x 1975", holdingRecord.getString("callNumber"));
     assertEquals("Item in place", holdingRecord.getString("status"));
     assertEquals("v.5:no.2-6", holdingRecord.getString("volume"));
+    assertEquals("101", holdingRecord.getString("holdingsCopyNumber"));
+    assertEquals("201", holdingRecord.getString("itemCopyNumber"));
   }
 
   // Unsuccessful searches result in a 200 OK status with an empty element in the
@@ -262,6 +263,10 @@ public class MainVerticleTest {
     assertEquals("Item in place", secondHoldings.getString("status"));
     assertEquals("v.5:no.2-6", firstHoldings.getString("volume"));
     assertEquals("v.5:no.2-6", secondHoldings.getString("volume"));
+    assertEquals("101", firstHoldings.getString("holdingsCopyNumber"));
+    assertEquals("101", secondHoldings.getString("holdingsCopyNumber"));
+    assertEquals("201", firstHoldings.getString("itemCopyNumber"));
+    assertEquals("201", secondHoldings.getString("itemCopyNumber"));
   }
 
   @Test
@@ -463,6 +468,8 @@ public class MainVerticleTest {
     assertEquals("PS3552.E796 D44x 1975", holding.callNumber);
     assertEquals("Item in place", holding.status);
     assertEquals("v.5:no.2-6", holding.volume);
+    assertEquals("101", holding.holdingsCopyNumber);
+    assertEquals("201", holding.itemCopyNumber);
   }
 
   @Test

@@ -103,6 +103,8 @@ public class RtacMockOkapi extends MockOkapi {
       .tempLocation("")
       .dueDate("")
       .volume("v.5:no.2-6")
+      .holdingsCopyNumber("101")
+      .itemCopyNumber("201")
       .build();
 
     final var holdings = new Holdings();
