@@ -151,6 +151,13 @@
       <scope>runtime</scope>
     </dependency>
 
+    <!-- Library provides the basic cryptographic functionality complying with FIPS -->
+    <dependency>
+      <groupId>org.bouncycastle</groupId>
+      <artifactId>bc-fips</artifactId>
+      <version>1.0.2.5</version>
+    </dependency>
+
     <!-- Test dependencies -->
     <dependency>
       <groupId>org.junit.jupiter</groupId>
