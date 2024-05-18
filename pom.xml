@@ -33,10 +33,16 @@
 
     <!-- the main class -->
     <exec.mainClass>org.folio.edge.rtac.MainVerticle</exec.mainClass>
+
+    <!--Dependency properties-->
     <log4j2.version>2.20.0</log4j2.version>
+    <bc-fips.version>1.0.2.5</bc-fips.version>
+    <bcpkix-fips.version>1.0.7</bcpkix-fips.version>
+    <bctls-fips.version>1.0.19</bctls-fips.version>
 
     <sonar.exclusions>
-      src/main/java/org/folio/edge/rtac/model/**
+      src/main/java/org/folio/edge/rtac/model/**,
+      src/main/java/org/folio/edge/orders/RtacLauncher.java
     </sonar.exclusions>
   </properties>
 
@@ -151,11 +157,21 @@
       <scope>runtime</scope>
     </dependency>
 
-    <!-- Library provides the basic cryptographic functionality complying with FIPS -->
+    <!-- Libraries provide the basic cryptographic functionality complying with FIPS -->
     <dependency>
       <groupId>org.bouncycastle</groupId>
       <artifactId>bc-fips</artifactId>
-      <version>1.0.2.5</version>
+      <version>${bc-fips.version}</version>
+    </dependency>
+    <dependency>
+      <groupId>org.bouncycastle</groupId>
+      <artifactId>bcpkix-fips</artifactId>
+      <version>${bcpkix-fips.version}</version>
+    </dependency>
+    <dependency>
+      <groupId>org.bouncycastle</groupId>
+      <artifactId>bctls-fips</artifactId>
+      <version>${bctls-fips.version}</version>
     </dependency>
 
     <!-- Test dependencies -->
