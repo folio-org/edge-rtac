@@ -42,7 +42,7 @@
 
     <sonar.exclusions>
       src/main/java/org/folio/edge/rtac/model/**,
-      src/main/java/org/folio/edge/orders/RtacLauncher.java
+      src/main/java/org/folio/edge/rtac/RtacLauncher.java
     </sonar.exclusions>
   </properties>
 
