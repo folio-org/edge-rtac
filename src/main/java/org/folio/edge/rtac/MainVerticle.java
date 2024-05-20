@@ -9,7 +9,7 @@ import com.fasterxml.jackson.annotation.JsonInclude;
 import io.vertx.core.http.HttpMethod;
 import io.vertx.ext.web.Router;
 import io.vertx.ext.web.handler.BodyHandler;
-import org.folio.edge.rtac.utils.RtacOkapiClientFactory;
+import org.folio.edge.core.utils.OkapiClientFactoryInitializer;
 
 public class MainVerticle extends EdgeVerticleHttp {
 
@@ -19,7 +19,7 @@ public class MainVerticle extends EdgeVerticleHttp {
 
   @Override
   public Router defineRoutes() {
-    OkapiClientFactory ocf = RtacOkapiClientFactory.createInstance(vertx, config());
+    OkapiClientFactory ocf = OkapiClientFactoryInitializer.createInstance(vertx, config());
     RtacHandler rtacHandler = new RtacHandler(secureStore, ocf);
 
     Router router = Router.router(vertx);

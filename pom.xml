@@ -36,13 +36,9 @@
 
     <!--Dependency properties-->
     <log4j2.version>2.20.0</log4j2.version>
-    <bc-fips.version>1.0.2.5</bc-fips.version>
-    <bcpkix-fips.version>1.0.7</bcpkix-fips.version>
-    <bctls-fips.version>1.0.19</bctls-fips.version>
 
     <sonar.exclusions>
-      src/main/java/org/folio/edge/rtac/model/**,
-      src/main/java/org/folio/edge/rtac/RtacLauncher.java
+      src/main/java/org/folio/edge/rtac/model/**
     </sonar.exclusions>
   </properties>
 
@@ -157,23 +153,6 @@
       <scope>runtime</scope>
     </dependency>
 
-    <!-- Libraries provide the basic cryptographic functionality complying with FIPS -->
-    <dependency>
-      <groupId>org.bouncycastle</groupId>
-      <artifactId>bc-fips</artifactId>
-      <version>${bc-fips.version}</version>
-    </dependency>
-    <dependency>
-      <groupId>org.bouncycastle</groupId>
-      <artifactId>bcpkix-fips</artifactId>
-      <version>${bcpkix-fips.version}</version>
-    </dependency>
-    <dependency>
-      <groupId>org.bouncycastle</groupId>
-      <artifactId>bctls-fips</artifactId>
-      <version>${bctls-fips.version}</version>
-    </dependency>
-
     <!-- Test dependencies -->
     <dependency>
       <groupId>org.junit.jupiter</groupId>
@@ -263,7 +242,7 @@
               <transformers>
                 <transformer implementation="org.apache.maven.plugins.shade.resource.ManifestResourceTransformer">
                   <manifestEntries>
-                    <Main-Class>org.folio.edge.rtac.RtacLauncher</Main-Class>
+                    <Main-Class>io.vertx.core.Launcher</Main-Class>
                     <Main-Verticle>${exec.mainClass}</Main-Verticle>
                     <Multi-Release>true</Multi-Release>
                   </manifestEntries>
