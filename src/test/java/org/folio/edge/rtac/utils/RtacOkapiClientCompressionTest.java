@@ -4,6 +4,7 @@ import java.util.UUID;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+import org.folio.edge.core.utils.OkapiClientFactory;
 import org.folio.edge.core.utils.test.TestUtils;
 import org.junit.After;
 import org.junit.Before;
@@ -50,8 +51,8 @@ public class RtacOkapiClientCompressionTest {
       async.complete();
     });
 
-    client = new RtacOkapiClientFactory(vertx,
-        "http://localhost:" + okapiPort, reqTimeout).getRtacOkapiClient(tenant);
+    client = new RtacOkapiClient(new OkapiClientFactory(vertx,
+      "http://localhost:" + okapiPort, reqTimeout).getOkapiClient(tenant));
   }
 
   @After

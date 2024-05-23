@@ -28,10 +28,10 @@ import org.apache.logging.log4j.Logger;
 import org.folio.edge.core.Handler;
 import org.folio.edge.core.security.SecureStore;
 import org.folio.edge.core.utils.Mappers;
+import org.folio.edge.core.utils.OkapiClientFactory;
 import org.folio.edge.rtac.model.Holdings;
 import org.folio.edge.rtac.model.Instances;
 import org.folio.edge.rtac.utils.RtacOkapiClient;
-import org.folio.edge.rtac.utils.RtacOkapiClientFactory;
 
 public class RtacHandler extends Handler {
 
@@ -42,7 +42,7 @@ public class RtacHandler extends Handler {
   private static final String PARAM_INSTANCE_ID = "instanceId";
   private static final String PARAM_INSTANCE_IDS = "instanceIds";
 
-  public RtacHandler(SecureStore secureStore, RtacOkapiClientFactory ocf) {
+  public RtacHandler(SecureStore secureStore, OkapiClientFactory ocf) {
     super(secureStore, ocf);
   }
 
@@ -108,7 +108,7 @@ public class RtacHandler extends Handler {
                 }
                 else {
                   holdings = instances.getHoldings().get(0);
-                } 
+                }
                 returningContent = isXmlRequest ? holdings.toXml() : holdings.toJson();
               }
 

@@ -19,6 +19,7 @@ import java.util.concurrent.CompletableFuture;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.folio.edge.core.utils.Mappers;
+import org.folio.edge.core.utils.OkapiClientFactory;
 import org.folio.edge.core.utils.test.TestUtils;
 import org.folio.edge.rtac.model.Instances;
 import org.junit.After;
@@ -54,8 +55,8 @@ public class RtacOkapiClientTest {
     mockOkapi = new RtacMockOkapi(okapiPort, knownTenants);
     mockOkapi.start().onComplete(context.asyncAssertSuccess());
 
-    client = new RtacOkapiClientFactory(Vertx.vertx(), "http://localhost:" + okapiPort, reqTimeout)
-      .getRtacOkapiClient(tenant);
+    client = new RtacOkapiClient(new OkapiClientFactory(Vertx.vertx(),
+      "http://localhost:" + okapiPort, reqTimeout).getOkapiClient(tenant));
   }
 
   @After
