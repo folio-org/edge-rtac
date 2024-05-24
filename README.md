@@ -47,16 +47,19 @@ Institutional users should be granted the following permission in order to use t
 | `secure_store_props`   | `NA`        | Path to a properties file specifying secure store configuration         |
 
 ### Env variables for TLS configuration for Http server
+
 To configure Transport Layer Security (TLS) for the HTTP server in an edge module, the following configuration parameters should be used.
 Parameters marked as Required are required only in case when ssl_enabled is set to true.
 
-| Property                                             | Default           | Description                                                                                 |
-|------------------------------------------------------|-------------------|---------------------------------------------------------------------------------------------|
-| `SPRING_SSL_BUNDLE_JKS_WEB-SERVER_KEYSTORE_TYPE`     | `NA`              | (Required). Set the type of the keystore. Common types include `JKS`, `PKCS12`, and `BCFKS` |
-| `SPRING_SSL_BUNDLE_JKS_WEB-SERVER_KEYSTORE_PATH`     | `NA`              | (Required). Set the location of the keystore file in the local file system                  |
-| `SPRING_SSL_BUNDLE_JKS_WEB-SERVER_KEYSTORE_PASSWORD` | `NA`              | (Required). Set the password for the keystore                                               |
+| Property                                              | Default           | Description                                                                                 |
+|-------------------------------------------------------|-------------------|---------------------------------------------------------------------------------------------|
+| `SPRING_SSL_BUNDLE_JKS_WEB-SERVER_KEYSTORE_TYPE`      | `NA`              | (Required). Set the type of the keystore. Common types include `JKS`, `PKCS12`, and `BCFKS` |
+| `SPRING_SSL_BUNDLE_JKS_WEB-SERVER_KEYSTORE_PATH`      | `NA`              | (Required). Set the location of the keystore file in the local file system                  |
+| `SPRING_SSL_BUNDLE_JKS_WEB-SERVER_KEYSTORE_PASSWORD`  | `NA`              | (Required). Set the password for the keystore                                               |
+| `SPRING_SSL_BUNDLE_JKS_WEB-SERVER_KEY_ALIAS`          | `NA`              | Set the alias of the key within the keystore.                                               |
 
 ### Env variables for TLS configuration for Web Client
+
 To configure Transport Layer Security (TLS) for Web clients in the edge module, you can use the following configuration parameters.
 Truststore parameters for configuring Web clients are optional even when ssl_enabled = true.
 If truststore parameters need to be populated, truststore_type, truststore_path and truststore_password are required.
@@ -64,9 +67,9 @@ If truststore parameters need to be populated, truststore_type, truststore_path 
 | Property                                | Default           | Description                                                                      |
 |-----------------------------------------|-------------------|----------------------------------------------------------------------------------|
 | `FOLIO_CLIENT_TLS_ENABLED`              | `false`           | Set whether SSL/TLS is enabled for Vertx Http Server                             |
-| `FOLIO_CLIENT_TLS_TRUST_STORE_TYPE`     | `NA`              | Set the type of the keystore. Common types include `JKS`, `PKCS12`, and `BCFKS`  |
-| `FOLIO_CLIENT_TLS_TRUST_STORE_PATH`     | `NA`              | Set the location of the keystore file in the local file system                   |
-| `FOLIO_CLIENT_TLS_TRUST_STORE_PASSWORD` | `NA`              | Set the password for the keystore                                                |
+| `FOLIO_CLIENT_TLS_TRUSTSTORETYPE`       | `NA`              | Set the type of the keystore. Common types include `JKS`, `PKCS12`, and `BCFKS`  |
+| `FOLIO_CLIENT_TLS_TRUSTSTOREPATH`       | `NA`              | Set the location of the keystore file in the local file system                   |
+| `FOLIO_CLIENT_TLS_TRUSTSTOREPASSWORD`   | `NA`              | Set the password for the keystore                                                |
 
 
 ## Additional information
