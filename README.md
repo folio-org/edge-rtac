@@ -46,7 +46,7 @@ Institutional users should be granted the following permission in order to use t
 | `secure_store`         | `Ephemeral` | Type of secure store to use.  Valid: `Ephemeral`, `AwsSsm`, `Vault`     |
 | `secure_store_props`   | `NA`        | Path to a properties file specifying secure store configuration         |
 
-### System Properties for TLS configuration for Http server
+### Env variables for TLS configuration for Http server
 To configure Transport Layer Security (TLS) for the HTTP server in an edge module, the following configuration parameters should be used.
 Parameters marked as Required are required only in case when ssl_enabled is set to true.
 
@@ -56,7 +56,7 @@ Parameters marked as Required are required only in case when ssl_enabled is set 
 | `SPRING_SSL_BUNDLE_JKS_WEB_SERVER_KEYSTORE_PATH`     | `NA`              | (Required). Set the location of the keystore file in the local file system                  |
 | `SPRING_SSL_BUNDLE_JKS_WEB_SERVER_KEYSTORE_PASSWORD` | `NA`              | (Required). Set the password for the keystore                                               |
 
-### System Properties for TLS configuration for Web Client
+### Env variables for TLS configuration for Web Client
 To configure Transport Layer Security (TLS) for Web clients in the edge module, you can use the following configuration parameters.
 Truststore parameters for configuring Web clients are optional even when ssl_enabled = true.
 If truststore parameters need to be populated, truststore_type, truststore_path and truststore_password are required.
