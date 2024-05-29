@@ -1,3 +1,8 @@
+* [EDGRTAC-88](https://folio-org.atlassian.net/browse/EDGRTAC-88) Vert.x 4.5.7 fixing netty-codec-http form POST OOM CVE-2024-29025
+* Remove -SNAPSHOT from edge-common:4.7.0-SNAPSHOT
+* [EDGRTAC-87](https://folio-org.atlassian.net/browse/EDGRTAC-87) aws-java-sdk-ssm 1.12.729 removing ion-java CVE-2024-21634
+* [EDGRTAC-86](https://folio-org.atlassian.net/browse/EDGRTAC-86) Enhance HTTP Endpoint Security with TLS and FIPS-140-2 Compliant Cryptography 
+
 # 2.7.1 2024-03-22
 
 * US1238243: update edge-common version to 4.6.0 ([MODRTAC-109](https://folio-org.atlassian.net/browse/MODRTAC-109))
