@@ -42,6 +42,7 @@
         <xs:element name="holdingsStatements" type="holdingsStatement" minOccurs="0" maxOccurs="unbounded"/>
         <xs:element name="holdingsStatementsForIndexes" type="holdingsStatement" minOccurs="0" maxOccurs="unbounded"/>
         <xs:element name="holdingsStatementsForSupplements" type="holdingsStatement" minOccurs="0" maxOccurs="unbounded"/>
+        <xs:element name="effectiveShelvingOrder" type="xs:string" minOccurs="0"/>
       </xs:sequence>
     </xs:complexType>
   </xs:element>

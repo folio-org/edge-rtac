@@ -57,6 +57,8 @@ public final class Holding {
   private final List<HoldingsStatement> holdingsStatementsForIndexes;
   @JsonProperty("holdingsStatementsForSupplements")
   private final List<HoldingsStatement> holdingsStatementsForSupplements;
+  @JsonProperty("effectiveShelvingOrder")
+  public final String effectiveShelvingOrder;
 
   @Override
   public boolean equals(Object o) {
@@ -82,7 +84,8 @@ public final class Holding {
       && Objects.equals(holdingsStatements, holding.holdingsStatements)
       && Objects.equals(holdingsStatementsForIndexes,
       holding.holdingsStatementsForIndexes) && Objects.equals(
-      holdingsStatementsForSupplements, holding.holdingsStatementsForSupplements);
+      holdingsStatementsForSupplements, holding.holdingsStatementsForSupplements)
+      && Objects.equals(effectiveShelvingOrder, holding.effectiveShelvingOrder);
   }
 
   @Override
@@ -90,6 +93,6 @@ public final class Holding {
     return Objects.hash(id, callNumber, location, locationCode, locationId, status, dueDate,
       tempLocation, volume, temporaryLoanType, permanentLoanType, barcode, suppressFromDiscovery,
       totalHoldRequests, materialType, library, holdingsStatements, holdingsStatementsForIndexes,
-      holdingsStatementsForSupplements);
+      holdingsStatementsForSupplements, effectiveShelvingOrder);
   }
 }
