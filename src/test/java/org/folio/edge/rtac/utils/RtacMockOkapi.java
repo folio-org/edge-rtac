@@ -105,6 +105,7 @@ public class RtacMockOkapi extends MockOkapi {
       .volume("v.5:no.2-6")
       .holdingsCopyNumber("101")
       .itemCopyNumber("201")
+      .effectiveShelvingOrder("3332.024")
       .build();
 
     final var holdings = new Holdings();

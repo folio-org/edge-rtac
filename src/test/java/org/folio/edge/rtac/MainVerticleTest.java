@@ -267,6 +267,8 @@ public class MainVerticleTest {
     assertEquals("101", secondHoldings.getString("holdingsCopyNumber"));
     assertEquals("201", firstHoldings.getString("itemCopyNumber"));
     assertEquals("201", secondHoldings.getString("itemCopyNumber"));
+    assertEquals("3332.024", firstHoldings.getString("effectiveShelvingOrder"));
+    assertEquals("3332.024", secondHoldings.getString("effectiveShelvingOrder"));
   }
 
   @Test
@@ -470,6 +472,7 @@ public class MainVerticleTest {
     assertEquals("v.5:no.2-6", holding.volume);
     assertEquals("101", holding.holdingsCopyNumber);
     assertEquals("201", holding.itemCopyNumber);
+    assertEquals("3332.024", holding.effectiveShelvingOrder);
   }
 
   @Test
