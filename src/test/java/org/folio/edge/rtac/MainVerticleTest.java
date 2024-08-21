@@ -35,7 +35,9 @@ import org.apache.http.HttpHeaders;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.folio.edge.core.utils.ApiKeyUtils;
+import org.folio.edge.core.utils.Mappers;
 import org.folio.edge.core.utils.test.TestUtils;
+import org.folio.edge.rtac.model.Error;
 import org.folio.edge.rtac.model.Holding;
 import org.folio.edge.rtac.model.Holdings;
 import org.folio.edge.rtac.model.Instances;
@@ -293,6 +295,55 @@ public class MainVerticleTest {
 
     assertEquals(expectedError, errors.getString("message"));
     assertEquals("404", errors.getString("code"));
+  }
+
+  @Test
+  public void shouldProvideNotFoundErrorForSingleResponseWhenTitleNotFoundInJson(TestContext context) throws Exception {
+
+    final var queryString = String.format("/rtac/%s?apikey=%s", RtacMockOkapi.titleId_Error, apiKey);
+
+    final Response resp = RestAssured
+        .given()
+        .accept(APPLICATION_JSON)
+        .get(queryString)
+        .then()
+        .contentType(APPLICATION_JSON)
+        .statusCode(200)
+        .header(HttpHeaders.CONTENT_TYPE, APPLICATION_JSON)
+        .extract()
+        .response();
+
+    String expectedError = "Instance 69640328-788e-43fc-9c3c-af39e243f3b8 can not be retrieved";
+
+    JsonObject error =  new JsonObject(resp.body().asString());
+
+    assertEquals(expectedError, error.getString("message"));
+    assertEquals("404", error.getString("code"));
+  }
+
+  @Test
+  public void shouldProvideNotFoundErrorForSingleResponseWhenTitleNotFoundInXml(TestContext context) throws Exception {
+
+    final var queryString = String.format("/rtac/%s?apikey=%s", RtacMockOkapi.titleId_Error, apiKey);
+
+    final Response resp = RestAssured
+        .given()
+        .accept(APPLICATION_XML)
+        .get(queryString)
+        .then()
+        .contentType(APPLICATION_XML)
+        .statusCode(200)
+        .header(HttpHeaders.CONTENT_TYPE, APPLICATION_XML)
+        .extract()
+        .response();
+
+    String expectedError = "Instance 69640328-788e-43fc-9c3c-af39e243f3b8 can not be retrieved";
+
+    Error error = Mappers.xmlMapper.readValue(resp.body()
+        .asString(), Error.class);
+
+    assertEquals(expectedError, error.getMessage());
+    assertEquals("404", error.getCode());
   }
 
   @Test

@@ -31,7 +31,7 @@ public final class Instances {
   @JsonProperty("errors")
   @JacksonXmlProperty(localName = "error")
   @JacksonXmlElementWrapper(localName = "errors")
-  private List<Error> errors = null;
+  public List<Error> errors = null;
 
   public void setErrors(List<Error> errors) {
     this.errors = errors;
