@@ -101,6 +101,9 @@ public class RtacHandler extends Handler {
               final var instances = Instances.fromJson(body);
               if (isBatch) {
                 returningContent = isXmlRequest ? instances.toXml() : instances.toJson();
+              } else if (instances.errors != null && !instances.errors.isEmpty()) {
+                  final var error = instances.errors.get(0);
+                  returningContent = isXmlRequest ? error.toXml() : error.toJson();
               } else {
                 var holdings = new Holdings();
                 if (instances.getHoldings().isEmpty()) {

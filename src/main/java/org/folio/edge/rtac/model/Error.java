@@ -1,13 +1,13 @@
 
 package org.folio.edge.rtac.model;
 
-import java.util.Objects;
-
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonPropertyDescription;
 import com.fasterxml.jackson.annotation.JsonPropertyOrder;
-
+import com.fasterxml.jackson.core.JsonProcessingException;
+import java.util.Objects;
+import org.folio.edge.core.utils.Mappers;
 
 /**
  * An error
@@ -54,6 +54,14 @@ public class Error {
   public Error withMessage(String message) {
     this.message = message;
     return this;
+  }
+
+  public String toXml() throws JsonProcessingException {
+    return Mappers.XML_PROLOG + Mappers.xmlMapper.writeValueAsString(this);
+  }
+
+  public String toJson() throws JsonProcessingException {
+    return Mappers.jsonMapper.writeValueAsString(this);
   }
 
   /**
