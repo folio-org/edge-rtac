@@ -40,6 +40,7 @@
     <sonar.exclusions>
       src/main/java/org/folio/edge/rtac/model/**
     </sonar.exclusions>
+    <vertx.version>4.5.10</vertx.version>
   </properties>
 
   <dependencyManagement>
@@ -47,7 +48,7 @@
       <dependency>
         <groupId>io.vertx</groupId>
         <artifactId>vertx-stack-depchain</artifactId>
-        <version>4.5.7</version>
+        <version>${vertx.version}</version>
         <type>pom</type>
         <scope>import</scope>
       </dependency>
