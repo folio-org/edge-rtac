@@ -1,3 +1,14 @@
+# v2.8.0 2024.10.31
+
+* Enhance single rtac response ([EDGRTAC-93](https://folio-org.atlassian.net/browse/EDGRTAC-93))
+* Update Vert.x to v4.5.10 version ([EDGRTAC-96](https://folio-org.atlassian.net/browse/EDGRTAC-96))
+
+# v2.7.3 2024.07.03
+
+* [EDGRTAC-89](https://folio-org.atlassian.net/browse/EDGRTAC-89) edge-common 4.7.1: AwsParamStore to support FIPS-approved crypto modules
+
+# v2.7.2 2024.05.29
+
 * [EDGRTAC-88](https://folio-org.atlassian.net/browse/EDGRTAC-88) Vert.x 4.5.7 fixing netty-codec-http form POST OOM CVE-2024-29025
 * Remove -SNAPSHOT from edge-common:4.7.0-SNAPSHOT
 * [EDGRTAC-87](https://folio-org.atlassian.net/browse/EDGRTAC-87) aws-java-sdk-ssm 1.12.729 removing ion-java CVE-2024-21634
