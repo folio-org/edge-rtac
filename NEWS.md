@@ -1,4 +1,9 @@
-# v2.8.0 2024.10.31
+# v2.9.0 2025.03.13
+
+* Update to edge-rtac Java 21 [EDGRTAC-100](https://folio-org.atlassian.net/browse/EDGRTAC-100)
+* Sunflower 2025 R1 - Migrate AWS SDK for Java from 1.x to 2.x [EDGRTAC-97](https://folio-org.atlassian.net/browse/EDGRTAC-97)
+
+# v2.8.0 2024.10.14
 
 * Enhance single rtac response ([EDGRTAC-93](https://folio-org.atlassian.net/browse/EDGRTAC-93))
 * Update Vert.x to v4.5.10 version ([EDGRTAC-96](https://folio-org.atlassian.net/browse/EDGRTAC-96))
