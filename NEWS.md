@@ -1,3 +1,9 @@
+# v2.9.3 2025.08.29
+
+Sunflower (R1 2025) Service Patch #1
+
+* [EDGRTAC-104](https://folio-org.atlassian.net/browse/EDGRTAC-104): Expose holdings notes
+
 # v2.9.2 2025.07.14
 
 Sunflower (R1 2025) Service Patch #1
