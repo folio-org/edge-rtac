@@ -51,6 +51,8 @@ public final class Holding {
   private final MaterialType materialType;
   @JsonProperty("library")
   private final Library library;
+  @JsonProperty("notes")
+  private final List<HoldingsNote> notes;
   @JsonProperty("holdingsStatements")
   private final List<HoldingsStatement> holdingsStatements;
   @JsonProperty("holdingsStatementsForIndexes")
