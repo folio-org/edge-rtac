@@ -4,6 +4,7 @@ import static io.vertx.core.http.HttpHeaders.ACCEPT;
 import static java.util.stream.Collectors.toList;
 import static org.folio.edge.core.Constants.APPLICATION_JSON;
 import static org.folio.edge.core.Constants.APPLICATION_XML;
+import static org.folio.edge.core.Constants.PARAM_API_KEY;
 import static org.folio.edge.rtac.utils.RtacUtils.SEPARATOR_COMMA;
 import static org.folio.edge.rtac.utils.RtacUtils.checkSupportedAcceptHeaders;
 import static org.folio.edge.rtac.utils.RtacUtils.isXmlRequest;
@@ -48,7 +49,7 @@ public class RtacHandler extends Handler {
 
   protected void handle(RoutingContext ctx, boolean isBatch) {
     final var request = ctx.request();
-    logger.info("Request: {} \n params: {}", request.uri(), request.params());
+    log(logger, request);
 
     // When acceptable type passed but didn't recognized by server - checks for supported types.
     if (!checkSupportedAcceptHeaders(ctx)) {
@@ -56,7 +57,7 @@ public class RtacHandler extends Handler {
       return;
     }
 
-  super.handleCommon(ctx,
+    super.handleCommon(ctx,
       new String[]{},
       new String[]{PARAM_TITLE_ID, PARAM_INSTANCE_ID, PARAM_INSTANCE_IDS, PARAM_FULL_PERIODICALS },
       (client, params) -> {
@@ -133,6 +134,31 @@ public class RtacHandler extends Handler {
             return null;
           });
       });
+  }
+
+  /**
+   * Log request but mask api key.
+   */
+  static void log(Logger theLogger, HttpServerRequest request) {
+    var uri = request.uri();
+    var end = uri.indexOf('?');
+    if (end >= 0) {
+      uri = uri.substring(0, end);  // strip parameters
+    }
+    var params = new StringBuilder("[");
+    for (var param : request.params()) {
+      if (params.length() > 1) {
+        params.append(", ");
+      }
+      params.append(param.getKey()).append('=');
+      if (PARAM_API_KEY.equalsIgnoreCase(param.getKey())) {
+        params.append("...");  // mask api key
+      } else {
+        params.append(param.getValue());
+      }
+    }
+    params.append(']');
+    theLogger.info("Request: {}, params: {}", uri, params);
   }
 
   /**
