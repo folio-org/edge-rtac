@@ -41,6 +41,8 @@ public final class Holding {
   public final String holdingsCopyNumber;
   @JsonProperty("itemCopyNumber")
   public final String itemCopyNumber;
+  @JsonProperty("itemDisplayOrder")
+  public final Integer itemDisplayOrder;
   @JsonProperty("barcode")
   private final String barcode;
   @JsonProperty("suppressFromDiscovery")
