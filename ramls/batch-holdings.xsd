@@ -34,6 +34,7 @@
         <xs:element name="temporaryLoanType" type="xs:string" minOccurs="0"/>
         <xs:element name="holdingsCopyNumber" type="xs:string" minOccurs="0"/>
         <xs:element name="itemCopyNumber" type="xs:string" minOccurs="0"/>
+        <xs:element name="itemDisplayOrder" type="xs:integer" minOccurs="0"/>
         <xs:element name="totalHoldRequests" type="xs:integer" minOccurs="0"/>
         <xs:element name="barcode" type="xs:string"/>
         <xs:element name="suppressFromDiscovery" type="xs:boolean"/>
