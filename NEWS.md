@@ -1,3 +1,8 @@
+# v2.8.1 2025.09.01
+
+* [EDGRTAC-102](https://folio-org.atlassian.net/browse/EDGRTAC-102): update commons-lang3 to 3.17.0 to fix TLS issues
+* [EDGRTAC-104](https://folio-org.atlassian.net/browse/EDGRTAC-104): Expose holdings notes
+
 # v2.8.0 2024.10.31
 
 * Enhance single rtac response ([EDGRTAC-93](https://folio-org.atlassian.net/browse/EDGRTAC-93))
