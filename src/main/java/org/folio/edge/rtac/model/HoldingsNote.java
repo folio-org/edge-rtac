@@ -10,7 +10,6 @@ import com.fasterxml.jackson.annotation.JsonPropertyDescription;
 import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 import java.util.HashMap;
 import java.util.Map;
-import org.jetbrains.annotations.NotNull;
 
 @JsonInclude(JsonInclude.Include.NON_NULL)
 @JsonPropertyOrder({
@@ -26,7 +25,6 @@ public class HoldingsNote {
    */
   @JsonProperty("holdingsNoteTypeName")
   @JsonPropertyDescription("Name of the holdings note type")
-  @NotNull
   private String holdingsNoteTypeName;
   /**
    * Text content of the note
@@ -35,7 +33,6 @@ public class HoldingsNote {
    */
   @JsonProperty("note")
   @JsonPropertyDescription("Text content of the note")
-  @NotNull
   private String note;
   @JsonIgnore
   private Map<String, Object> additionalProperties = new HashMap<String, Object>();
