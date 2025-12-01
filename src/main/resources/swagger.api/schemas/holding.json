@@ -1,0 +1,133 @@
+{
+  "$schema": "http://json-schema.org/draft-04/schema#",
+  "description": "Individual holding item",
+  "Holding": {
+    "type": "object",
+    "required": [
+      "id"
+    ],
+    "properties": {
+      "id": {
+        "type": "string",
+        "description": "Unique identifier for the holding"
+      },
+      "callNumber": {
+        "type": "string",
+        "description": "Call number for the item"
+      },
+      "location": {
+        "type": "string",
+        "description": "Location name"
+      },
+      "locationCode": {
+        "type": "string",
+        "description": "Location code"
+      },
+      "locationId": {
+        "type": "string",
+        "description": "Location identifier"
+      },
+      "status": {
+        "type": "string",
+        "description": "Item status"
+      },
+      "dueDate": {
+        "type": "string",
+        "description": "Due date if item is checked out"
+      },
+      "tempLocation": {
+        "type": "string",
+        "description": "Temporary location"
+      },
+      "volume": {
+        "type": "string",
+        "description": "Volume information"
+      },
+      "temporaryLoanType": {
+        "type": "string",
+        "description": "Temporary loan type"
+      },
+      "permanentLoanType": {
+        "type": "string",
+        "description": "Permanent loan type"
+      },
+      "holdingsCopyNumber": {
+        "type": "string",
+        "description": "Holdings copy number"
+      },
+      "itemCopyNumber": {
+        "type": "string",
+        "description": "Item copy number"
+      },
+      "itemDisplayOrder": {
+        "type": "integer",
+        "format": "int32",
+        "description": "Display order for the item"
+      },
+      "barcode": {
+        "type": "string",
+        "description": "Item barcode"
+      },
+      "suppressFromDiscovery": {
+        "type": "boolean",
+        "description": "Whether item is suppressed from discovery"
+      },
+      "totalHoldRequests": {
+        "type": "integer",
+        "format": "int32",
+        "description": "Total number of hold requests"
+      },
+      "materialType": {
+        "$ref": "materialType.json#/MaterialType"
+      },
+      "library": {
+        "$ref": "library.json#/Library"
+      },
+      "notes": {
+        "type": "array",
+        "items": {
+          "$ref": "holdingsNote.json#/HoldingsNote"
+        },
+        "xml": {
+          "name": "notes",
+          "wrapped": false
+        }
+      },
+      "holdingsStatements": {
+        "default": [],
+        "type": "array",
+        "items": {
+          "$ref": "holdingsStatement.json#/HoldingsStatement"
+        },
+        "xml": {
+          "name": "holdingsStatements",
+          "wrapped": false
+        }
+      },
+      "holdingsStatementsForIndexes": {
+        "type": "array",
+        "items": {
+          "$ref": "holdingsStatement.json#/HoldingsStatement"
+        },
+        "xml": {
+          "name": "holdingsStatementsForIndexes",
+          "wrapped": false
+        }
+      },
+      "holdingsStatementsForSupplements": {
+        "type": "array",
+        "items": {
+          "$ref": "holdingsStatement.json#/HoldingsStatement"
+        },
+        "xml": {
+          "name": "holdingsStatementsForSupplements",
+          "wrapped": false
+        }
+      }
+    },
+    "xml": {
+      "name": "holding"
+    }
+  }
+}
+

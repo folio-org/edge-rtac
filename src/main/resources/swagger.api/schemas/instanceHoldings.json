@@ -1,0 +1,28 @@
+{
+  "$schema": "http://json-schema.org/draft-04/schema#",
+  "description": "Holdings information for a single instance",
+  "InstanceHoldings": {
+    "type": "object",
+    "properties": {
+      "instanceId": {
+        "type": "string",
+        "description": "The instance identifier",
+        "xml": {
+          "name": "instanceId"
+        }
+      },
+      "holdings": {
+        "type": "array",
+        "items": {
+          "$ref": "holding.json#/Holding"
+        },
+        "xml": {
+          "name": "holding"
+        }
+      }
+    },
+    "xml": {
+      "name": "holdings"
+    }
+  }
+}

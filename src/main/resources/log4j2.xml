@@ -1,13 +1,13 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<Configuration>
+<Configuration status="INFO">
   <Appenders>
-    <Console name="STDOUT" target="SYSTEM_OUT">
-      <PatternLayout pattern="%d{HH:mm:ss} %-5p %-20.20C{1} %m%n"/>
+    <Console name="Console" target="SYSTEM_OUT">
+      <PatternLayout pattern="%d{HH:mm:ss.SSS} [%t] %-5level %logger{36} - %msg%n"/>
     </Console>
   </Appenders>
   <Loggers>
-    <Root level="${sys:loglevel:-info}">
-      <AppenderRef ref="STDOUT"/>
+    <Root level="${sys:log_level:-INFO}">
+      <AppenderRef ref="Console"/>
     </Root>
   </Loggers>
 </Configuration>

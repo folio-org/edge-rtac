@@ -1,0 +1,20 @@
+{
+  "$schema": "http://json-schema.org/draft-04/schema#",
+  "description": "Library location information",
+  "Library": {
+    "type": "object",
+    "properties": {
+      "name": {
+        "type": "string",
+        "description": "Library name"
+      },
+      "code": {
+        "type": "string",
+        "description": "Library code"
+      }
+    },
+    "xml": {
+      "name": "library"
+    }
+  }
+}

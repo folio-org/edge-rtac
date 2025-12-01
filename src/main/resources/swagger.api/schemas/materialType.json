@@ -1,0 +1,20 @@
+{
+  "$schema": "http://json-schema.org/draft-04/schema#",
+  "description": "Material type information",
+  "MaterialType": {
+    "type": "object",
+    "properties": {
+      "id": {
+        "type": "string",
+        "description": "Material type identifier"
+      },
+      "name": {
+        "type": "string",
+        "description": "Material type name"
+      }
+    },
+    "xml": {
+      "name": "materialType"
+    }
+  }
+}

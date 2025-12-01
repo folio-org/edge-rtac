@@ -1,0 +1,62 @@
+{
+  "holdings": [
+    {
+      "instanceId": "69640328-788e-43fc-9c3c-af39e243f3b7",
+      "holdings": [
+        {
+          "id": "holding-1",
+          "callNumber": "QA76.73.C15 C33 2019",
+          "location": "Main Library",
+          "locationCode": "ML",
+          "locationId": "location-id-1",
+          "status": "Available",
+          "dueDate": null,
+          "volume": "Vol. 1",
+          "barcode": "12345678",
+          "suppressFromDiscovery": false,
+          "totalHoldRequests": 0,
+          "materialType": {
+            "id": "material-type-1",
+            "name": "Book"
+          },
+          "library": {
+            "name": "Central Library"
+          },
+          "notes": [
+            {
+              "note": "Test note",
+              "noteType": "General note"
+            }
+          ],
+          "holdingsStatements": [
+            {
+              "statement": "Holdings statement 1"
+            }
+          ]
+        },
+        {
+          "id": "holding-2",
+          "callNumber": "QA76.73.C15 C33 2019 Copy 2",
+          "location": "Main Library",
+          "locationCode": "ML",
+          "locationId": "location-id-2",
+          "status": "Checked out",
+          "dueDate": "2025-12-31T23:59:59Z",
+          "volume": "Vol. 2",
+          "barcode": "87654321",
+          "suppressFromDiscovery": false,
+          "totalHoldRequests": 2,
+          "materialType": {
+            "id": "material-type-2",
+            "name": "Periodical"
+          },
+          "library": {
+            "name": "Branch Library"
+          },
+          "notes": [],
+          "holdingsStatements": []
+        }
+      ]
+    }
+  ]
+}
