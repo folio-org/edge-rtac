@@ -1,0 +1,23 @@
+{
+  "mappings": [
+    {
+      "priority": 1,
+      "request": {
+        "method": "POST",
+        "url": "/rtac-batch",
+        "bodyPatterns": [
+          {
+            "equalToJson": "{\"instanceIds\":[\"69640328-788e-43fc-9c3c-af39e243f3b7\"],\"fullPeriodicals\":true}"
+          }
+        ]
+      },
+      "response": {
+        "status": 200,
+        "bodyFileName": "rtac/single_holding_response.json",
+        "headers": {
+          "Content-Type": "application/json"
+        }
+      }
+    }
+  ]
+}

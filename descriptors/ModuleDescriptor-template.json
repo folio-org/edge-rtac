@@ -1,5 +1,5 @@
 {
-  "id": "${artifactId}-${version}",
+  "id": "@artifactId@:@version@",
   "name": "Real Time Availability Check Edge API",
   "provides": [],
   "requires": [
@@ -14,7 +14,7 @@
   ],
   "permissionSets": [],
   "launchDescriptor": {
-    "dockerImage": "${artifactId}:${version}",
+    "dockerImage": "@artifactId@:@version@",
     "dockerPull": false,
     "dockerArgs": {
       "HostConfig": {
@@ -25,6 +25,26 @@
     "env": [
       { "name": "JAVA_OPTIONS",
         "value": "-XX:MaxRAMPercentage=66.0"
+      },
+      {
+        "name": "secure_store",
+        "value": "Ephemeral"
+      },
+      {
+        "name": "secure_store_props",
+        "value": "src/main/resources/ephemeral.properties"
+      },
+      {
+        "name": "token_cache_ttl_ms",
+        "value": "3600000"
+      },
+      {
+        "name": "null_token_cache_ttl_ms",
+        "value": "30000"
+      },
+      {
+        "name": "token_cache_capacity",
+        "value": "100"
       }
     ]
   }

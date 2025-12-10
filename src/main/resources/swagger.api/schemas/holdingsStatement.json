@@ -1,0 +1,17 @@
+{
+  "$schema": "http://json-schema.org/draft-04/schema#",
+  "description": "Holdings statement information",
+  "HoldingsStatement": {
+    "type": "object",
+    "properties": {
+      "statement": {
+        "type": "string",
+        "description": "Statement text"
+      },
+      "note": {
+        "type": "string",
+        "description": "Note for the statement"
+      }
+    }
+  }
+}

@@ -1,0 +1,23 @@
+{
+  "mappings": [
+    {
+      "priority": 2,
+      "request": {
+        "method": "POST",
+        "url": "/rtac-batch",
+        "bodyPatterns": [
+          {
+            "equalToJson": "{\"instanceIds\":[]}"
+          }
+        ]
+      },
+      "response": {
+        "status": 200,
+        "bodyFileName": "rtac/empty_holdings_response.json",
+        "headers": {
+          "Content-Type": "application/json"
+        }
+      }
+    }
+  ]
+}

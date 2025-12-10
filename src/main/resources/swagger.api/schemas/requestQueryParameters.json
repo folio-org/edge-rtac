@@ -1,0 +1,38 @@
+{
+  "$schema": "http://json-schema.org/draft-04/schema#",
+  "description": "Request query parameters",
+  "RequestQueryParameters": {
+    "type": "object",
+    "properties": {
+      "query": {
+        "type": "string",
+        "description": "A CQL query string with search conditions.",
+        "minLength": 1
+      },
+      "limit": {
+        "type": "integer",
+        "description": "Limit the number of elements returned in the response",
+        "maximum": 2147483647,
+        "minimum": 0,
+        "default": 10
+      },
+      "offset": {
+        "type": "integer",
+        "description": "Skip over a number of elements by specifying an offset value for the query",
+        "maximum": 2147483647,
+        "minimum": 0,
+        "default": 0
+      },
+      "lang": {
+        "type": "string",
+        "description": "Requested language",
+        "default": "en",
+        "pattern": "[a-zA-Z]{2}"
+      },
+      "expand": {
+        "type": "string",
+        "description": "Whether or not to expand the id fields"
+      }
+    }
+  }
+}

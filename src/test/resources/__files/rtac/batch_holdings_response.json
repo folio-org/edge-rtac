@@ -1,0 +1,54 @@
+{
+  "holdings": [
+    {
+      "instanceId": "83034b0a-bf71-4495-b642-2e998f721e5d",
+      "holdings": [
+        {
+          "id": "holding-1",
+          "callNumber": "QA76.73.C15 C33 2019",
+          "location": "Main Library",
+          "locationCode": "ML",
+          "locationId": "location-id-1",
+          "status": "Available",
+          "dueDate": null,
+          "volume": "Vol. 1",
+          "barcode": "12345678",
+          "suppressFromDiscovery": false,
+          "totalHoldRequests": 0,
+          "materialType": {
+            "id": "material-type-1",
+            "name": "Book"
+          },
+          "library": {
+            "name": "Central Library"
+          }
+        }
+      ]
+    },
+    {
+      "instanceId": "67227d94-7333-4d22-98a0-718b49d36595",
+      "holdings": [
+        {
+          "id": "holding-2",
+          "callNumber": "PR6052.R326 A6 2001",
+          "location": "Science Library",
+          "locationCode": "SL",
+          "locationId": "location-id-2",
+          "status": "Available",
+          "dueDate": null,
+          "volume": "Vol. 1",
+          "barcode": "11223344",
+          "suppressFromDiscovery": false,
+          "totalHoldRequests": 1,
+          "materialType": {
+            "id": "material-type-2",
+            "name": "Book"
+          },
+          "library": {
+            "name": "Science Complex"
+          }
+        }
+      ]
+    }
+  ]
+}

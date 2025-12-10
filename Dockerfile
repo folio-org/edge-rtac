@@ -1,17 +1,17 @@
 FROM folioci/alpine-jre-openjdk21:latest
 
-# Install latest patch versions of packages: https://pythonspeed.com/articles/security-updates-in-docker/
 USER root
+
 RUN apk upgrade --no-cache
 USER folio
 
-ENV VERTICLE_FILE edge-rtac-fat.jar
-
-# Set the location of the verticles
-ENV VERTICLE_HOME /usr/verticles
-
 # Copy your fat jar to the container
-COPY target/${VERTICLE_FILE} ${VERTICLE_HOME}/${VERTICLE_FILE}
+ENV APP_FILE edge-rtac-fat.jar
+
+# - should be a single jar file
+ARG JAR_FILE=./target/*.jar
+# - copy
+COPY ${JAR_FILE} ${JAVA_APP_DIR}/${APP_FILE}
 
 # Expose this port locally in the container.
 EXPOSE 8081
