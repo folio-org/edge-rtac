@@ -40,7 +40,7 @@ class RtacServiceTest {
 
   @Test
   void getInstanceRtac_shouldReturnInstanceHoldings() {
-    String singleHoldingResponse = TestUtil.readFileContentFromResources("__files/rtac/single_holding_response.json");
+    String singleHoldingResponse = TestUtil.readFileContentFromResources("__files/rtac/single-holding-response.json");
     when(rtacClient.rtac(anyString())).thenReturn(singleHoldingResponse);
 
     InstanceHoldings result = rtacService.getInstanceRtac(INSTANCE_ID, null);
@@ -52,7 +52,7 @@ class RtacServiceTest {
 
   @Test
   void getInstanceRtac_shouldReturnInstanceHoldingsWithFullPeriodicals() {
-    String singleHoldingResponse = TestUtil.readFileContentFromResources("__files/rtac/single_holding_response.json");
+    String singleHoldingResponse = TestUtil.readFileContentFromResources("__files/rtac/single-holding-response.json");
     when(rtacClient.rtac(anyString())).thenReturn(singleHoldingResponse);
 
     ArgumentCaptor<String> requestCaptor = ArgumentCaptor.forClass(String.class);
@@ -69,7 +69,7 @@ class RtacServiceTest {
 
   @Test
   void getInstanceRtac_shouldReturnEmptyHoldings_whenResponseHasNoHoldings() {
-    String emptyHoldingsResponse = TestUtil.readFileContentFromResources("__files/rtac/empty_holdings_response.json");
+    String emptyHoldingsResponse = TestUtil.readFileContentFromResources("__files/rtac/empty-holdings-response.json");
     when(rtacClient.rtac(anyString())).thenReturn(emptyHoldingsResponse);
 
     InstanceHoldings result = rtacService.getInstanceRtac(INSTANCE_ID, null);
@@ -80,7 +80,7 @@ class RtacServiceTest {
 
   @Test
   void getInstanceRtac_shouldThrowException_whenResponseHasErrors() {
-    String errorResponse = TestUtil.readFileContentFromResources("__files/rtac/mod_rtac_error.json");
+    String errorResponse = TestUtil.readFileContentFromResources("__files/rtac/mod-rtac-error.json");
     when(rtacClient.rtac(anyString())).thenReturn(errorResponse);
 
     assertThatThrownBy(() -> rtacService.getInstanceRtac(INSTANCE_ID, null))
@@ -91,7 +91,7 @@ class RtacServiceTest {
 
   @Test
   void getBatchRtac_shouldReturnBatchHoldingsResponse() {
-    String batchHoldingsResponse = TestUtil.readFileContentFromResources("__files/rtac/batch_holdings_response.json");
+    String batchHoldingsResponse = TestUtil.readFileContentFromResources("__files/rtac/batch-holdings-response.json");
     when(rtacClient.rtac(anyString())).thenReturn(batchHoldingsResponse);
 
     String instanceIds = INSTANCE_ID_1 + "," + INSTANCE_ID_2;
@@ -105,7 +105,7 @@ class RtacServiceTest {
 
   @Test
   void getBatchRtac_shouldTrimAndFilterInstanceIds() {
-    String batchHoldingsResponse = TestUtil.readFileContentFromResources("__files/rtac/batch_holdings_response.json");
+    String batchHoldingsResponse = TestUtil.readFileContentFromResources("__files/rtac/batch-holdings-response.json");
     when(rtacClient.rtac(anyString())).thenReturn(batchHoldingsResponse);
 
     ArgumentCaptor<String> requestCaptor = ArgumentCaptor.forClass(String.class);
@@ -124,7 +124,7 @@ class RtacServiceTest {
 
   @Test
   void getBatchRtac_shouldIncludeFullPeriodicalsWhenProvided() {
-    String batchHoldingsResponse = TestUtil.readFileContentFromResources("__files/rtac/batch_holdings_response.json");
+    String batchHoldingsResponse = TestUtil.readFileContentFromResources("__files/rtac/batch-holdings-response.json");
     when(rtacClient.rtac(anyString())).thenReturn(batchHoldingsResponse);
 
     ArgumentCaptor<String> requestCaptor = ArgumentCaptor.forClass(String.class);
@@ -140,7 +140,7 @@ class RtacServiceTest {
 
   @Test
   void getBatchRtac_shouldNotIncludeFullPeriodicalsWhenNull() {
-    String batchHoldingsResponse = TestUtil.readFileContentFromResources("__files/rtac/batch_holdings_response.json");
+    String batchHoldingsResponse = TestUtil.readFileContentFromResources("__files/rtac/batch-holdings-response.json");
     when(rtacClient.rtac(anyString())).thenReturn(batchHoldingsResponse);
 
     ArgumentCaptor<String> requestCaptor = ArgumentCaptor.forClass(String.class);

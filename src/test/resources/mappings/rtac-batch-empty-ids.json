@@ -13,7 +13,7 @@
       },
       "response": {
         "status": 200,
-        "bodyFileName": "rtac/empty_holdings_response.json",
+        "bodyFileName": "rtac/empty-holdings-response.json",
         "headers": {
           "Content-Type": "application/json"
         }
