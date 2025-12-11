@@ -1,0 +1,24 @@
+{
+  "$schema": "http://json-schema.org/draft-04/schema#",
+  "description": "Note attached to holdings",
+  "HoldingsNote": {
+    "type": "object",
+    "properties": {
+      "note": {
+        "type": "string",
+        "description": "Note text"
+      },
+      "noteType": {
+        "type": "string",
+        "description": "Type of note"
+      },
+      "staffOnly": {
+        "type": "boolean",
+        "description": "Whether note is staff only"
+      }
+    },
+    "xml": {
+      "name": "notes"
+    }
+  }
+}

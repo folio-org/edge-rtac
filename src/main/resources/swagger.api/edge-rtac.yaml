@@ -1,0 +1,386 @@
+openapi: 3.0.0
+info:
+  title: RTAC API
+  version: v1
+  description: Edge RTAC API to interface with FOLIO for 3rd party discovery services to determine holdings availability
+
+paths:
+    /rtac/{instanceId}:
+      get:
+        tags:
+          - RTAC
+        operationId: getInstanceRtac
+        summary: Get RTAC info for a single instance
+        parameters:
+          - $ref: '#/components/parameters/instance-id-path'
+          - $ref: '#/components/parameters/fullPeriodicals'
+          - $ref: '#/components/parameters/lang'
+          - $ref: '#/components/parameters/authorization'
+          - $ref: '#/components/parameters/apiKey'
+          - $ref: '#/components/parameters/x-okapi-tenant-header'
+          - $ref: '#/components/parameters/x-okapi-url-header'
+          - $ref: '#/components/parameters/x-okapi-token-header'
+        responses:
+          '200':
+            description: Success
+            content:
+              application/json:
+                schema:
+                  $ref: '#/components/schemas/InstanceHoldings'
+              application/xml:
+                schema:
+                  $ref: '#/components/schemas/InstanceHoldings'
+              text/xml:
+                schema:
+                  $ref: '#/components/schemas/InstanceHoldings'
+          '400':
+            $ref: '#/components/responses/badRequestResponse'
+          '401':
+            $ref: '#/components/responses/notAuthorizedResponse'
+          '403':
+            $ref: '#/components/responses/accessDeniedResponse'
+          '404':
+            $ref: '#/components/responses/notFoundResponse'
+          '422':
+            $ref: '#/components/responses/unprocessableEntityErrorResponse'
+          '500':
+            $ref: '#/components/responses/internalServerErrorResponse'
+
+    /rtac:
+      get:
+        tags:
+          - RTAC
+        operationId: getBatchRtac
+        summary: Get RTAC info for multiple instances
+        parameters:
+          - $ref: '#/components/parameters/instanceIds'
+          - $ref: '#/components/parameters/fullPeriodicals'
+          - $ref: '#/components/parameters/lang'
+          - $ref: '#/components/parameters/authorization'
+          - $ref: '#/components/parameters/apiKey'
+          - $ref: '#/components/parameters/x-okapi-tenant-header'
+          - $ref: '#/components/parameters/x-okapi-url-header'
+          - $ref: '#/components/parameters/x-okapi-token-header'
+        responses:
+          '200':
+            description: Success
+            content:
+              application/json:
+                schema:
+                  $ref: '#/components/schemas/BatchHoldingsResponse'
+              application/xml:
+                schema:
+                  $ref: '#/components/schemas/BatchHoldingsResponse'
+              text/xml:
+                schema:
+                  $ref: '#/components/schemas/BatchHoldingsResponse'
+          '400':
+            $ref: '#/components/responses/badRequestResponse'
+          '401':
+            $ref: '#/components/responses/notAuthorizedResponse'
+          '403':
+            $ref: '#/components/responses/accessDeniedResponse'
+          '422':
+            $ref: '#/components/responses/unprocessableEntityErrorResponse'
+          '500':
+            $ref: '#/components/responses/internalServerErrorResponse'
+
+    /rtac-cache/search/{instanceId}:
+      get:
+        tags:
+          - rtac
+        summary: Search RTAC holdings
+        operationId: searchRtacCacheHoldings
+        parameters:
+          - $ref: '#/components/parameters/instance-id-path'
+          - $ref: '#/components/parameters/search-query-parameter'
+          - $ref: '#/components/parameters/available-parameter'
+          - $ref: '#/components/parameters/limit'
+          - $ref: '#/components/parameters/offset'
+          - $ref: '#/components/parameters/authorization'
+          - $ref: '#/components/parameters/apiKey'
+        responses:
+          '200':
+            description: RTAC holdings retrieved successfully
+            content:
+              application/json:
+                schema:
+                  type: string
+          '400':
+            $ref: '#/components/responses/badRequestResponse'
+          '401':
+            $ref: '#/components/responses/notAuthorizedResponse'
+          '403':
+            $ref: '#/components/responses/accessDeniedResponse'
+          '422':
+            $ref: '#/components/responses/unprocessableEntityErrorResponse'
+          '500':
+            $ref: '#/components/responses/internalServerErrorResponse'
+    /rtac-cache/{instanceId}:
+      get:
+        tags:
+          - rtac
+        summary: Retrieve RTAC holdings for a single instance
+        operationId: getRtacCacheHoldingsById
+        parameters:
+        - $ref: '#/components/parameters/instance-id-path'
+        - $ref: '#/components/parameters/limit'
+        - $ref: '#/components/parameters/offset'
+        - $ref: '#/components/parameters/authorization'
+        - $ref: '#/components/parameters/apiKey'
+        responses:
+          '200':
+            description: RTAC holdings retrieved successfully
+            content:
+              application/json:
+                schema:
+                  type: string
+          '400':
+            $ref: '#/components/responses/badRequestResponse'
+          '401':
+            $ref: '#/components/responses/notAuthorizedResponse'
+          '403':
+            $ref: '#/components/responses/accessDeniedResponse'
+          '422':
+            $ref: '#/components/responses/unprocessableEntityErrorResponse'
+          '500':
+            $ref: '#/components/responses/internalServerErrorResponse'
+
+    /rtac-cache/batch:
+      post:
+        tags:
+          - rtac
+        summary: Retrieve RTAC holdings in batch
+        operationId: postRtacCacheBatchHoldings
+        requestBody:
+          required: true
+          content:
+            application/json:
+              schema:
+                $ref: 'schemas/rtac-cache/rtacRequest.json'
+        responses:
+          '200':
+            description: RTAC batch holdings retrieved successfully
+            content:
+              application/json:
+                schema:
+                  type: string
+          '400':
+            $ref: '#/components/responses/badRequestResponse'
+          '401':
+            $ref: '#/components/responses/notAuthorizedResponse'
+          '403':
+            $ref: '#/components/responses/accessDeniedResponse'
+          '422':
+            $ref: '#/components/responses/unprocessableEntityErrorResponse'
+          '500':
+            $ref: '#/components/responses/internalServerErrorResponse'
+
+components:
+  schemas:
+    errorResponse:
+      $ref: 'schemas/error.json#/Error'
+    requestQueryParameters:
+      $ref: 'schemas/requestQueryParameters.json#/RequestQueryParameters'
+    BatchHoldingsResponse:
+      $ref: 'schemas/batchHoldingsResponse.json#/BatchHoldingsResponse'
+    InstanceHoldings:
+      $ref: 'schemas/instanceHoldings.json#/InstanceHoldings'
+    Holding:
+      $ref: 'schemas/holding.json#/Holding'
+    MaterialType:
+      $ref: 'schemas/materialType.json#/MaterialType'
+    Library:
+      $ref: 'schemas/library.json#/Library'
+    HoldingsNote:
+      $ref: 'schemas/holdingsNote.json#/HoldingsNote'
+    HoldingsStatement:
+      $ref: 'schemas/holdingsStatement.json#/HoldingsStatement'
+    HoldingsError:
+      $ref: 'schemas/holdingsError.json#/HoldingsError'
+
+  parameters:
+    request-query-parameters:
+      name: requestQueryParameters
+      in: query
+      description: Request query parameters(query, limit, offset and etc.) as object.
+      schema:
+        $ref: '#/components/schemas/requestQueryParameters'
+    search-query-parameter:
+      name: query
+      in: query
+      description: The keyword query in CQL format
+      required: true
+      schema:
+        type: string
+    limit:
+      in: query
+      name: limit
+      description: Limit the number of elements returned in the response.
+      schema:
+        type: integer
+        minimum: 0
+        maximum: 500
+        default: 100
+    offset:
+      in: query
+      name: offset
+      description: Skip over a number of elements by specifying an offset value for the query.
+      schema:
+        type: integer
+        minimum: 0
+        maximum: 100000
+        default: 0
+    available-parameter:
+      name: available
+      in: query
+      description: Filter by holdings that are available
+      required: false
+      schema:
+        type: boolean
+    lang:
+      name: lang
+      in: query
+      description: Requested language
+      required: false
+      example: en
+      schema:
+        pattern: "[a-zA-Z]{2}"
+        default: en
+        type: string
+    type:
+      name: type
+      in: query
+      description: Indicates how to route the request
+      required: true
+      schema:
+        type: string
+    x-okapi-tenant-header:
+      name: x-okapi-tenant
+      in: header
+      description: x-okapi-tenant header value
+      required: false
+      schema:
+        type: string
+    x-okapi-url-header:
+      name: x-okapi-url
+      in: header
+      description: x-okapi-url header value
+      required: false
+      schema:
+        type: string
+    x-okapi-token-header:
+      name: x-okapi-token
+      in: header
+      description: x-okapi-token header value
+      required: false
+      schema:
+        type: string
+    authorization:
+      name: authorization
+      in: header
+      description: apikey for authorization
+      required: false
+      schema:
+        type: string
+    apiKey:
+      name: apiKey
+      in: query
+      description: apikey for authorization
+      required: false
+      schema:
+        type: string
+    instance-id-path:
+      name: instanceId
+      in: path
+      description: Course Instance's UUID
+      required: true
+      schema:
+        type: string
+    sort-by:
+      name: sortBy
+      in: query
+      description: Param to sort collection results by a specific field
+      required: false
+      example: sortBy=name/sort.descending
+      schema:
+        type: string
+        pattern: ^(name|id)\/sort\.(ascending|descending)$
+    instanceIds:
+      name: instanceIds
+      in: query
+      description: List of Folio instance identifiers
+      required: false
+      schema:
+        type: string
+        pattern: "^([0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[1-5][0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}[, ]*)+$"
+    fullPeriodicals:
+      name: fullPeriodicals
+      in: query
+      description: Flag for including items data
+      required: false
+      schema:
+        type: boolean
+
+  responses:
+    healthCheckResponse:
+      description: Success
+      content:
+        text/plain:
+          schema:
+            type: string
+    badRequestResponse:
+      description: Validation errors
+      content:
+        application/json:
+          example:
+            $ref: ./examples/error/badRequestErrorResponse.json
+          schema:
+            $ref: "#/components/schemas/errorResponse"
+    internalServerErrorResponse:
+      description: When unhandled exception occurred during code execution, e.g. NullPointerException
+      content:
+        application/json:
+          example:
+            $ref: ./examples/error/internalErrorResponse.json
+          schema:
+            $ref: "#/components/schemas/errorResponse"
+    notAuthorizedResponse:
+      description: Not authorized to perform requested action
+      content:
+        application/json:
+          example:
+            $ref: examples/error/unauthorizedErrorResponse.json
+          schema:
+            $ref: "#/components/schemas/errorResponse"
+    accessDeniedResponse:
+      description: Access Denied
+      content:
+        application/json:
+          example:
+            $ref: examples/error/accessDeniedErrorResponse.json
+          schema:
+            $ref: "#/components/schemas/errorResponse"
+    notFoundResponse:
+      description: Item with a given ID not found
+      content:
+        application/json:
+          example:
+            $ref: examples/error/notFoundErrorResponse.json
+          schema:
+            $ref: "#/components/schemas/errorResponse"
+    unprocessableEntityErrorResponse:
+      description: Item with a given ID not found
+      content:
+        application/json:
+          example:
+            $ref: examples/error/unprocessableEntityErrorResponse.json
+          schema:
+            $ref: "#/components/schemas/errorResponse"
+    notImplementedResponse:
+      description: The server does not support the functionality required to fulfill the request
+      content:
+        application/json:
+          example: "the method that is unavailable"
+          schema:
+            $ref: "#/components/schemas/errorResponse"

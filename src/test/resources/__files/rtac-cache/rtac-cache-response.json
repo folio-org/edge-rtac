@@ -1,0 +1,22 @@
+{
+  "instanceId": "83034b0a-bf71-4495-b642-2e998f721e5d",
+  "totalRecords": 2,
+  "holdings": [
+    {
+      "id": "65cb2bf0-d4eb-4eb6-8e5b-2b5e1a1e1e1a",
+      "callNumber": "PR6019.O9 U4 2001",
+      "status": "Available",
+      "location": "Main Library",
+      "dueDate": "2024-12-31T23:59:59.000Z",
+      "type": "item"
+    },
+    {
+      "id": "75cb2bf0-d4eb-4eb6-8e5b-2b5e1a1e1e2b",
+      "callNumber": "PR6019.O9 U4 2001 Copy 2",
+      "status": "Checked out",
+      "location": "Branch Library",
+      "dueDate": "2024-06-15T23:59:59.000Z",
+      "type": "item"
+    }
+  ]
+}

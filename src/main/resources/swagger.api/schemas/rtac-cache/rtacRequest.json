@@ -1,0 +1,17 @@
+{
+  "description": "Define format of request data with instances ids",
+  "type": "object",
+  "properties": {
+    "instanceIds": {
+      "description": "Inventory instances identifiers",
+      "type": "array",
+      "items": {
+        "$ref": "uuid.json"
+      }
+    }
+  },
+  "additionalProperties": false,
+  "required": [
+    "instanceIds"
+  ]
+}

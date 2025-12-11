@@ -1,0 +1,34 @@
+{
+  "$schema": "http://json-schema.org/draft-04/schema#",
+  "description": "Container for multiple holdings instances",
+  "BatchHoldingsResponse": {
+    "type": "object",
+    "required": [
+      "holdings"
+    ],
+    "properties": {
+      "holdings": {
+        "type": "array",
+        "items": {
+          "$ref": "instanceHoldings.json#/InstanceHoldings"
+        },
+        "xml": {
+          "wrapped": false
+        }
+      },
+      "errors": {
+        "type": "array",
+        "items": {
+          "$ref": "holdingsError.json#/HoldingsError"
+        },
+        "xml": {
+          "name": "error",
+          "wrapped": true
+        }
+      }
+    },
+    "xml": {
+      "name": "instances"
+    }
+  }
+}

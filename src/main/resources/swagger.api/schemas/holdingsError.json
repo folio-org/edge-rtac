@@ -1,0 +1,20 @@
+{
+  "$schema": "http://json-schema.org/draft-04/schema#",
+  "description": "Holdings error information",
+  "HoldingsError": {
+    "type": "object",
+    "properties": {
+      "message": {
+        "description": "Error message text",
+        "type": "string"
+      },
+      "code": {
+        "description": "Error code",
+        "type": "string"
+      }
+    },
+    "xml": {
+      "name": "error"
+    }
+  }
+}
