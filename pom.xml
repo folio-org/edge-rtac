@@ -25,7 +25,7 @@
 
   <properties>
     <java.version>21</java.version>
-    <edge-common-spring.version>3.1.0-SNAPSHOT</edge-common-spring.version>
+    <edge-common-spring.version>3.0.1</edge-common-spring.version>
     <openapi-generator.version>7.12.0</openapi-generator.version>
     <spring-cloud-wiremock>4.2.0</spring-cloud-wiremock>
     <swagger-parser.version>2.1.25</swagger-parser.version>
