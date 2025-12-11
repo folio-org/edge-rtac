@@ -85,6 +85,97 @@ paths:
           '500':
             $ref: '#/components/responses/internalServerErrorResponse'
 
+    /rtac-cache/search/{instanceId}:
+      get:
+        tags:
+          - rtac
+        summary: Search RTAC holdings
+        operationId: searchRtacCacheHoldings
+        parameters:
+          - $ref: '#/components/parameters/instance-id-path'
+          - $ref: '#/components/parameters/search-query-parameter'
+          - $ref: '#/components/parameters/available-parameter'
+          - $ref: '#/components/parameters/limit'
+          - $ref: '#/components/parameters/offset'
+          - $ref: '#/components/parameters/authorization'
+          - $ref: '#/components/parameters/apiKey'
+        responses:
+          '200':
+            description: RTAC holdings retrieved successfully
+            content:
+              application/json:
+                schema:
+                  type: string
+          '400':
+            $ref: '#/components/responses/badRequestResponse'
+          '401':
+            $ref: '#/components/responses/notAuthorizedResponse'
+          '403':
+            $ref: '#/components/responses/accessDeniedResponse'
+          '422':
+            $ref: '#/components/responses/unprocessableEntityErrorResponse'
+          '500':
+            $ref: '#/components/responses/internalServerErrorResponse'
+    /rtac-cache/{instanceId}:
+      get:
+        tags:
+          - rtac
+        summary: Retrieve RTAC holdings for a single instance
+        operationId: getRtacCacheHoldingsById
+        parameters:
+        - $ref: '#/components/parameters/instance-id-path'
+        - $ref: '#/components/parameters/limit'
+        - $ref: '#/components/parameters/offset'
+        - $ref: '#/components/parameters/authorization'
+        - $ref: '#/components/parameters/apiKey'
+        responses:
+          '200':
+            description: RTAC holdings retrieved successfully
+            content:
+              application/json:
+                schema:
+                  type: string
+          '400':
+            $ref: '#/components/responses/badRequestResponse'
+          '401':
+            $ref: '#/components/responses/notAuthorizedResponse'
+          '403':
+            $ref: '#/components/responses/accessDeniedResponse'
+          '422':
+            $ref: '#/components/responses/unprocessableEntityErrorResponse'
+          '500':
+            $ref: '#/components/responses/internalServerErrorResponse'
+
+    /rtac-cache/batch:
+      post:
+        tags:
+          - rtac
+        summary: Retrieve RTAC holdings in batch
+        operationId: postRtacCacheBatchHoldings
+        requestBody:
+          required: true
+          content:
+            application/json:
+              schema:
+                $ref: 'schemas/rtac-cache/rtacRequest.json'
+        responses:
+          '200':
+            description: RTAC batch holdings retrieved successfully
+            content:
+              application/json:
+                schema:
+                  type: string
+          '400':
+            $ref: '#/components/responses/badRequestResponse'
+          '401':
+            $ref: '#/components/responses/notAuthorizedResponse'
+          '403':
+            $ref: '#/components/responses/accessDeniedResponse'
+          '422':
+            $ref: '#/components/responses/unprocessableEntityErrorResponse'
+          '500':
+            $ref: '#/components/responses/internalServerErrorResponse'
+
 components:
   schemas:
     errorResponse:
@@ -115,12 +206,38 @@ components:
       description: Request query parameters(query, limit, offset and etc.) as object.
       schema:
         $ref: '#/components/schemas/requestQueryParameters'
-    query-parameter:
+    search-query-parameter:
       name: query
       in: query
       description: The keyword query in CQL format
+      required: true
       schema:
         type: string
+    limit:
+      in: query
+      name: limit
+      description: Limit the number of elements returned in the response.
+      schema:
+        type: integer
+        minimum: 0
+        maximum: 500
+        default: 100
+    offset:
+      in: query
+      name: offset
+      description: Skip over a number of elements by specifying an offset value for the query.
+      schema:
+        type: integer
+        minimum: 0
+        maximum: 100000
+        default: 0
+    available-parameter:
+      name: available
+      in: query
+      description: Filter by holdings that are available
+      required: false
+      schema:
+        type: boolean
     lang:
       name: lang
       in: query

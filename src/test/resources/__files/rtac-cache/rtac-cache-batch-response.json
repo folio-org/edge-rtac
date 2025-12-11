@@ -1,0 +1,23 @@
+{
+  "holdings": [
+    {
+      "instanceId": "83034b0a-bf71-4495-b642-2e998f721e5d",
+      "hasVolumes": true,
+      "locationStatus": [
+        {
+          "libraryId": "main-library",
+          "locationId": "stacks-1",
+          "status": "Available",
+          "statusCount": 2
+        },
+        {
+          "libraryId": "main-library",
+          "locationId": "stacks-1",
+          "status": "Checked out",
+          "statusCount": 1
+        }
+      ]
+    }
+  ],
+  "errors": []
+}

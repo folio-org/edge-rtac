@@ -65,6 +65,11 @@ public abstract class BaseIntegrationTests {
         .accept(acceptType));
   }
 
+  protected static ResultActions doGet(MockMvc mockMvc, String url) throws Exception {
+    return mockMvc.perform(get(url)
+      .headers(defaultHeaders()));
+  }
+
   @SneakyThrows
   protected static ResultActions doPost(MockMvc mockMvc, String url, String body) {
     return mockMvc.perform(post(url)
