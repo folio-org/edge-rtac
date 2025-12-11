@@ -1,3 +1,15 @@
+# v2.9.3 2025.08.29
+
+Sunflower (R1 2025) Service Patch #1
+
+* [EDGRTAC-104](https://folio-org.atlassian.net/browse/EDGRTAC-104): Expose holdings notes
+
+# v2.9.2 2025.07.14
+
+Sunflower (R1 2025) Service Patch #1
+
+* [EDGRTAC-102](https://folio-org.atlassian.net/browse/EDGRTAC-102): Fix commons-lang version to 3.17.0 and release hot-fix version of edge-rtac
+
 # v2.9.1 2025.03.17
 
 * Update to edge-rtac Java 21 [EDGRTAC-100](https://folio-org.atlassian.net/browse/EDGRTAC-100)
