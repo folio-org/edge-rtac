@@ -1,3 +1,11 @@
+# v3.0.0 2025.12.11
+
+LoC specific release for Sunflower CSP#4 (R1 2025)
+
+* [EDGRTAC-114](https://folio-org.atlassian.net/browse/EDGRTAC-114): Migrate to Spring Boot
+* [EDGRTAC-115](https://folio-org.atlassian.net/browse/EDGRTAC-EDGRTAC-115): Add new APIs to expose mod-rtac-cache endpoints
+
+
 # v2.9.3 2025.08.29
 
 Sunflower (R1 2025) Service Patch #1
