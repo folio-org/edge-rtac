@@ -1,5 +1,5 @@
 {
-  "id": "@artifactId@:@version@",
+  "id": "@artifactId@-@version@",
   "name": "Real Time Availability Check Edge API",
   "provides": [],
   "requires": [
@@ -14,7 +14,7 @@
   ],
   "permissionSets": [],
   "launchDescriptor": {
-    "dockerImage": "@artifactId@:@version@",
+    "dockerImage": "@artifactId@-@version@",
     "dockerPull": false,
     "dockerArgs": {
       "HostConfig": {
