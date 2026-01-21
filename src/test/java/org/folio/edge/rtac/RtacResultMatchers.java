@@ -47,7 +47,7 @@ public class RtacResultMatchers {
       jsonPath("$.holdings[0].library.name", is("Central Library")).match(result);
       jsonPath("$.holdings[0].notes", hasSize(1)).match(result);
       jsonPath("$.holdings[0].notes[0].note", is("Test note")).match(result);
-      jsonPath("$.holdings[0].notes[0].noteType", is("General note")).match(result);
+      jsonPath("$.holdings[0].notes[0].holdingsNoteTypeName", is("General note")).match(result);
       jsonPath("$.holdings[0].holdingsStatements", hasSize(1)).match(result);
       jsonPath("$.holdings[0].holdingsStatements[0].statement", is("Holdings statement 1")).match(result);
       // Second holding
@@ -174,7 +174,7 @@ public class RtacResultMatchers {
       xpath("/holdings/holding[1]/library/name").string("Central Library").match(result);
       xpath("count(/holdings/holding[1]/notes)").number(1.0).match(result);
       xpath("/holdings/holding[1]/notes[1]/note").string("Test note").match(result);
-      xpath("/holdings/holding[1]/notes[1]/noteType").string("General note").match(result);
+      xpath("/holdings/holding[1]/notes[1]/holdingsNoteTypeName").string("General note").match(result);
       xpath("count(/holdings/holding[1]/holdingsStatements)").number(1.0).match(result);
       xpath("/holdings/holding[1]/holdingsStatements[1]/statement").string("Holdings statement 1").match(result);
       // Second holding

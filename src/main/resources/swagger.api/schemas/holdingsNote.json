@@ -6,15 +6,11 @@
     "properties": {
       "note": {
         "type": "string",
-        "description": "Note text"
+        "description": "Text content of the note"
       },
-      "noteType": {
+      "holdingsNoteTypeName": {
         "type": "string",
-        "description": "Type of note"
-      },
-      "staffOnly": {
-        "type": "boolean",
-        "description": "Whether note is staff only"
+        "description": "Name of the holdings note type"
       }
     },
     "xml": {
