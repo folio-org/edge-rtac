@@ -24,8 +24,8 @@
           },
           "notes": [
             {
-              "note": "Test note",
-              "noteType": "General note"
+              "holdingsNoteTypeName": "General note",
+              "note": "Test note"
             }
           ],
           "holdingsStatements": [
