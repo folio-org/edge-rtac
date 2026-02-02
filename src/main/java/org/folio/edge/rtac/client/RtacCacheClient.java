@@ -18,10 +18,13 @@ public interface RtacCacheClient {
                                  @RequestParam String query,
                                  @RequestParam(required = false) Boolean available,
                                  @RequestParam Integer limit,
-                                 @RequestParam Integer offset);
+      @RequestParam Integer offset,
+      @RequestParam(required = false) String sort);
 
   @GetMapping(value = "/rtac-cache/{instanceId}", consumes = MediaType.APPLICATION_JSON_VALUE)
-  String rtacCacheById(@PathVariable String instanceId, @RequestParam Integer limit, @RequestParam Integer offset);
+  String rtacCacheById(@PathVariable String instanceId,
+      @RequestParam Integer limit, @RequestParam Integer offset,
+      @RequestParam(required = false) String sort);
 
   @PostMapping(value = "/rtac-cache/batch", consumes = MediaType.APPLICATION_JSON_VALUE)
   String rtacCacheBatch(@RequestBody RtacRequest rtacRequest);

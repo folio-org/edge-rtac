@@ -12,6 +12,7 @@ import static org.hamcrest.Matchers.notNullValue;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
+import java.util.Map;
 import org.folio.edge.rtac.BaseIntegrationTests;
 import org.folio.edge.rtac.TestConstants;
 import org.folio.edge.rtac.TestUtil;
@@ -28,6 +29,15 @@ class RtacCacheControllerIT extends BaseIntegrationTests {
   @Test
   void searchInstanceRtacCache_shouldReturnCachedHoldings() throws Exception {
     doGetWithParam(mockMvc, RTAC_CACHE_SEARCH_URL + INSTANCE_UUID, QUERY_PARAM, QUERY_PARAM_VALUE)
+      .andExpect(status().isOk())
+      .andExpect(jsonPath("$.instanceId", equalTo(INSTANCE_UUID)))
+      .andExpect(jsonPath("$.holdings", notNullValue()))
+      .andExpect(jsonPath("$.totalRecords", equalTo(2)));
+  }
+
+  @Test
+  void searchInstanceRtacCache_shouldReturnCachedHoldings_withSortParameter() throws Exception {
+    doGetWithParams(mockMvc, RTAC_CACHE_SEARCH_URL + INSTANCE_UUID, Map.of(QUERY_PARAM, QUERY_PARAM_VALUE, "sort", "locationName,asc"))
       .andExpect(status().isOk())
       .andExpect(jsonPath("$.instanceId", equalTo(INSTANCE_UUID)))
       .andExpect(jsonPath("$.holdings", notNullValue()))

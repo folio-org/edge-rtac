@@ -1,10 +1,14 @@
 {
   "mappings": [
     {
-      "priority": 1,
       "request": {
         "method": "GET",
-        "urlPath": "/rtac-cache/search/83034b0a-bf71-4495-b642-2e998f721e5d"
+        "urlPath": "/rtac-cache/search/83034b0a-bf71-4495-b642-2e998f721e5d",
+        "queryParameters": {
+          "sort": {
+            "equalTo": "locationName,asc"
+          }
+        }
       },
       "response": {
         "status": 200,
@@ -15,7 +19,24 @@
       }
     },
     {
-      "priority": 2,
+      "request": {
+        "method": "GET",
+        "urlPath": "/rtac-cache/search/83034b0a-bf71-4495-b642-2e998f721e5d",
+        "queryParameters": {
+          "sort": {
+            "absent": true
+          }
+        }
+      },
+      "response": {
+        "status": 200,
+        "headers": {
+          "Content-Type": "application/json"
+        },
+        "bodyFileName": "rtac-cache/rtac-cache-response.json"
+      }
+    },
+    {
       "request": {
         "method": "GET",
         "urlPath": "/rtac-cache/search/a826719e-4ed2-4681-95ca-d3de6bbdec66"
