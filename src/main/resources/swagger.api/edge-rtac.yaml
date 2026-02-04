@@ -97,6 +97,7 @@ paths:
           - $ref: '#/components/parameters/available-parameter'
           - $ref: '#/components/parameters/limit'
           - $ref: '#/components/parameters/offset'
+          - $ref: '#/components/parameters/sort'
           - $ref: '#/components/parameters/authorization'
           - $ref: '#/components/parameters/apiKey'
         responses:
@@ -126,6 +127,7 @@ paths:
         - $ref: '#/components/parameters/instance-id-path'
         - $ref: '#/components/parameters/limit'
         - $ref: '#/components/parameters/offset'
+        - $ref: '#/components/parameters/sort'
         - $ref: '#/components/parameters/authorization'
         - $ref: '#/components/parameters/apiKey'
         responses:
@@ -321,6 +323,15 @@ components:
       required: false
       schema:
         type: boolean
+    sort:
+      name: sort
+      in: query
+      description: |
+        Sort criteria in the format: `property,direction` (e.g., `locationName,asc`).
+        Supported properties are: effectiveShelvingOrder, libraryName, locationName, status.
+        The default sort order is effectiveShelvingOrder, libraryName, locationName, status (ascending).
+      schema:
+        type: string
 
   responses:
     healthCheckResponse:

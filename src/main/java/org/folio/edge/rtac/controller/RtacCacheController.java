@@ -21,19 +21,23 @@ public class RtacCacheController implements RtacCacheApi {
                                                         Boolean available,
                                                         Integer limit,
                                                         Integer offset,
+                                                        String sort,
                                                         String authorization,
                                                         String apiKey) {
-    var holdings = rtacCacheService.searchRtacCacheHoldings(instanceId, query, available, limit, offset);
+    var holdings = rtacCacheService.searchRtacCacheHoldings(instanceId, query, available, limit, offset, sort);
     return ResponseEntity.ok(holdings);
   }
+
 
   @Override
   public ResponseEntity<String> getRtacCacheHoldingsById(String instanceId,
                                                          Integer limit,
                                                          Integer offset,
+                                                         String sort,
                                                          String authorization,
-                                                         String apiKey) {
-    var holdings = rtacCacheService.getRtacCacheHoldingsById(instanceId, limit, offset);
+                                                         String apiKey
+  ) {
+    var holdings = rtacCacheService.getRtacCacheHoldingsById(instanceId, limit, offset, sort);
     return ResponseEntity.ok(holdings);
   }
 
