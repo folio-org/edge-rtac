@@ -8,6 +8,7 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 import com.github.tomakehurst.wiremock.WireMockServer;
 import com.github.tomakehurst.wiremock.extension.responsetemplating.ResponseTemplateTransformer;
 import java.util.List;
+import java.util.Map;
 import lombok.SneakyThrows;
 import lombok.extern.log4j.Log4j2;
 import org.folio.edge.rtac.config.RtacClientRequestInterceptor;
@@ -90,6 +91,12 @@ public abstract class BaseIntegrationTests {
         .param(paramName, paramValue)
         .headers(defaultHeaders())
         .accept(acceptType));
+  }
+
+  protected static ResultActions doGetWithParams(MockMvc mockMvc, String url, Map<String, String> params) throws Exception {
+    var request = get(url).headers(defaultHeaders());
+    params.forEach(request::param);
+    return mockMvc.perform(request);
   }
 
   private static HttpHeaders defaultHeaders() {
