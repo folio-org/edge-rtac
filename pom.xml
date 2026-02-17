@@ -40,7 +40,7 @@
     <sonar.exclusions>
       src/main/java/org/folio/edge/rtac/model/**
     </sonar.exclusions>
-    <vertx.version>4.5.10</vertx.version>
+    <vertx.version>4.5.23</vertx.version>
   </properties>
 
   <dependencyManagement>
