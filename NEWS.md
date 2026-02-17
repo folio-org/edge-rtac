@@ -1,6 +1,12 @@
+# v2.9.4 2026.02.17
+
+Sunflower (R1 2025) Service Patch #6
+
+* [EDGRTAC-120](https://folio-org.atlassian.net/browse/EDGRTAC-120): Sunflower: Release 2.9.4 with Vertx 4.5.23 and Netty 4.1.130.Final fixing vulns
+
 # v2.9.3 2025.08.29
 
-Sunflower (R1 2025) Service Patch #1
+Sunflower (R1 2025) Service Patch #2
 
 * [EDGRTAC-104](https://folio-org.atlassian.net/browse/EDGRTAC-104): Expose holdings notes
 
