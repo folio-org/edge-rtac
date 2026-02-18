@@ -1,3 +1,12 @@
+# v3.0.1 2026.02.18
+
+LoC specific release for Sunflower CSP#6 (R1 2025)
+
+* [EDGRTAC-121](https://folio-org.atlassian.net/browse/EDGRTAC-121): Sunflower (LoC): Release 3.0.1 with Spring Boot 3.4.13 fixing vulns
+* [EDGRTAC-126](https://folio-org.atlassian.net/browse/EDGRTAC-126): Sunflower (LoC): Release 3.0.1 with Spring Boot 3.4.13 fixing vulns
+* [EDGRTAC-104](https://folio-org.atlassian.net/browse/EDGRTAC-104): Update holdingsNote schema and tests: replace `noteType` with `holdingsNoteTypeName`
+
+
 # v3.0.0 2025.12.11
 
 LoC specific release for Sunflower CSP#4 (R1 2025)
