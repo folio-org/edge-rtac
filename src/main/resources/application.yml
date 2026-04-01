@@ -1,44 +1,64 @@
+server:
+  port: 8080
+secure_store: ephemeral
+secure_store_props: src/main/resources/ephemeral.properties
+
 spring:
   application:
-    name: edge-rtac
+    name: edge-courses
+  main:
+    allow-bean-definition-overriding: true
   liquibase:
     enabled: false
   jackson:
-    default-property-inclusion: non_null
-  cloud:
-    openfeign:
-      okhttp:
-        enabled: true
-
-management.endpoints.web.base-path: /admin
-header.validation.x-okapi-tenant.exclude.base-paths: /admin,/swagger,/v2/api-docs
+    deserialization:
+      fail-on-unknown-properties: false
+      accept-single-value-as-array: true
 
 folio:
-  system-user:  # This isn't actually used, but we get dependency injection errors from folio-spring-system-user if we don't have it
-    username: dummy
-    password: dummy
-  environment: dev # Overridden at runtime in production, but causes folio-spring-system-user DI errors if it's not set
+  exchange:
+    enabled: false # edge-common-spring provides its own HttpServiceProxyFactory (edgeHttpServiceProxyFactory)
+  logging:
+    exchange:
+      enabled: true
+      level: BASIC
   tenant:
     validation:
       enabled: false
+  system-user:
+    username: dummy # This isn't actually used, but we get dependency injection errors from folio-spring-system-user if we don't have it
+    password: dummy # This isn't actually used, but we get dependency injection errors from folio-spring-system-user if we don't have it
+  environment: dev # Overridden at runtime in production, but causes folio-spring-system-user DI errors if it's not set
   client:
-#    okapiUrl: http://localhost:9130
+    okapiUrl: http://localhost:9130
     tls:
       enabled: false
-#      trustStorePath: ~/test/test.truststore.bcfks
-#      trustStorePassword: "SecretPassword"
-#      trustStoreType: BCFKS
+      #      trustStorePath: classpath:test/test.truststore.bcfks
+      #      trustStorePassword: "SecretPassword"
+      #      trustStoreType: bcfks
+
+management:
+  endpoints:
+    web:
+      exposure:
+        include: info,health,env,httpexchanges
+      base-path: /admin
+  #  endpoint:
+  #    health:
+  #      show-details: always
+  #      show-components: always
+  ###################################################
+  # Disable all checks except for readiness
+  ###################################################
+  health:
+    defaults:
+      enabled: false
+    readinessstate:
+      enabled: true
+debug: false
+
 logging:
   config: classpath:log4j2.xml
-
-server:
-  port: 8081
-  error:
-    include-message: always
-
-security:
-  store: ${secure_store:Ephemeral}
-  props-location: ${secure_store_props:src/main/resources/ephemeral.properties}
 
 token:
   capacity: ${token_cache_capacity:100}

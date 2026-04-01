@@ -5,7 +5,7 @@
   <parent>
     <groupId>org.springframework.boot</groupId>
     <artifactId>spring-boot-starter-parent</artifactId>
-    <version>3.4.3</version>
+    <version>4.0.3</version>
     <relativePath />
   </parent>
 
@@ -13,7 +13,7 @@
   <artifactId>edge-rtac</artifactId>
   <version>3.1.0-SNAPSHOT</version>
   <packaging>jar</packaging>
-  <name>Edge API - Real Time Availability Check</name>
+  <name>edge-rtac</name>
   <description>Edge API to interface with FOLIO for 3rd party discovery services to determine holdings availability</description>
 
   <licenses>
@@ -25,34 +25,66 @@
 
   <properties>
     <java.version>21</java.version>
-    <edge-common-spring.version>3.0.1</edge-common-spring.version>
-    <openapi-generator.version>7.12.0</openapi-generator.version>
-    <spring-cloud-wiremock>4.2.0</spring-cloud-wiremock>
-    <swagger-parser.version>2.1.25</swagger-parser.version>
+    <edge-common-spring.version>4.0.0-SNAPSHOT</edge-common-spring.version>
+    <openapi-generator.version>7.20.0</openapi-generator.version>
+    <folio-spring-support.version>10.0.0-RC1</folio-spring-support.version>
     <edge-rtac.yaml.file>${project.basedir}/src/main/resources/swagger.api/edge-rtac.yaml</edge-rtac.yaml.file>
 
-    <httpcomponents.httpclient.version>4.5.14</httpcomponents.httpclient.version>
-    <httpcomponents.httpcore.version>4.4.16</httpcomponents.httpcore.version>
-    <jknack.handlebars.version>4.4.0</jknack.handlebars.version>
-    <folio-spring-cql.version>9.0.0</folio-spring-cql.version>
-    <commons-lang3.version>3.17.0</commons-lang3.version>
+    <!-- Test dependencies versions -->
+    <wiremock-standalone.version>3.13.2</wiremock-standalone.version>
   </properties>
 
   <dependencies>
-    <!-- New Dependencies -->
     <dependency>
       <groupId>org.folio</groupId>
-      <artifactId>folio-spring-cql</artifactId>
-      <version>${folio-spring-cql.version}</version>
+      <artifactId>folio-spring-base</artifactId>
+      <version>${folio-spring-support.version}</version>
+      <exclusions>
+        <exclusion>
+          <groupId>org.springframework.boot</groupId>
+          <artifactId>spring-boot-starter-data-jpa</artifactId>
+        </exclusion>
+        <exclusion>
+          <groupId>org.bouncycastle</groupId>
+          <artifactId>bcprov-jdk18on</artifactId>
+        </exclusion>
+      </exclusions>
     </dependency>
+
     <dependency>
-      <groupId>org.projectlombok</groupId>
-      <artifactId>lombok</artifactId>
-      <optional>true</optional>
+      <groupId>org.folio</groupId>
+      <artifactId>edge-common-spring</artifactId>
+      <version>${edge-common-spring.version}</version>
+      <exclusions>
+        <exclusion>
+          <groupId>org.springframework.boot</groupId>
+          <artifactId>spring-boot-starter-data-jpa</artifactId>
+        </exclusion>
+        <exclusion>
+          <groupId>org.bouncycastle</groupId>
+          <artifactId>bcprov-jdk18on</artifactId>
+        </exclusion>
+      </exclusions>
     </dependency>
+
     <dependency>
       <groupId>org.springframework.boot</groupId>
       <artifactId>spring-boot-starter-web</artifactId>
+      <exclusions>
+        <exclusion>
+          <groupId>org.apache.logging.log4j</groupId>
+          <artifactId>log4j-to-slf4j</artifactId>
+        </exclusion>
+        <exclusion>
+          <groupId>ch.qos.logback</groupId>
+          <artifactId>logback-classic</artifactId>
+        </exclusion>
+      </exclusions>
+    </dependency>
+
+    <dependency>
+      <groupId>org.springframework.boot</groupId>
+      <artifactId>spring-boot-starter-validation</artifactId>
       <exclusions>
         <exclusion>
           <groupId>org.apache.logging.log4j</groupId>
@@ -70,33 +102,21 @@
     </dependency>
     <dependency>
       <groupId>org.springframework.boot</groupId>
-      <artifactId>spring-boot-starter-validation</artifactId>
+      <artifactId>spring-boot-starter-cache</artifactId>
     </dependency>
     <dependency>
-      <groupId>org.springframework.cloud</groupId>
-      <artifactId>spring-cloud-contract-wiremock</artifactId>
-      <version>${spring-cloud-wiremock}</version>
-      <scope>test</scope>
+      <groupId>org.springframework.boot</groupId>
+      <artifactId>spring-boot-starter-actuator</artifactId>
     </dependency>
+
     <dependency>
-      <groupId>org.folio</groupId>
-      <artifactId>edge-common-spring</artifactId>
-      <version>${edge-common-spring.version}</version>
-      <exclusions>
-        <exclusion>
-          <groupId>org.apache.logging.log4j</groupId>
-          <artifactId>log4j-api</artifactId>
-        </exclusion>
-        <exclusion>
-          <groupId>org.springframework.boot</groupId>
-          <artifactId>spring-boot-starter-logging</artifactId>
-        </exclusion>
-        <exclusion>
-          <groupId>org.bouncycastle</groupId>
-          <artifactId>bcprov-jdk18on</artifactId>
-        </exclusion>
-      </exclusions>
+      <groupId>org.projectlombok</groupId>
+      <artifactId>lombok</artifactId>
+      <optional>true</optional>
     </dependency>
+
+    <!-- Test dependencies -->
+
     <dependency>
       <groupId>org.springframework.boot</groupId>
       <artifactId>spring-boot-starter-test</artifactId>
@@ -107,35 +127,30 @@
           <artifactId>junit-vintage-engine</artifactId>
         </exclusion>
         <exclusion>
-          <groupId>org.springframework.boot</groupId>
-          <artifactId>spring-boot-starter-logging</artifactId>
+          <groupId>org.apache.logging.log4j</groupId>
+          <artifactId>log4j-to-slf4j</artifactId>
+        </exclusion>
+        <exclusion>
+          <groupId>ch.qos.logback</groupId>
+          <artifactId>logback-classic</artifactId>
         </exclusion>
       </exclusions>
     </dependency>
     <dependency>
-      <groupId>com.fasterxml.jackson.dataformat</groupId>
-      <artifactId>jackson-dataformat-xml</artifactId>
+      <groupId>org.springframework.boot</groupId>
+      <artifactId>spring-boot-webmvc-test</artifactId>
+      <scope>test</scope>
     </dependency>
     <dependency>
-      <groupId>io.swagger.parser.v3</groupId>
-      <artifactId>swagger-parser</artifactId>
-      <version>${swagger-parser.version}</version>
-    </dependency>
-
-    <dependency>
-      <groupId>org.apache.httpcomponents</groupId>
-      <artifactId>httpclient</artifactId>
-      <version>${httpcomponents.httpclient.version}</version>
+      <groupId>org.wiremock</groupId>
+      <artifactId>wiremock-standalone</artifactId>
+      <version>${wiremock-standalone.version}</version>
+      <scope>test</scope>
     </dependency>
     <dependency>
-      <groupId>org.apache.httpcomponents</groupId>
-      <artifactId>httpcore</artifactId>
-      <version>${httpcomponents.httpcore.version}</version>
-    </dependency>
-    <dependency>
-      <groupId>com.github.jknack</groupId>
-      <artifactId>handlebars</artifactId>
-      <version>${jknack.handlebars.version}</version>
+      <groupId>org.testcontainers</groupId>
+      <artifactId>testcontainers-junit-jupiter</artifactId>
+      <scope>test</scope>
     </dependency>
   </dependencies>
 
@@ -145,12 +160,9 @@
         <groupId>org.springframework.boot</groupId>
         <artifactId>spring-boot-maven-plugin</artifactId>
         <configuration>
-          <excludes>
-            <exclude>
-              <groupId>org.projectlombok</groupId>
-              <artifactId>lombok</artifactId>
-            </exclude>
-          </excludes>
+          <layers>
+            <enabled>true</enabled>
+          </layers>
         </configuration>
       </plugin>
 
@@ -234,8 +246,9 @@
                 <java8>true</java8>
                 <dateLibrary>java</dateLibrary>
                 <interfaceOnly>true</interfaceOnly>
-                <useSpringBoot3>true</useSpringBoot3>
+                <useSpringBoot4>true</useSpringBoot4>
                 <openApiNullable>false</openApiNullable>
+                <useJackson3>true</useJackson3>
                 <withXml>true</withXml>
               </configOptions>
             </configuration>
@@ -266,53 +279,7 @@
           <localCheckout>true</localCheckout>
         </configuration>
       </plugin>
-
-      <plugin>
-        <artifactId>maven-compiler-plugin</artifactId>
-        <version>3.14.0</version>
-        <configuration>
-          <release>21</release>
-          <encoding>UTF-8</encoding>
-        </configuration>
-      </plugin>
-
-      <plugin>
-        <groupId>org.codehaus.mojo</groupId>
-        <artifactId>exec-maven-plugin</artifactId>
-        <version>3.1.0</version>
-        <executions>
-          <execution>
-            <!-- run the application using the fat jar -->
-            <id>run-app</id>
-            <goals>
-              <goal>exec</goal>
-            </goals>
-            <configuration>
-              <executable>java</executable>
-              <arguments>
-                <argument>-jar</argument>
-                <argument>target/${project.artifactId}-${project.version}-fat.jar</argument>
-              </arguments>
-            </configuration>
-          </execution>
-        </executions>
-      </plugin>
-
     </plugins>
-    <pluginManagement>
-      <!--
-           The super pom declares these dependencies and versions. Eclipse warns when versions
-           are specified for plugins that are controlled by pluginManagement. By declaring them
-           here we avoid these warnings and ensure we are getting the expected versions, in case
-           the super pom changes versions for some reason.
-      -->
-      <plugins>
-        <plugin>
-          <artifactId>maven-release-plugin</artifactId>
-          <version>3.0.1</version>
-        </plugin>
-      </plugins>
-    </pluginManagement>
   </build>
 
   <repositories>

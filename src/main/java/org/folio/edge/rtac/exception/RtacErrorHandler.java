@@ -12,6 +12,7 @@ import org.springframework.http.converter.HttpMessageConversionException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
+import org.springframework.web.client.HttpStatusCodeException;
 
 @Log4j2
 @RestControllerAdvice
@@ -26,11 +27,11 @@ public class RtacErrorHandler {
     return ResponseEntity.ok(holdingsError);
   }
 
-  @ExceptionHandler(FeignException.class)
-  public ResponseEntity<String> handleFeignException(FeignException exception) {
-    String properErrorMessage = exception.contentUTF8();
+  @ExceptionHandler(HttpStatusCodeException.class)
+  public ResponseEntity<String> handleFeignException(HttpStatusCodeException exception) {
+    String properErrorMessage = exception.getResponseBodyAsString();;
     log.error("Error occurred during service chain call, {}", properErrorMessage);
-    return ResponseEntity.status(exception.status())
+    return ResponseEntity.status(exception.getStatusCode())
       .contentType(MediaType.APPLICATION_JSON)
       .body(properErrorMessage);
   }

@@ -12,9 +12,6 @@ import org.springframework.test.web.servlet.MockMvc;
 
 class TenantControllerTest extends BaseIntegrationTests {
 
-  @Autowired
-  private MockMvc mockMvc;
-
   @Test
   void postTenant_shouldReturnHttpStatusOk() throws Exception {
     String requestBody = TestUtil.readFileContentFromResources(POST_TENANT_REQUEST);

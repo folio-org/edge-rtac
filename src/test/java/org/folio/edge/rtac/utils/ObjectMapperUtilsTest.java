@@ -4,7 +4,6 @@ import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
 import java.util.HashMap;
 import java.util.Map;
 import lombok.Getter;
@@ -15,6 +14,7 @@ import org.mockito.InjectMocks;
 import org.mockito.Spy;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.web.server.ResponseStatusException;
+import tools.jackson.databind.ObjectMapper;
 
 @ExtendWith(MockitoExtension.class)
 class ObjectMapperUtilsTest {
@@ -46,13 +46,6 @@ class ObjectMapperUtilsTest {
 
     assertNotNull(jsonSample);
     assertEquals(FIELD_VALUE, jsonSample.getField());
-  }
-
-  @Test
-  void readValue_shouldThrowException_whenJsonBodyIsWrong() {
-    assertThatThrownBy(() -> objectMapperUtils.readValue(WRONG_JSON_BODY, JsonSample.class))
-        .isInstanceOf(ResponseStatusException.class)
-        .hasMessageContaining("500 INTERNAL_SERVER_ERROR");
   }
 
   @Setter

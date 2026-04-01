@@ -7,7 +7,10 @@
         "url": "/rtac-batch",
         "bodyPatterns": [
           {
-            "equalToJson": "{\"instanceIds\":[\"69640328-788e-43fc-9c3c-af39e243f3b7\"]}"
+            "equalToJson": {
+              "instanceIds": ["69640328-788e-43fc-9c3c-af39e243f3b7"],
+              "fullPeriodicals": false
+            }
           }
         ]
       },

@@ -1,14 +1,16 @@
 package org.folio.edge.rtac.client;
 
-import org.folio.edge.rtac.config.RtacClientConfig;
-import org.springframework.cloud.openfeign.FeignClient;
-import org.springframework.http.MediaType;
-import org.springframework.web.bind.annotation.PostMapping;
+import org.folio.rtac.domain.dto.BatchHoldingsResponse;
+import org.folio.rtac.domain.dto.RtacBatchRequest;
 import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.service.annotation.HttpExchange;
+import org.springframework.web.service.annotation.PostExchange;
+import tools.jackson.databind.JsonNode;
 
-@FeignClient(name = "rtac", configuration = RtacClientConfig.class)
+@HttpExchange(contentType = "application/json")
 public interface RtacClient {
 
-  @PostMapping(value = "/rtac-batch", consumes = MediaType.APPLICATION_JSON_VALUE)
-  String rtac(@RequestBody String requestBody);
+  @PostExchange("rtac-batch")
+  BatchHoldingsResponse rtac(@RequestBody RtacBatchRequest requestBody);
+
 }
