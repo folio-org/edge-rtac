@@ -67,10 +67,6 @@ public class RtacService {
     return extractOrCreateEmptyHolding(batchHoldingsResponse, instanceId);
   }
 
-  private BatchHoldingsResponse transformBatchResponse(String modRtacResponse) {
-    return objectMapperUtils.readValue(modRtacResponse, BatchHoldingsResponse.class);
-  }
-
   private InstanceHoldings extractOrCreateEmptyHolding(BatchHoldingsResponse instances, String instanceId) {
     if (isNotEmpty(instances.getHoldings())) {
       return instances.getHoldings().getFirst();

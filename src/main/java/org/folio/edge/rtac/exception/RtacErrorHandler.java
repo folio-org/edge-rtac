@@ -29,7 +29,7 @@ public class RtacErrorHandler {
 
   @ExceptionHandler(HttpStatusCodeException.class)
   public ResponseEntity<String> handleFeignException(HttpStatusCodeException exception) {
-    String properErrorMessage = exception.getResponseBodyAsString();;
+    String properErrorMessage = exception.getResponseBodyAsString();
     log.error("Error occurred during service chain call, {}", properErrorMessage);
     return ResponseEntity.status(exception.getStatusCode())
       .contentType(MediaType.APPLICATION_JSON)

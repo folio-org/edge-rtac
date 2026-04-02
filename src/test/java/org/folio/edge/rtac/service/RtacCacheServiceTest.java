@@ -1,7 +1,6 @@
 package org.folio.edge.rtac.service;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.folio.edge.rtac.TestConstants.RTAC_CACHE_REQUEST_NON_EXISTENT_PATH;
 import static org.folio.edge.rtac.TestConstants.RTAC_CACHE_RESPONSE_PATH;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
@@ -17,7 +16,6 @@ import org.mockito.ArgumentCaptor;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
-import tools.jackson.databind.JsonNode;
 
 @ExtendWith(MockitoExtension.class)
 class RtacCacheServiceTest {

@@ -3,7 +3,6 @@ package org.folio.edge.rtac.service;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
@@ -66,7 +65,7 @@ class RtacServiceTest {
     var requestBody = requestCaptor.getValue();
     assertThat(result).isNotNull();
     assertThat(requestBody.getInstanceIds()).contains(INSTANCE_ID);
-    assertThat(requestBody.getFullPeriodicals()).isEqualTo(true);
+    assertThat(requestBody.getFullPeriodicals()).isTrue();
   }
 
   @Test
@@ -122,7 +121,7 @@ class RtacServiceTest {
     var requestBody = requestCaptor.getValue();
     assertThat(requestBody.getInstanceIds()).contains(INSTANCE_ID_1);
     assertThat(requestBody.getInstanceIds()).contains(INSTANCE_ID_2);
-    assertThat(requestBody.getFullPeriodicals()).isEqualTo(false);
+    assertThat(requestBody.getFullPeriodicals()).isFalse();
   }
 
   @Test
@@ -136,7 +135,7 @@ class RtacServiceTest {
 
     verify(rtacClient).rtac(requestCaptor.capture());
     var requestBody = requestCaptor.getValue();
-    assertThat(requestBody.getFullPeriodicals()).isEqualTo(true);
+    assertThat(requestBody.getFullPeriodicals()).isTrue();
   }
 
   @Test

@@ -20,7 +20,6 @@ import tools.jackson.databind.ObjectMapper;
 class ObjectMapperUtilsTest {
 
   private static final String JSON_BODY = "{\"field\":\"value\"}";
-  private static final String WRONG_JSON_BODY = "{\"field\":value}";
   private static final String FIELD_VALUE = "value";
 
   @Spy
