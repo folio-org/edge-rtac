@@ -1,0 +1,24 @@
+{
+  "$schema": "http://json-schema.org/draft-04/schema#",
+  "description": "Define format of request data with instances ids",
+  "RtacBatchRequest": {
+    "type": "object",
+    "properties": {
+      "instanceIds": {
+        "description": "Inventory instances identifiers",
+        "type": "array",
+        "items": {
+          "$ref": "uuid.json"
+        }
+      },
+      "fullPeriodicals": {
+        "description": "Whether or not to return full periodical records",
+        "type": "boolean"
+      }
+    },
+    "additionalProperties": false,
+    "required": [
+      "instanceIds"
+    ]
+  }
+}

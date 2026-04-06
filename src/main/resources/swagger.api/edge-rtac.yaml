@@ -182,10 +182,10 @@ components:
   schemas:
     errorResponse:
       $ref: 'schemas/error.json#/Error'
-    requestQueryParameters:
-      $ref: 'schemas/requestQueryParameters.json#/RequestQueryParameters'
     BatchHoldingsResponse:
       $ref: 'schemas/batchHoldingsResponse.json#/BatchHoldingsResponse'
+    RtacBatchRequest:
+      $ref: 'schemas/rtacBatchRequest.json#/RtacBatchRequest'
     InstanceHoldings:
       $ref: 'schemas/instanceHoldings.json#/InstanceHoldings'
     Holding:
@@ -202,12 +202,6 @@ components:
       $ref: 'schemas/holdingsError.json#/HoldingsError'
 
   parameters:
-    request-query-parameters:
-      name: requestQueryParameters
-      in: query
-      description: Request query parameters(query, limit, offset and etc.) as object.
-      schema:
-        $ref: '#/components/schemas/requestQueryParameters'
     search-query-parameter:
       name: query
       in: query
@@ -323,6 +317,7 @@ components:
       required: false
       schema:
         type: boolean
+        default: false
     sort:
       name: sort
       in: query

@@ -4,9 +4,14 @@
       "request": {
         "method": "POST",
         "url": "/authn/login-with-expiry",
-        "bodyPatterns" : [ {
-          "equalToJson" : "{\"username\":\"test_admin\",\"password\":\"test\"}"
-        } ]
+        "bodyPatterns": [
+          {
+            "equalToJson": {
+              "username": "test_admin",
+              "password": "test"
+            }
+          }
+        ]
       },
       "response": {
         "status": 200,

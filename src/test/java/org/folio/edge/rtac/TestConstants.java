@@ -20,6 +20,8 @@ public class TestConstants {
   public static final String NON_EXISTENT_INSTANCE_UUID = "a826719e-4ed2-4681-95ca-d3de6bbdec66";
   public static final String RTAC_CACHE_REQUEST_PATH = "__files/rtac-cache/rtac-request.json";
   public static final String RTAC_CACHE_REQUEST_NON_EXISTENT_PATH = "__files/rtac-cache/rtac-request-nonexisting.json";
+  public static final String RTAC_CACHE_RESPONSE_PATH = "__files/rtac-cache/rtac-cache-response.json";
+  public static final String RTAC_BATCH_CACHE_RESPONSE_PATH = "__files/rtac-cache/rtac-cache-batch-response.json";
   public static final String QUERY_PARAM = "query";
   public static final String QUERY_PARAM_VALUE = "Test";
 }

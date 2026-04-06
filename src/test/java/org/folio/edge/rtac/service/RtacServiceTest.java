@@ -2,7 +2,7 @@ package org.folio.edge.rtac.service;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
-import static org.mockito.ArgumentMatchers.anyString;
+import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
@@ -12,6 +12,7 @@ import org.folio.edge.rtac.exception.RtacSoftErrorException;
 import org.folio.edge.rtac.utils.ObjectMapperUtils;
 import org.folio.rtac.domain.dto.BatchHoldingsResponse;
 import org.folio.rtac.domain.dto.InstanceHoldings;
+import org.folio.rtac.domain.dto.RtacBatchRequest;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -40,8 +41,9 @@ class RtacServiceTest {
 
   @Test
   void getInstanceRtac_shouldReturnInstanceHoldings() {
-    String singleHoldingResponse = TestUtil.readFileContentFromResources("__files/rtac/single-holding-response.json");
-    when(rtacClient.rtac(anyString())).thenReturn(singleHoldingResponse);
+    var singleHoldingResponse = TestUtil.readFileContentFromResources("__files/rtac/single-holding-response.json");
+    var batchHoldingsResponse = objectMapperUtils.readValue(singleHoldingResponse, BatchHoldingsResponse.class);
+    when(rtacClient.rtac(any(RtacBatchRequest.class))).thenReturn(batchHoldingsResponse);
 
     InstanceHoldings result = rtacService.getInstanceRtac(INSTANCE_ID, null);
 
@@ -52,25 +54,25 @@ class RtacServiceTest {
 
   @Test
   void getInstanceRtac_shouldReturnInstanceHoldingsWithFullPeriodicals() {
-    String singleHoldingResponse = TestUtil.readFileContentFromResources("__files/rtac/single-holding-response.json");
-    when(rtacClient.rtac(anyString())).thenReturn(singleHoldingResponse);
-
-    ArgumentCaptor<String> requestCaptor = ArgumentCaptor.forClass(String.class);
+    var singleHoldingResponse = TestUtil.readFileContentFromResources("__files/rtac/single-holding-response.json");
+    var batchHoldingsResponse = objectMapperUtils.readValue(singleHoldingResponse, BatchHoldingsResponse.class);
+    when(rtacClient.rtac(any(RtacBatchRequest.class))).thenReturn(batchHoldingsResponse);
+    ArgumentCaptor<RtacBatchRequest> requestCaptor = ArgumentCaptor.forClass(RtacBatchRequest.class);
 
     InstanceHoldings result = rtacService.getInstanceRtac(INSTANCE_ID, true);
 
     verify(rtacClient).rtac(requestCaptor.capture());
-    String requestBody = requestCaptor.getValue();
-
+    var requestBody = requestCaptor.getValue();
     assertThat(result).isNotNull();
-    assertThat(requestBody).contains("fullPeriodicals");
-    assertThat(requestBody).contains("true");
+    assertThat(requestBody.getInstanceIds()).contains(INSTANCE_ID);
+    assertThat(requestBody.getFullPeriodicals()).isTrue();
   }
 
   @Test
   void getInstanceRtac_shouldReturnEmptyHoldings_whenResponseHasNoHoldings() {
-    String emptyHoldingsResponse = TestUtil.readFileContentFromResources("__files/rtac/empty-holdings-response.json");
-    when(rtacClient.rtac(anyString())).thenReturn(emptyHoldingsResponse);
+    var emptyHoldingsResponse = TestUtil.readFileContentFromResources("__files/rtac/empty-holdings-response.json");
+    var batchHoldingsResponse = objectMapperUtils.readValue(emptyHoldingsResponse, BatchHoldingsResponse.class);
+    when(rtacClient.rtac(any(RtacBatchRequest.class))).thenReturn(batchHoldingsResponse);
 
     InstanceHoldings result = rtacService.getInstanceRtac(INSTANCE_ID, null);
 
@@ -80,8 +82,9 @@ class RtacServiceTest {
 
   @Test
   void getInstanceRtac_shouldThrowException_whenResponseHasErrors() {
-    String errorResponse = TestUtil.readFileContentFromResources("__files/rtac/mod-rtac-error.json");
-    when(rtacClient.rtac(anyString())).thenReturn(errorResponse);
+    var errorResponse = TestUtil.readFileContentFromResources("__files/rtac/mod-rtac-error.json");
+    var batchHoldingsResponse = objectMapperUtils.readValue(errorResponse, BatchHoldingsResponse.class);
+    when(rtacClient.rtac(any(RtacBatchRequest.class))).thenReturn(batchHoldingsResponse);
 
     assertThatThrownBy(() -> rtacService.getInstanceRtac(INSTANCE_ID, null))
         .isInstanceOf(RtacSoftErrorException.class)
@@ -91,10 +94,11 @@ class RtacServiceTest {
 
   @Test
   void getBatchRtac_shouldReturnBatchHoldingsResponse() {
-    String batchHoldingsResponse = TestUtil.readFileContentFromResources("__files/rtac/batch-holdings-response.json");
-    when(rtacClient.rtac(anyString())).thenReturn(batchHoldingsResponse);
+    var batchHoldingsResponseString = TestUtil.readFileContentFromResources("__files/rtac/batch-holdings-response.json");
+    var batchHoldingsResponse = objectMapperUtils.readValue(batchHoldingsResponseString, BatchHoldingsResponse.class);
+    when(rtacClient.rtac(any(RtacBatchRequest.class))).thenReturn(batchHoldingsResponse);
 
-    String instanceIds = INSTANCE_ID_1 + "," + INSTANCE_ID_2;
+    var instanceIds = INSTANCE_ID_1 + "," + INSTANCE_ID_2;
     BatchHoldingsResponse result = rtacService.getBatchRtac(instanceIds, null);
 
     assertThat(result.getHoldings()).hasSize(2);
@@ -105,51 +109,46 @@ class RtacServiceTest {
 
   @Test
   void getBatchRtac_shouldTrimAndFilterInstanceIds() {
-    String batchHoldingsResponse = TestUtil.readFileContentFromResources("__files/rtac/batch-holdings-response.json");
-    when(rtacClient.rtac(anyString())).thenReturn(batchHoldingsResponse);
+    var batchHoldingsResponseString = TestUtil.readFileContentFromResources("__files/rtac/batch-holdings-response.json");
+    var batchHoldingsResponse = objectMapperUtils.readValue(batchHoldingsResponseString, BatchHoldingsResponse.class);
+    when(rtacClient.rtac(any(RtacBatchRequest.class))).thenReturn(batchHoldingsResponse);
+    ArgumentCaptor<RtacBatchRequest> requestCaptor = ArgumentCaptor.forClass(RtacBatchRequest.class);
+    var instanceIds = "  " + INSTANCE_ID_1 + " , " + INSTANCE_ID_2 + "  , , ";
 
-    ArgumentCaptor<String> requestCaptor = ArgumentCaptor.forClass(String.class);
-
-    String instanceIds = "  " + INSTANCE_ID_1 + " , " + INSTANCE_ID_2 + "  , , ";
     rtacService.getBatchRtac(instanceIds, false);
 
     verify(rtacClient).rtac(requestCaptor.capture());
-    String requestBody = requestCaptor.getValue();
-
-    assertThat(requestBody).contains(INSTANCE_ID_1);
-    assertThat(requestBody).contains(INSTANCE_ID_2);
-    assertThat(requestBody).contains("fullPeriodicals");
-    assertThat(requestBody).contains("false");
+    var requestBody = requestCaptor.getValue();
+    assertThat(requestBody.getInstanceIds()).contains(INSTANCE_ID_1);
+    assertThat(requestBody.getInstanceIds()).contains(INSTANCE_ID_2);
+    assertThat(requestBody.getFullPeriodicals()).isFalse();
   }
 
   @Test
   void getBatchRtac_shouldIncludeFullPeriodicalsWhenProvided() {
-    String batchHoldingsResponse = TestUtil.readFileContentFromResources("__files/rtac/batch-holdings-response.json");
-    when(rtacClient.rtac(anyString())).thenReturn(batchHoldingsResponse);
-
-    ArgumentCaptor<String> requestCaptor = ArgumentCaptor.forClass(String.class);
+    var batchHoldingsResponseString = TestUtil.readFileContentFromResources("__files/rtac/batch-holdings-response.json");
+    var batchHoldingsResponse = objectMapperUtils.readValue(batchHoldingsResponseString, BatchHoldingsResponse.class);
+    when(rtacClient.rtac(any(RtacBatchRequest.class))).thenReturn(batchHoldingsResponse);
+    ArgumentCaptor<RtacBatchRequest> requestCaptor = ArgumentCaptor.forClass(RtacBatchRequest.class);
 
     rtacService.getBatchRtac(INSTANCE_ID_1, true);
 
     verify(rtacClient).rtac(requestCaptor.capture());
-    String requestBody = requestCaptor.getValue();
-
-    assertThat(requestBody).contains("fullPeriodicals");
-    assertThat(requestBody).contains("true");
+    var requestBody = requestCaptor.getValue();
+    assertThat(requestBody.getFullPeriodicals()).isTrue();
   }
 
   @Test
   void getBatchRtac_shouldNotIncludeFullPeriodicalsWhenNull() {
-    String batchHoldingsResponse = TestUtil.readFileContentFromResources("__files/rtac/batch-holdings-response.json");
-    when(rtacClient.rtac(anyString())).thenReturn(batchHoldingsResponse);
-
-    ArgumentCaptor<String> requestCaptor = ArgumentCaptor.forClass(String.class);
+    var batchHoldingsResponseString = TestUtil.readFileContentFromResources("__files/rtac/batch-holdings-response.json");
+    var batchHoldingsResponse = objectMapperUtils.readValue(batchHoldingsResponseString, BatchHoldingsResponse.class);
+    when(rtacClient.rtac(any(RtacBatchRequest.class))).thenReturn(batchHoldingsResponse);
+    ArgumentCaptor<RtacBatchRequest> requestCaptor = ArgumentCaptor.forClass(RtacBatchRequest.class);
 
     rtacService.getBatchRtac(INSTANCE_ID_1, null);
 
     verify(rtacClient).rtac(requestCaptor.capture());
-    String requestBody = requestCaptor.getValue();
-
-    assertThat(requestBody).doesNotContain("fullPeriodicals");
+    var requestBody = requestCaptor.getValue();
+    assertThat(requestBody.getFullPeriodicals()).isNull();
   }
 }

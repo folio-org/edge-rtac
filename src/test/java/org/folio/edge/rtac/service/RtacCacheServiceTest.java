@@ -1,11 +1,15 @@
 package org.folio.edge.rtac.service;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.folio.edge.rtac.TestConstants.RTAC_CACHE_RESPONSE_PATH;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
+import org.folio.edge.rtac.TestUtil;
 import org.folio.edge.rtac.client.RtacCacheClient;
+import org.folio.edge.rtac.utils.ObjectMapperUtils;
 import org.folio.rtac.domain.dto.RtacRequest;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.ArgumentCaptor;
@@ -33,12 +37,20 @@ class RtacCacheServiceTest {
   @Mock
   private RtacCacheClient rtacCacheClient;
 
+  private ObjectMapperUtils objectMapperUtils;
+
+  @BeforeEach
+  void setUp() {
+    objectMapperUtils = new ObjectMapperUtils(TestUtil.OBJECT_MAPPER);
+  }
 
   @Test
   void searchRtacCacheHoldings_shouldDelegateToClient_andReturnResult() {
     // given
+    var rtacCacheResponse = TestUtil.readFileContentFromResources(RTAC_CACHE_RESPONSE_PATH);
+    var searchResponse = objectMapperUtils.readTree(rtacCacheResponse);
     when(rtacCacheClient.searchRtacCacheHoldings(INSTANCE_ID_1, QUERY_TITLE_FOO, AVAILABLE_TRUE, LIMIT_10, OFFSET_0, SORT_BY_LOCATION))
-      .thenReturn("search-response");
+      .thenReturn(searchResponse);
 
     // when
     String result = rtacCacheService.searchRtacCacheHoldings(INSTANCE_ID_1, QUERY_TITLE_FOO, AVAILABLE_TRUE, LIMIT_10, OFFSET_0, SORT_BY_LOCATION);
@@ -51,7 +63,9 @@ class RtacCacheServiceTest {
   @Test
   void getRtacCacheHoldingsById_shouldDelegateToClient_andReturnResult() {
     // given
-    when(rtacCacheClient.rtacCacheById(INSTANCE_ID_2, LIMIT_5, OFFSET_2, SORT_BY_STATUS)).thenReturn("single-response");
+    var rtacCacheResponse = TestUtil.readFileContentFromResources(RTAC_CACHE_RESPONSE_PATH);
+    var singleResponse = objectMapperUtils.readTree(rtacCacheResponse);
+    when(rtacCacheClient.rtacCacheById(INSTANCE_ID_2, LIMIT_5, OFFSET_2, SORT_BY_STATUS)).thenReturn(singleResponse);
 
     // when
     String result = rtacCacheService.getRtacCacheHoldingsById(INSTANCE_ID_2, LIMIT_5, OFFSET_2, SORT_BY_STATUS);
@@ -65,7 +79,9 @@ class RtacCacheServiceTest {
   void getRtacCacheBatchHoldings_shouldDelegateToClient_andReturnResult() {
     // given
     RtacRequest request = new RtacRequest();
-    when(rtacCacheClient.rtacCacheBatch(request)).thenReturn("batch-response");
+    var rtacCacheBatchResponse = TestUtil.readFileContentFromResources(RTAC_CACHE_RESPONSE_PATH);
+    var batchResponse = objectMapperUtils.readTree(rtacCacheBatchResponse);
+    when(rtacCacheClient.rtacCacheBatch(request)).thenReturn(batchResponse);
 
     // when
     String result = rtacCacheService.getRtacCacheBatchHoldings(request);

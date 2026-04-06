@@ -15,14 +15,14 @@ public class RtacCacheService {
 
   public String searchRtacCacheHoldings(String instanceId, String query, Boolean available,
     Integer limit, Integer offset, String sort) {
-    return rtacCacheClient.searchRtacCacheHoldings(instanceId, query, available, limit, offset, sort);
+    return rtacCacheClient.searchRtacCacheHoldings(instanceId, query, available, limit, offset, sort).toString();
   }
 
   public String getRtacCacheHoldingsById(String instanceId, Integer limit, Integer offset, String sort) {
-    return rtacCacheClient.rtacCacheById(instanceId, limit, offset, sort);
+    return rtacCacheClient.rtacCacheById(instanceId, limit, offset, sort).toString();
   }
 
   public String getRtacCacheBatchHoldings(RtacRequest rtacRequest) {
-    return rtacCacheClient.rtacCacheBatch(rtacRequest);
+    return rtacCacheClient.rtacCacheBatch(rtacRequest).toString();
   }
 }
