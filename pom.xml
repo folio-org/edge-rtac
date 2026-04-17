@@ -11,7 +11,7 @@
 
   <groupId>org.folio</groupId>
   <artifactId>edge-rtac</artifactId>
-  <version>3.1.0-SNAPSHOT</version>
+  <version>3.1.0</version>
   <packaging>jar</packaging>
   <name>edge-rtac</name>
   <description>Edge API to interface with FOLIO for 3rd party discovery services to determine holdings availability</description>
@@ -311,7 +311,7 @@
     <url>https://github.com/folio-org/${project.artifactId}</url>
     <connection>scm:git:git://github.com/folio-org/${project.artifactId}.git</connection>
     <developerConnection>scm:git:git@github.com:folio-org/${project.artifactId}.git</developerConnection>
-    <tag>HEAD</tag>
+    <tag>v3.1.0</tag>
   </scm>
 
 </project>
