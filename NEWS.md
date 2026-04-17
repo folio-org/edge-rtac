@@ -1,3 +1,11 @@
+# v3.1.0 2026.04.17
+
+* [EDGRTAC-122](https://folio-org.atlassian.net/browse/EDGRTAC-117): Upgrade module to SpringBoot4.0 and Spring7.0
+* [EDGRTAC-122](https://folio-org.atlassian.net/browse/EDGRTAC-122): Fix holding name type naming in response schema
+* [EDGRTAC-123](https://folio-org.atlassian.net/browse/EDGRTAC-123): Upgrade module to SpringBoot4.0 and Spring7.0
+* [EDGRTAC-126](https://folio-org.atlassian.net/browse/EDGRTAC-126): Add support for sorting in RTAC cache search APIs
+
+
 # v3.0.0 2025.12.11
 
 LoC specific release for Sunflower CSP#4 (R1 2025)
