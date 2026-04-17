@@ -1,6 +1,5 @@
 package org.folio.edge.rtac.exception;
 
-import feign.FeignException;
 import jakarta.validation.ConstraintViolationException;
 import lombok.extern.log4j.Log4j2;
 import org.folio.rtac.domain.dto.Error;
