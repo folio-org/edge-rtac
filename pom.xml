@@ -26,7 +26,7 @@
   <properties>
     <java.version>21</java.version>
     <edge-common-spring.version>4.0.0</edge-common-spring.version>
-    <openapi-generator.version>7.20.0</openapi-generator.version>
+    <openapi-generator.version>7.22.0</openapi-generator.version>
     <folio-spring-support.version>10.0.0</folio-spring-support.version>
     <edge-rtac.yaml.file>${project.basedir}/src/main/resources/swagger.api/edge-rtac.yaml</edge-rtac.yaml.file>
 
@@ -271,7 +271,7 @@
       <plugin>
         <groupId>org.apache.maven.plugins</groupId>
         <artifactId>maven-release-plugin</artifactId>
-        <version>3.1.1</version>
+        <version>3.3.1</version>
         <configuration>
           <preparationGoals>clean verify</preparationGoals>
           <tagNameFormat>v@{project.version}</tagNameFormat>
