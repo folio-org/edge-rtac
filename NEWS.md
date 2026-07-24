@@ -1,3 +1,9 @@
+# v3.1.1 2026.07.24
+
+* [EDGRTAC-134](https://folio-org.atlassian.net/browse/EDGRTAC-134): Fix null fields leaking into /rtac response payload
+* [EDGRTAC-132](https://folio-org.atlassian.net/browse/EDGRTAC-132): Upgrade edge-common-spring in edge-rtac
+
+
 # v3.1.0 2026.04.17
 
 * [EDGRTAC-122](https://folio-org.atlassian.net/browse/EDGRTAC-117): Upgrade module to SpringBoot4.0 and Spring7.0
