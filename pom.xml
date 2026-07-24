@@ -11,7 +11,7 @@
 
   <groupId>org.folio</groupId>
   <artifactId>edge-rtac</artifactId>
-  <version>3.1.0</version>
+  <version>3.1.1-SNAPSHOT</version>
   <packaging>jar</packaging>
   <name>edge-rtac</name>
   <description>Edge API to interface with FOLIO for 3rd party discovery services to determine holdings availability</description>
