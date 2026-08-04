@@ -1,3 +1,7 @@
+# WIP
+
+* [FOLIO-4553](https://folio-org.atlassian.net/browse/FOLIO-4553): Set "permissions: contents: read" in maven.yml
+
 # v3.1.0 2026.04.17
 
 * [EDGRTAC-122](https://folio-org.atlassian.net/browse/EDGRTAC-117): Upgrade module to SpringBoot4.0 and Spring7.0
