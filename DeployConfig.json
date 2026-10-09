@@ -1,0 +1,111 @@
+{
+  "_disclaimer": "Default values are calibrated against a defined reference baseline of bugfest environment (currently 3 standalone tenants, and 11 consortia tenants). See ADR-0013 (Module configuration management) for the governance model behind this file.",
+  "description": "mod-rtac-cache configuration template",
+  "moduleDefaults": {
+    "resources": [
+      {
+        "name": "cpu",
+        "value": "64",
+        "description": "CPU request/limit for container"
+      },
+      {
+        "name": "memory",
+        "value": "1024",
+        "description": "Memory hard limit for container"
+      },
+      {
+        "name": "memoryReservation",
+        "value": "896",
+        "description": "Memory reservation for container"
+      }
+    ],
+    "java": [
+      {
+        "name": "xmx",
+        "value": "768m",
+        "description": "Maximum Java heap size"
+      },
+      {
+        "name": "MaxMetaspaceSize",
+        "value": "128m",
+        "description": "Maximum Java metaspace size"
+      },
+      {
+        "name": "MetaspaceSize",
+        "value": "88m",
+        "description": "Initial Java metaspace size"
+      }
+    ],
+    "deployment": {
+      "isHaSupported": true,
+      "replicasRecommendedCount": 1,
+      "description": "Deployment configuration for the backend module. Adjust replicas based on expected load and HA requirements. The scheduled cache-invalidation job (RTAC_CACHE_INVALIDATION_CRON) runs unguarded per replica; concurrent runs are idempotent deletes, so HA is safe without a distributed lock."
+    },
+    "kong": {
+      "timeouts": {
+        "connect": "60s",
+        "send": "60s",
+        "read": "120s"
+      },
+      "description": "Custom Kong proxy timeouts. Read timeout is raised above the 60s default because a cache-miss request synchronously fans out to inventory/circulation/orders to lazily generate the RTAC cache before responding."
+    },
+    "EnvVars": [
+      {
+        "name": "ENV",
+        "value": null,
+        "description": "Logical FOLIO deployment name used as the prefix for Kafka topic patterns and Kafka consumer groups.",
+        "type": "CONFIG",
+        "essential": true
+      },
+      {
+        "name": "okapi_url",
+        "value": null,
+        "description": "Okapi base URL used for outbound FOLIO service calls and system-user requests. Must be provided by the deployment environment.",
+        "type": "CONFIG",
+        "essential": true
+      },
+      {
+        "name": "secure_store",
+        "value": null,
+        "description": "Type of secure store used for tenant credentials. Valid values: Ephemeral, AwsSsm, Vault.",
+        "type": "CONFIG",
+        "essential": true
+      },
+      {
+        "name": "secure_store_props",
+        "value": null,
+        "description": "Path to a properties file specifying the secure store configuration.",
+        "type": "CONFIG",
+        "essential": true
+      },
+      {
+        "name": "log_level",
+        "value": "INFO",
+        "description": "Log4j log level for the module.",
+        "type": "CONFIG",
+        "essential": true
+      },
+      {
+        "name": "token_cache_ttl_ms",
+        "value": "300000",
+        "description": "How long to cache JWTs, in milliseconds.",
+        "type": "CONFIG",
+        "essential": true
+      },
+      {
+        "name": "null_token_cache_ttl_ms",
+        "value": "30000",
+        "description": "How long to cache a failed (null) token lookup, in milliseconds, before retrying.",
+        "type": "CONFIG",
+        "essential": true
+      },
+      {
+        "name": "token_cache_capacity",
+        "value": "25",
+        "description": "Maximum number of entries in the token cache.",
+        "type": "CONFIG",
+        "essential": true
+      }
+    ]
+  }
+}
