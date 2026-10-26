@@ -115,7 +115,7 @@ public class RtacHandler extends Handler {
                 returningContent = isXmlRequest ? holdings.toXml() : holdings.toJson();
               }
 
-              logger.info("Converted Response: \n {}", returningContent);
+              logger.debug("Converted Response: \n {}", returningContent);
               ctx.response()
                 .setStatusCode(200)
                 .putHeader(HttpHeaders.CONTENT_TYPE, isXmlRequest ? APPLICATION_XML : APPLICATION_JSON)
