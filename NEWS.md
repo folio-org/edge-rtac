@@ -1,3 +1,9 @@
+# v2.9.5 Unreleased
+
+Sunflower (R1 2025)
+
+* [EDGRTAC-113](https://folio-org.atlassian.net/browse/EDGRTAC-113): Stop logging full mod-rtac and edge-rtac responses at INFO level
+
 # v2.9.4 2026.02.17
 
 Sunflower (R1 2025) Service Patch #6
