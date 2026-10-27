@@ -62,8 +62,8 @@ public class RtacOkapiClient extends OkapiClient {
   static class ResponseInterpreter {
     String interpretResponse(Response response) {
       if (response.getStatusCode() == 200) {
-        logger.info("Successfully retrieved title info from mod-rtac: ({}) {}",
-          response.getStatusCode(), response.getBody());
+        logger.info("Successfully retrieved title info from mod-rtac: ({})",
+          response.getStatusCode());
 
         return response.getBody();
       } else {
