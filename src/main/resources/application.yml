@@ -5,7 +5,7 @@ secure_store_props: src/main/resources/ephemeral.properties
 
 spring:
   application:
-    name: edge-courses
+    name: edge-rtac
   main:
     allow-bean-definition-overriding: true
   liquibase:
