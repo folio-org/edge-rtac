@@ -5,7 +5,7 @@
   <parent>
     <groupId>org.springframework.boot</groupId>
     <artifactId>spring-boot-starter-parent</artifactId>
-    <version>4.0.3</version>
+    <version>4.1.1</version>
     <relativePath />
   </parent>
 
@@ -25,9 +25,9 @@
 
   <properties>
     <java.version>21</java.version>
-    <edge-common-spring.version>4.0.2</edge-common-spring.version>
-    <openapi-generator.version>7.20.0</openapi-generator.version>
-    <folio-spring-support.version>10.0.0</folio-spring-support.version>
+    <edge-common-spring.version>4.0.4</edge-common-spring.version>
+    <openapi-generator.version>7.26.0</openapi-generator.version>
+    <folio-spring-support.version>10.0.1</folio-spring-support.version>
     <edge-rtac.yaml.file>${project.basedir}/src/main/resources/swagger.api/edge-rtac.yaml</edge-rtac.yaml.file>
 
     <!-- Test dependencies versions -->
@@ -69,7 +69,7 @@
 
     <dependency>
       <groupId>org.springframework.boot</groupId>
-      <artifactId>spring-boot-starter-web</artifactId>
+      <artifactId>spring-boot-starter-webmvc</artifactId>
       <exclusions>
         <exclusion>
           <groupId>org.apache.logging.log4j</groupId>
@@ -249,6 +249,7 @@
                 <useSpringBoot4>true</useSpringBoot4>
                 <openApiNullable>false</openApiNullable>
                 <useJackson3>true</useJackson3>
+                <useJspecify>true</useJspecify>
                 <withXml>true</withXml>
               </configOptions>
             </configuration>

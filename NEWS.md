@@ -1,5 +1,6 @@
 # WIP
 
+* [EDGRTAC-138](https://folio-org.atlassian.net/browse/EDGRTAC-138): Upgrade module to Spring Boot 4.1.1
 * [FOLIO-4553](https://folio-org.atlassian.net/browse/FOLIO-4553): Set "permissions: contents: read" in maven.yml
 
 # v3.1.0 2026.04.17
