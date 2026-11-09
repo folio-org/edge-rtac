@@ -1,3 +1,7 @@
+# v3.1.2 2026.11.09
+
+* [EDGRTAC-138](https://folio-org.atlassian.net/browse/EDGRTAC-138): Upgrade module to Spring Boot 4.1.1
+
 # v3.1.1 2026.07.24
 
 * [EDGRTAC-134](https://folio-org.atlassian.net/browse/EDGRTAC-134): Fix null fields leaking into /rtac response payload
