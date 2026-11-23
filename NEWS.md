@@ -1,3 +1,7 @@
+# v3.1.3 2026.11.23
+
+* [EDGRTAC-135](https://folio-org.atlassian.net/browse/EDGRTAC-135): Add DeployConfig.json to edge-rtac (ADR-0013 Configuration Management)
+
 # v3.1.2 2026.11.09
 
 * [EDGRTAC-138](https://folio-org.atlassian.net/browse/EDGRTAC-138): Upgrade module to Spring Boot 4.1.1
